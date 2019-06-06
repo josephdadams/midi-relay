@@ -1,31 +1,41 @@
 {
-    "name": "midi-relay",
-    "productName": "MIDI Relay",
-    "description": "Listens for HTTP request with JSON payload and relays MIDI/MSC commands on local ports.",
-    "version": "1.0.0",
-    "keywords": [
-        "util",
-        "functional",
-        "server",
-        "client",
-        "browser",
-        "midi"
-    ],
-    "license": "MIT",
-    "author": "Joseph Adams",
-    "dependencies": {
-        "body-parser": "^1.18.3",
-        "express": "^4.16.3",
-        "jzz": "^0.7.9",
-        "lodash": "^4.17.11"
-    },
-    "main": "main.js",
-    "bin": "main.js",
-    "scripts": {},
-    "devDependencies": {},
-    "pkg": {
-        "assets": [
-            "./views/**/*"
-        ]
-    }
+  "name": "midi-relay",
+  "productName": "MIDI Relay",
+  "description": "Listens for HTTP request with JSON payload and relays MIDI/MSC commands on local ports.",
+  "version": "1.0.0",
+  "keywords": [
+    "util",
+    "functional",
+    "server",
+    "client",
+    "browser",
+    "midi"
+  ],
+  "license": "MIT",
+  "author": "Joseph Adams",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "jzz": "^0.7.9",
+    "lodash": "^4.17.11"
+  },
+  "main": "main.js",
+  "bin": {
+    "midi-relay": "main.js"
+  },
+  "scripts": {},
+  "devDependencies": {},
+  "pkg": {
+    "assets": [
+      "./views/**/*"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josephdadams/midi-relay.git"
+  },
+  "bugs": {
+    "url": "https://github.com/josephdadams/midi-relay/issues"
+  },
+  "homepage": "https://github.com/josephdadams/midi-relay#readme"
 }
