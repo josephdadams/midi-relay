@@ -55,6 +55,9 @@ function initialRESTSetup() {
 			case 'noteon':
 				res.send(SendMIDI_NoteOn(midiObj.midiport, midiObj.note, midiObj.channel, midiObj.velocity));
 				break;
+            case 'mcc':
+                res.send(SendMIDI_MCC(midiObj.midiport, midiObj.param, midiObj.channel, midiObj.setvalue));
+                break;
 			case 'noteoff':
 				res.send(SendMIDI_NoteOff(midiObj.midiport, midiObj.note, midiObj.channel, midiObj.velocity));
 				break;
@@ -123,6 +126,19 @@ function SendMIDI_NoteOn(midiPort, note, channel, velocity) {
 		port.close();
 	
 		return {result: 'note-on-sent-successfully', note: note, channel: channel, velocity: velocity};
+	}
+	catch(error) {
+		return {error: error};
+	}
+}
+
+function SendMIDI_MCC(midiPort, param, channel, setvalue) {
+	try {
+		let port = navigator().openMidiOut(midiport);
+		port.control(channel, param, setvalue);
+		port.close();
+
+		return {result: 'mcc-sent-successfully', param: param, channel: channel, setvalue: setvalue};
 	}
 	catch(error) {
 		return {error: error};
