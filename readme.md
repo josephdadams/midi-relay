@@ -77,7 +77,9 @@ To run, `node main.js` within the midi-relay folder.
     *   opencuelist
     *   closecuelist
     *   startclock
-    *   stopclockAny other value for _command_ will default to "go".  
+    *   stopclock
+	
+	Any other value for _command_ will default to "go".  
 
     Values for _cue_, _cuelist_, and _cuepath_ are all optional strings. If left blank ("") or not included in the object, those will not be included in the MIDI command that is generated.  
     A JSON response of `{result: 'msc-sent-successfully'}` indicates the note was successfully sent.
