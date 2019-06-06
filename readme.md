@@ -33,7 +33,8 @@ To run, `node main.js` within the midi-relay folder.
 
     *   _note_ should be an integer of the MIDI Number value that represents the note, between 21 (A0) and 108 (C8).
     *   _channel_ should be a integer between 0 and 15.
-    *   _velocity_ should be a integer between 1 and 127.  
+    *   _velocity_ should be a integer between 1 and 127.
+	
     To send a MSC (MIDI Show Control) message, the JSON object should be in this format:
 	```javascript
     {
@@ -57,7 +58,8 @@ To run, `node main.js` within the midi-relay folder.
     *   projection.general
     *   processcontrol.general
     *   pyro.general
-    *   allAny other value for _commandformat_ will default to "all".  
+    *   all
+	Any other value for _commandformat_ will default to "all".  
 
     _command_ should be a string with one of the following values:
     *   go
