@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+<head>
+    <title>MIDI Relay</title>
+<meta charset="UTF-8">
+<style>
+    body
+    {
+        font-family: Helvetica, Arial;
+        background:#efefef;
+    }
+	
+    #container
+    {
+        position: relative;
+    }
+    
+    #title
+    {
+        margin: 0 auto;
+    }
+    
+    #divLicense
+    {
+        background: #dddddd;
+        font-style: italic;
+    }
+	
+	.code
+    {
+        font-family: Courier New, monospace;
+        background: #eee;
+    }
+	
+	ol li
+	{
+	  padding: 5px;
+	}
+    
+    
+</style>
+</head>
+<body>
+<div id="container">
+        <div id="title"><h1>About MIDI Relay</h1></div>
+		<div id="divBody">MIDI Relay was written by Joseph Adams and is distributed under the MIT License.
+            <br /><br />
+            <div id="divLicense">
+                Copyright 2019 Joseph Adams.<br /><br />
+                Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+				<br /><br />
+				The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+				<br /><br />
+				THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+				</div><br /><br />
+				It is not sold, authorized, or associated with any other company or product.<br /><br />
+				To contact the author or for more information, please visit <a id="bloglink" href="http://www.techministry.blog">www.techministry.blog</a>.
+				<br /><br />
+            <b>TO USE THIS SOFTWARE:</b><br />
+            <ol>
+				<li>This program runs an HTTP server listening on port 4000.</li>
+				<li>Upon startup, the program will enumerate through the available MIDI ports.</li>
+				<li>Making a GET request to <span class="code">/midi_inputs</span> will return a JSON list of MIDI Input ports available on the server.</li>
+				<li>Making a GET request to <span class="code">/midi_outputs</span> will return a JSON list of MIDI Output ports available on the server.</li>
+				<li>Making a GET request to <span class="code">/refresh</span> will refresh the list of available MIDI ports and update the internal variables with these ports. A JSON response of <span class="code">{result: 'ports-refreshed-successfully'}</span> indicates it was successful.</li>
+				<li>Making a POST request to <span class="code">/sendmidi</span> will send a MIDI command to the port identified in the JSON object included in the POST body.<br />
+					If sending a MIDI Note On or Note Off, the JSON object should be in this format:<br />
+					<span class="code">
+					{<br />
+						midiport: 'MIDI Port Name',<br />
+  						midicommand: 'noteon',<br />
+  						note: 21,<br />
+						channel: 0,<br />
+						velocity: 1<br />
+					}
+					</span><br /><br />
+					A JSON response of <span class="code">{result: 'note-on-sent-successfully'}</span> indicates the note was successfully sent.
+					A <i>midicommand</i> of <i>noteon</i> specifies a MIDI Note On command. <i>noteoff</i> specifies that it is a Note Off command.<br />
+					<ul>
+						<li><i>note</i> should be an integer of the MIDI Number value that represents the note, between 21 (A0) and 108 (C8).</li>
+						<li><i>channel</i> should be a integer between 0 and 15.</li>
+						<li><i>velocity</i> should be a integer between 1 and 127.</li>
+					</ul>
+					<br />
+					To send a MSC (MIDI Show Control) message, the JSON object should be in this format:<br />
+					<span class="code">
+					{<br />
+						midiport: 'MIDI Port Name',<br />
+						midicommand: 'msc',<br />
+						deviceid: 0,<br />
+						commandformat: 'lighting.general',<br />
+						command: 'go',<br />
+						cue: '10',<br />
+						cuelist: '13',<br />
+						cuepath: ''<br />
+						}
+					</span><br /><br />
+					<i>deviceid</i> should be an integer between 0 and 111. It can also be a string "g1" through "g15" to represent groups, or it can be "all".<br /><br />
+					<i>commandformat</i> should be a string with one of the following values:
+					<ul>
+						<li>lighting.general</li>
+						<li>sound.general</li>
+						<li>machinery.general</li>
+						<li>video.general</li>
+						<li>projection.general</li>
+						<li>processcontrol.general</li>
+						<li>pyro.general</li>
+						<li>all</li>
+					</ul>
+					Any other value for <i>commandformat</i> will default to "all".<br /><br />
+					<i>command</i> should be a string with one of the following values:
+					<ul>
+						<li>go</li>
+						<li>stop</li>
+						<li>gojam</li>
+						<li>gooff</li>
+						<li>resume</li>
+						<li>timedgo</li>
+						<li>load</li>
+						<li>set</li>
+						<li>fire</li>
+						<li>alloff</li>
+						<li>restore</li>
+						<li>reset</li>
+						<li>opencuelist</li>
+						<li>closecuelist</li>
+						<li>startclock</li>
+						<li>stopclock</li>
+					</ul>
+					Any other value for <i>command</i> will default to "go".<br /><br />
+					Values for <i>cue</i>, <i>cuelist</i>, and <i>cuepath</i> are all optional strings. If left blank ("") or not included in the object, those will not be included in the MIDI command that is generated.<br />
+					A JSON response of <span class="code">{result: 'msc-sent-successfully'}</span> indicates the note was successfully sent.					
+				</li>
+            </ol>
+			<br /><br />
+        </div>
+</div>
+</body>
+</html>
