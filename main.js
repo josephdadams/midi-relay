@@ -134,7 +134,7 @@ function SendMIDI_NoteOn(midiPort, note, channel, velocity) {
 
 function SendMIDI_MCC(midiPort, param, channel, setvalue) {
 	try {
-		let port = navigator().openMidiOut(midiport);
+		let port = navigator().openMidiOut(midiPort);
 		port.control(channel, param, setvalue);
 		port.close();
 
