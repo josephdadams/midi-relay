@@ -17,7 +17,8 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "jzz": "^0.7.9",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.11",
+    "mdns": "^2.5.0"
   },
   "main": "main.js",
   "bin": {

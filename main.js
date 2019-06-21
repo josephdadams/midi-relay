@@ -14,9 +14,12 @@ var MIDI_outputs = [];
 
 //other variables
 var _ = require('lodash');
+const mdns = require('mdns');
+var ad = null; //mdns advertisement variable
 
 function setUpApp() {
 	initialRESTSetup();
+	initialMDNSSetup();
 	initialMIDISetup();
 }
 
@@ -78,6 +81,11 @@ function initialRESTSetup() {
 	console.log('MIDI Relay server started on: ' + listenPort);
 }
 
+function initialMDNSSetup() {
+	ad = mdns.createAdvertisement(mdns.tcp('midi-relay'), 4000);
+	ad.start();
+}
+
 function initialMIDISetup() {
 	console.log('Beginning MIDI Setup.');
 	try {
@@ -118,11 +126,16 @@ function RefreshPorts() {
 
 function SendMIDI_NoteOn(midiPort, note, channel, velocity) {
 	try {
+		console.log('Sending NoteOn.');
+		
 		let port = navigator().openMidiOut(midiPort);
 		port.noteOn(channel, note, velocity);
 		port.close();
 	
-		return {result: 'note-on-sent-successfully', note: note, channel: channel, velocity: velocity};
+		let returnObj = {result: 'note-on-sent-successfully', note: note, channel: channel, velocity: velocity};
+		
+		console.log(returnObj);
+		return returnObj;
 	}
 	catch(error) {
 		return {error: error};
@@ -131,6 +144,8 @@ function SendMIDI_NoteOn(midiPort, note, channel, velocity) {
 
 function SendMIDI_NoteOff(midiPort, note, channel, velocity) {
 	try {
+		console.log('Sending NoteOff.');
+		
 		let port = navigator().openMidiOut(midiPort);
 		if (channel === null) {
 			channel = 0;
@@ -145,7 +160,10 @@ function SendMIDI_NoteOff(midiPort, note, channel, velocity) {
 		port.noteOff(channel, note, velocity);
 		port.close();
 	
-		return {result: 'note-off-sent-successfully', note: note, channel: channel, velocity: velocity};
+		let returnObj = {result: 'note-off-sent-successfully', note: note, channel: channel, velocity: velocity};
+		
+		console.log(returnObj);
+		return returnObj;
 	}
 	catch(error) {
 		return {error: error};
@@ -155,6 +173,7 @@ function SendMIDI_NoteOff(midiPort, note, channel, velocity) {
 function SendMIDI_MSC(midiPort, deviceId, commandFormat, command, cue, cueList, cuePath) {
 	try {
 		console.log('Sending MSC command.');
+		
 		//check if cue, cueList, or cuePath are included (they are optional)
 		let midiObj = {};
 
@@ -180,8 +199,11 @@ function SendMIDI_MSC(midiPort, deviceId, commandFormat, command, cue, cueList, 
 		port.send(message);
 
 		port.close();
-
-		return {result: 'msc-sent-successfully', deviceid: deviceId, commandformat: commandFormat, command: command, cue: cue, cuelist: cueList, cuepath: cuePath, message: message};
+		
+		let returnObj = {result: 'msc-sent-successfully', deviceid: deviceId, commandformat: commandFormat, command: command, cue: cue, cuelist: cueList, cuepath: cuePath, message: message};
+		
+		console.log(returnObj);
+		return returnObj;
 	}
 	catch (error) {
 		console.log(error);
