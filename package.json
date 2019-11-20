@@ -1,42 +1,48 @@
 {
-  "name": "midi-relay",
-  "productName": "MIDI Relay",
-  "description": "Listens for HTTP request with JSON payload and relays MIDI/MSC commands on local ports.",
-  "version": "1.0.0",
-  "keywords": [
-    "util",
-    "functional",
-    "server",
-    "client",
-    "browser",
-    "midi"
-  ],
-  "license": "MIT",
-  "author": "Joseph Adams",
-  "dependencies": {
-    "body-parser": "^1.18.3",
-    "express": "^4.16.3",
-    "jzz": "^0.7.9",
-    "lodash": "^4.17.11",
-    "mdns": "^2.5.0"
-  },
-  "main": "main.js",
-  "bin": {
-    "midi-relay": "main.js"
-  },
-  "scripts": {},
-  "devDependencies": {},
-  "pkg": {
-    "assets": [
-      "./views/**/*"
-    ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/josephdadams/midi-relay.git"
-  },
-  "bugs": {
-    "url": "https://github.com/josephdadams/midi-relay/issues"
-  },
-  "homepage": "https://github.com/josephdadams/midi-relay#readme"
+	"name": "midi-relay",
+	"productName": "MIDI Relay",
+	"description": "Listens for HTTP request with JSON payload and relays MIDI/MSC commands on local ports. Also listens for incoming MIDI messages on local ports and can send HTTP requests or run AppleScripts.",
+	"version": "2.0.0",
+	"keywords": [
+		"util",
+		"functional",
+		"server",
+		"client",
+		"browser",
+		"midi"
+	],
+	"license": "MIT",
+	"author": "Joseph Adams",
+	"dependencies": {
+		"body-parser": "^1.18.3",
+		"cli-color": "^2.0.0",
+		"cors": "^2.8.5",
+		"express": "^4.16.3",
+		"figlet": "^1.2.4",
+		"jzz": "^0.7.9",
+		"lodash": "^4.17.11",
+		"mdns-js": "^1.0.3",
+		"node-osascript": "^2.1.0",
+		"request": "^2.88.0"
+	},
+	"main": "main.js",
+	"bin": {
+		"midi-relay": "main.js"
+	},
+	"scripts": {},
+	"devDependencies": {},
+	"pkg": {
+		"assets": [
+			"./views/**/*",
+			"./node_modules/figlet/fonts/Standard.flf"
+		]
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/josephdadams/midi-relay.git"
+	},
+	"bugs": {
+		"url": "https://github.com/josephdadams/midi-relay/issues"
+	},
+	"homepage": "https://github.com/josephdadams/midi-relay#readme"
 }

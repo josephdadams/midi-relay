@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>MIDI-Relay Settings</title>
+		<meta charset='UTF-8'>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<style>
+			body {
+				font-family: Helvetica, Arial;
+				background:#eeeeee;
+			}
+			
+			#container {
+				display: table;
+				clear: both;
+			}
+			
+			.logo {
+				display: flex;
+				align-items: center;
+			}
+			
+			#divMIDIPortsContainer {
+				background: #ffffff;
+				width: 200x;
+				padding: 5px;
+				float: left;
+				margin: 5px;
+			}
+			
+			#divTriggersContainer {
+				background: #ffffff;
+				width: 200x;
+				padding: 5px;
+				float: left;
+				margin: 5px;
+			}
+			
+			#divHostsContainer {
+				background: #ffffff;
+				width: 200x;
+				padding: 5px;
+				float: left;
+				margin: 5px;
+			}
+			
+			#divLogContainer {
+				background: #ffffff;
+				width: 525px;
+				height: 120px;
+				padding: 5px;
+				float: left;
+				margin: 5px;
+			}
+
+			#divLog {
+				background: #cdcdcd;
+				font-family: monospace;
+				padding: 5px;
+				width: 510px;
+				height: 80px;
+				overflow-y: scroll;
+				-webkit-user-select: text;
+			}
+			
+			#divRelayContainer {
+				background: #ffffff;
+				width: 525px;
+				height: auto;
+				padding: 5px;
+				float: left;
+				margin: 5px;
+			}
+		</style>
+		<script src='js/jquery-3.3.1.min.js'></script>
+		<script>
+			var MIDI_INPUTS = [];
+			
+			var MIDI_NOTES = [
+				{id: 1, label: '1 - unassigned'},
+				{id: 2, label: '2 - unassigned'},
+				{id: 3, label: '3 - unassigned'},
+				{id: 4, label: '4 - unassigned'},
+				{id: 5, label: '5 - unassigned'},
+				{id: 6, label: '6 - unassigned'},
+				{id: 7, label: '7 - unassigned'},
+				{id: 8, label: '8 - unassigned'},
+				{id: 9, label: '9 - unassigned'},
+				{id: 10, label: '10 - unassigned'},
+				{id: 11, label: '11 - unassigned'},
+				{id: 12, label: '12 - unassigned'},
+				{id: 13, label: '13 - unassigned'},
+				{id: 14, label: '14 - unassigned'},
+				{id: 15, label: '15 - unassigned'},
+				{id: 16, label: '16 - unassigned'},
+				{id: 17, label: '17 - unassigned'},
+				{id: 18, label: '18 - unassigned'},
+				{id: 19, label: '19 - unassigned'},
+				{id: 20, label: '20 - unassigned'},
+				{id: 21, label: '21 - A0', selected: true},
+				{id: 22, label: '22 - A#0'},
+				{id: 23, label: '23 - B0'},
+				{id: 24, label: '24 - C1'},
+				{id: 25, label: '25 - C#1'},
+				{id: 26, label: '26 - D1'},
+				{id: 27, label: '27 - D#1'},
+				{id: 28, label: '28 - E1'},
+				{id: 29, label: '29 - F1'},
+				{id: 30, label: '30 - F#1'},
+				{id: 31, label: '31 - G1'},
+				{id: 32, label: '32 - G#1'},
+				{id: 33, label: '33 - A1'},
+				{id: 34, label: '34 - A#1'},
+				{id: 35, label: '35 - B1'},
+				{id: 36, label: '36 - C2'},
+				{id: 37, label: '37 - C#2'},
+				{id: 38, label: '38 - D2'},
+				{id: 39, label: '39 - D#2'},
+				{id: 40, label: '40 - E2'},
+				{id: 41, label: '41 - F2'},
+				{id: 42, label: '42 - F#2'},
+				{id: 43, label: '43 - G2'},
+				{id: 44, label: '44 - G#2'},
+				{id: 45, label: '45 - A2'},
+				{id: 46, label: '46 - A#2'},
+				{id: 47, label: '47 - B2'},
+				{id: 48, label: '48 - C3'},
+				{id: 49, label: '49 - C#3'},
+				{id: 50, label: '50 - D3'},
+				{id: 51, label: '51 - D#3'},
+				{id: 52, label: '52 - E3'},
+				{id: 53, label: '53 - F3'},
+				{id: 54, label: '54 - F#3'},
+				{id: 55, label: '55 - G3'},
+				{id: 56, label: '56 - G#3'},
+				{id: 57, label: '57 - A3'},
+				{id: 58, label: '58 - A#3'},
+				{id: 59, label: '59 - B3'},
+				{id: 60, label: '60 - C4'},
+				{id: 61, label: '61 - C#4'},
+				{id: 62, label: '62 - D4'},
+				{id: 63, label: '63 - D#4'},
+				{id: 64, label: '64 - E4'},
+				{id: 65, label: '65 - F4'},
+				{id: 66, label: '66 - F#4'},
+				{id: 67, label: '67 - G4'},
+				{id: 68, label: '68 - G#4'},
+				{id: 69, label: '69 - A4'},
+				{id: 70, label: '70 - A#4'},
+				{id: 71, label: '71 - B4'},
+				{id: 72, label: '72 - C5'},
+				{id: 73, label: '73 - C#5'},
+				{id: 74, label: '74 - D5'},
+				{id: 75, label: '75 - D#5'},
+				{id: 76, label: '76 - E5'},
+				{id: 77, label: '77 - F5'},
+				{id: 78, label: '78 - F#5'},
+				{id: 79, label: '79 - G5'},
+				{id: 80, label: '80 - G#5'},
+				{id: 81, label: '81 - A5'},
+				{id: 82, label: '82 - A#5'},
+				{id: 83, label: '83 - B5'},
+				{id: 84, label: '84 - C6'},
+				{id: 85, label: '85 - C#6'},
+				{id: 86, label: '86 - D6'},
+				{id: 87, label: '87 - D#6'},
+				{id: 88, label: '88 - E6'},
+				{id: 89, label: '89 - F6'},
+				{id: 90, label: '90 - F#6'},
+				{id: 91, label: '91 - G6'},
+				{id: 92, label: '92 - G#6'},
+				{id: 93, label: '93 - A6'},
+				{id: 94, label: '94 - A#6'},
+				{id: 95, label: '95 - B6'},
+				{id: 96, label: '96 - C7'},
+				{id: 97, label: '97 - C#7'},
+				{id: 98, label: '98 - D7'},
+				{id: 99, label: '99 - D#7'},
+				{id: 100, label: '100 - E7'},
+				{id: 101, label: '101 - F7'},
+				{id: 102, label: '102 - F#7'},
+				{id: 103, label: '103 - G7'},
+				{id: 104, label: '104 - G#7'},
+				{id: 105, label: '105 - A7'},
+				{id: 106, label: '106 - A#7'},
+				{id: 107, label: '107 - B7'},
+				{id: 108, label: '108 - C8'},
+				{id: 109, label: '109 - C#8'},
+				{id: 110, label: '110 - D8'},
+				{id: 111, label: '111 - D#8'},
+				{id: 112, label: '112 - E8'},
+				{id: 113, label: '113 - F8'},
+				{id: 114, label: '114 - F#8'},
+				{id: 115, label: '115 - G8'},
+				{id: 116, label: '116 - G#8'},
+				{id: 117, label: '117 - A8'},
+				{id: 118, label: '118 - A#8'},
+				{id: 119, label: '119 - B8'},
+				{id: 120, label: '120 - C9'},
+				{id: 121, label: '121 - C#9'},
+				{id: 122, label: '122 - D9'},
+				{id: 123, label: '123 - D#9'},
+				{id: 124, label: '124 - E9'},
+				{id: 125, label: '125 - F9'},
+				{id: 126, label: '126 - F#9'},
+				{id: 127, label: '127 - G9'}
+			];
+			
+			var MIDI_CONTROLLERS = [
+				{id: 0, label: '0 - Bank Select (MSB)'},
+				{id: 1, label: '1 - Modulation Wheel (MSB)'},
+				{id: 2, label: '2 - Breath Controler (MSB)'},
+				{id: 3, label: '3 - Undefined (MSB)'},
+				{id: 4, label: '4 - Foot Pedal (MSB)'},
+				{id: 5, label: '5 - Portamento Time (MSB)'},
+				{id: 6, label: '6 - Data Entry (MSB)'},
+				{id: 7, label: '7 - Volume (MSB)'},
+				{id: 8, label: '8 - Balance (MSB)'},
+				{id: 9, label: '9 - Undefined (MSB)'},
+				{id: 10, label: '10 - Pan (MSB)'},
+				{id: 11, label: '11 - Expression (MSB)'},
+				{id: 12, label: '12 - Effect Controller 1 (MSB)'},
+				{id: 13, label: '13 - Effect Controller 2 (MSB)'},
+				{id: 14, label: '14 - Undefined (MSB)'},
+				{id: 15, label: '15 - Undefined (MSB)'},
+				{id: 16, label: '16 - General Purpose (MSB)'},
+				{id: 17, label: '17 - General Purpose (MSB)'},
+				{id: 18, label: '18 - General Purpose (MSB)'},
+				{id: 19, label: '19 - General Purpose (MSB)'},
+				{id: 20, label: '20 - Undefined (MSB)'},
+				{id: 21, label: '21 - Undefined (MSB)'},
+				{id: 22, label: '22 - Undefined (MSB)'},
+				{id: 23, label: '23 - Undefined (MSB)'},
+				{id: 24, label: '24 - Undefined (MSB)'},
+				{id: 25, label: '25 - Undefined (MSB)'},
+				{id: 26, label: '26 - Undefined (MSB)'},
+				{id: 27, label: '27 - Undefined (MSB)'},
+				{id: 28, label: '28 - Undefined (MSB)'},
+				{id: 29, label: '29 - Undefined (MSB)'},
+				{id: 30, label: '30 - Undefined (MSB)'},
+				{id: 31, label: '31 - Undefined (MSB)'},
+				{id: 32, label: '32 - Bank Select (LSB)'},
+				{id: 33, label: '33 - Modulation Wheel (LSB)'},
+				{id: 34, label: '34 - Breath Controler (LSB)'},
+				{id: 35, label: '35 - Undefined (LSB)'},
+				{id: 36, label: '36 - Foot Pedal (LSB)'},
+				{id: 37, label: '37 - Portamento Time (LSB)'},
+				{id: 38, label: '38 - Data Entry (LSB)'},
+				{id: 39, label: '39 - Volume (LSB)'},
+				{id: 40, label: '40 - Balance (LSB)'},
+				{id: 41, label: '41 - Undefined (LSB)'},
+				{id: 42, label: '42 - Pan (LSB)'},
+				{id: 43, label: '43 - Expression (LSB)'},
+				{id: 44, label: '44 - Effect Controller 1 (LSB)'},
+				{id: 45, label: '45 - Effect Controller 2 (LSB)'},
+				{id: 46, label: '46 - Undefined (LSB)'},
+				{id: 47, label: '47 - Undefined (LSB)'},
+				{id: 48, label: '48 - General Purpose (LSB)'},
+				{id: 49, label: '49 - General Purpose (LSB)'},
+				{id: 50, label: '50 - General Purpose (LSB)'},
+				{id: 51, label: '51 - General Purpose (LSB)'},
+				{id: 52, label: '52 - Undefined (LSB)'},
+				{id: 53, label: '53 - Undefined (LSB)'},
+				{id: 54, label: '54 - Undefined (LSB)'},
+				{id: 55, label: '55 - Undefined (LSB)'},
+				{id: 56, label: '56 - Undefined (LSB)'},
+				{id: 57, label: '57 - Undefined (LSB)'},
+				{id: 58, label: '58 - Undefined (LSB)'},
+				{id: 59, label: '59 - Undefined (LSB)'},
+				{id: 60, label: '60 - Undefined (LSB)'},
+				{id: 61, label: '61 - Undefined (LSB)'},
+				{id: 62, label: '62 - Undefined (LSB)'},
+				{id: 63, label: '63 - Undefined (LSB)'},
+				{id: 64, label: '64 - Damper Pedal on/off'},
+				{id: 65, label: '65 - Portamento on/off'},
+				{id: 66, label: '66 - Sostenuto Pedal on/off'},
+				{id: 67, label: '67 - Soft Pedal on/off'},
+				{id: 68, label: '68 - Legato Pedal on/off'},
+				{id: 69, label: '69 - Hold Pedal 2 on/off'},
+				{id: 70, label: '70 - Sound Variation'},
+				{id: 71, label: '71 - Sound Timbre'},
+				{id: 72, label: '72 - Sound Release Time'},
+				{id: 73, label: '73 - Sound Attack Time'},
+				{id: 74, label: '74 - Sound Brightness'},
+				{id: 75, label: '75 - Sound Control 6'},
+				{id: 76, label: '76 - Sound Control 7'},
+				{id: 77, label: '77 - Sound Control 8'},
+				{id: 78, label: '78 - Sound Control 9'},
+				{id: 79, label: '79 - Sound Control 10'},
+				{id: 80, label: '80 - General Purpose Button'},
+				{id: 81, label: '81 - General Purpose Button'},
+				{id: 82, label: '82 - General Purpose Button'},
+				{id: 83, label: '83 - General Purpose Button'},
+				{id: 84, label: '84 - Undefined on/off'},
+				{id: 85, label: '85 - Undefined on/off'},
+				{id: 86, label: '86 - ndefined on/off'},
+				{id: 87, label: '87 - Undefined on/off'},
+				{id: 88, label: '88 - Undefined on/off'},
+				{id: 89, label: '89 - Undefined on/off'},
+				{id: 90, label: '90 - Undefined on/off'},
+				{id: 91, label: '91 - Effects/Reverb Level'},
+				{id: 92, label: '92 - Tremulo Level'},
+				{id: 93, label: '93 - Chorus Level'},
+				{id: 94, label: '94 - Celeste (Detune) Level'},
+				{id: 95, label: '95 - Phaser Level'},
+				{id: 96, label: '96 - Data Entry +1'},
+				{id: 97, label: '97 - Data Entry -1'},
+				{id: 98, label: '98 - NRPN (MSB)'},
+				{id: 99, label: '99 - NRPN (LSB)'},
+				{id: 100, label: '100 - RPN (MSB)'},
+				{id: 101, label: '101 - RPN (LSB)'},
+				{id: 102, label: '102 - Undefined'},
+				{id: 103, label: '103 - Undefined'},
+				{id: 104, label: '104 - Undefined'},
+				{id: 105, label: '105 - Undefined'},
+				{id: 106, label: '106 - Undefined'},
+				{id: 107, label: '107 - Undefined'},
+				{id: 108, label: '108 - Undefined'},
+				{id: 109, label: '109 - Undefined'},
+				{id: 110, label: '110 - Undefined'},
+				{id: 111, label: '111 - Undefined'},
+				{id: 112, label: '112 - Undefined'},
+				{id: 113, label: '113 - Undefined'},
+				{id: 114, label: '114 - Undefined'},
+				{id: 115, label: '115 - Undefined'},
+				{id: 116, label: '116 - Undefined'},
+				{id: 117, label: '117 - Undefined'},
+				{id: 118, label: '118 - Undefined'},
+				{id: 119, label: '119 - Undefined'},
+				{id: 120, label: '120 - All Sound Off'},
+				{id: 121, label: '121 - Reset All Controllers'},
+				{id: 122, label: '122 - Local Switch on/off'},
+				{id: 123, label: '123 - All Notes Off'},
+				{id: 124, label: '124 - Omni Mode Off'},
+				{id: 125, label: '125 - Omni Mode On'},
+				{id: 126, label: '126 - Monophonic Mode On'},
+				{id: 127, label: '127 - Polyphonic Mode On'}
+			];
+			
+			var MSC_commandformat = [
+				{id: 'lighting.general', label: 'Lighting - General'},
+				{id: 'sound.general', label: 'Sound - General'},
+				{id: 'machinery.general', label: 'Machinery - General'},
+				{id: 'video.general', label: 'Video - General'},
+				{id: 'projection.general', label: 'Projection - General'},
+				{id: 'processcontrol.general', label: 'Process Control - General'},
+				{id: 'pyro.general', label: 'Pyro - General'},
+				{id: 'all', label: 'All'}
+			];
+
+			var MSC_command = [
+				{id: 'go', label: 'Go'},
+				{id: 'stop', label: 'Stop'},
+				{id: 'gojam', label: 'Go Jam'},
+				{id: 'resume', label: 'Resume'},
+				{id: 'timedgo', label: 'Timed Go'},
+				{id: 'load', label: 'Load'},
+				{id: 'set', label: 'Set'},
+				{id: 'fire', label: 'Fire'},
+				{id: 'alloff', label: 'All Off'},
+				{id: 'restore', label: 'Restore'},
+				{id: 'reset', label: 'Reset'},
+				{id: 'gooff', label: 'Go Off'},
+				{id: 'opencuelist', label: 'Open Cue List'},
+				{id: 'closecuelist', label: 'Close Cue List'},
+				{id: 'startclock', label: 'Start Clock'},
+				{id: 'stopclock', label: 'Stop Clock'}
+			];
+			
+			function loadSettings() {
+				//gets the latest list of MIDI Ports from the API
+				getMIDIInputs();
+				getMIDIOutputs();
+				getTriggers();
+				getHosts();
+				
+				populateDropdowns();
+			}
+			
+			function getMIDIInputs() {
+				let divMIDIInputs = document.getElementById('divMIDIInputs');
+
+				$.getJSON('/midi_inputs', function(data) {
+					divMIDIInputs.innerHTML = '';
+
+					MIDI_INPUTS = data;
+
+					for (let i = 0; i < data.length; i++)
+					{
+						let divInput = document.createElement('div');
+
+						let spanPort = document.createElement('span');
+						spanPort.innerHTML = data[i].name;
+						divInput.appendChild(spanPort);
+						divMIDIInputs.appendChild(divInput);
+						
+						let opt = data[i];
+						let el = document.createElement('option');
+						el.textContent = opt.name;
+						el.value = opt.name;
+						selectMIDIPort.appendChild(el);
+					}
+				});
+			}
+
+			function getMIDIOutputs() {
+				let divMIDIOutputs = document.getElementById('divMIDIOutputs');
+
+				$.getJSON('/midi_outputs', function(data) {
+					divMIDIOutputs.innerHTML = '';
+
+					for (let i = 0; i < data.length; i++)
+					{
+						let divMIDIOutput = document.createElement('div');
+
+						let spanPort = document.createElement('span');
+						spanPort.innerHTML = data[i].name;
+						divMIDIOutput.appendChild(spanPort);
+						divMIDIOutputs.appendChild(divMIDIOutput);
+					}
+				});
+			}
+
+			function getTriggers() {
+				let divTriggers = document.getElementById('divTriggers');
+				
+				let tableTriggers = document.createElement('table');
+
+				$.getJSON('/triggers', function(data) {
+					divTriggers.innerHTML = '';
+					
+					let trHeader = document.createElement('tr');
+					let tdHeaderMIDIPort = document.createElement('td');
+					tdHeaderMIDIPort.innerHTML = '<b>MIDI In Port</b>';
+					trHeader.appendChild(tdHeaderMIDIPort);
+					let tdHeaderMIDICommand = document.createElement('td');
+					tdHeaderMIDICommand.innerHTML = '<b>Command</b>';
+					trHeader.appendChild(tdHeaderMIDICommand);
+					let tdHeaderMIDIData = document.createElement('td');
+					tdHeaderMIDIData.innerHTML = '<b>Data</b>';
+					trHeader.appendChild(tdHeaderMIDIData);
+					let tdHeaderMIDIDescription = document.createElement('td');
+					tdHeaderMIDIDescription.innerHTML = '<b>Description</b>';
+					trHeader.appendChild(tdHeaderMIDIDescription);
+					
+					tableTriggers.appendChild(trHeader);
+
+					for (let i = 0; i < data.length; i++)
+					{
+						let trTrigger = document.createElement('tr');						
+						
+						/*let tdTriggerID = document.createElement('td');
+						tdTriggerID.innerHTML = data[i].id;
+						trTrigger.appendChild(tdTriggerID);*/
+						
+						let tdTriggerMIDIPort = document.createElement('td');
+						tdTriggerMIDIPort.innerHTML = data[i].midiport;
+						trTrigger.appendChild(tdTriggerMIDIPort);
+						
+						let tdTriggerMIDICommand = document.createElement('td');
+						tdTriggerMIDICommand.innerHTML = data[i].midicommand;
+						tdTriggerMIDICommand.style.textAlign = 'center';
+						trTrigger.appendChild(tdTriggerMIDICommand);
+						
+						let tdTriggerMIDIData = document.createElement('td');
+						
+						let spanTriggerMIDIChannel, spanTriggerMIDINote, spanTriggerMIDIVelocity, spanTriggerMIDIController, spanTriggerMIDIValue, spanTriggerMIDISysExMessage;
+						
+						switch(data[i].midicommand) {
+							case 'noteon':
+							case 'noteoff':
+								spanTriggerMIDIChannel = document.createElement('span');
+								spanTriggerMIDIChannel.innerHTML = 'Channel: ' + ((data[i].channel === '*') ? '*' : (parseInt(data[i].channel)+1));
+								spanTriggerMIDIChannel.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDIChannel);
+								
+								spanTriggerMIDINote = document.createElement('span');
+								spanTriggerMIDINote.innerHTML = 'Note: ' + data[i].note;
+								spanTriggerMIDINote.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDINote);
+								
+								spanTriggerMIDIVelocity = document.createElement('span');
+								spanTriggerMIDIVelocity.innerHTML = 'Velocity: ' + ((data[i].velocity === '*') ? '*' : parseInt(data[i].velocity));
+								spanTriggerMIDIVelocity.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDIVelocity);
+								break;
+							case 'aftertouch':
+								spanTriggerMIDIChannel = document.createElement('span');
+								spanTriggerMIDIChannel.innerHTML = 'Channel: ' + ((data[i].channel === '*') ? '*' : (parseInt(data[i].channel)+1));
+								spanTriggerMIDIChannel.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDIChannel);
+								
+								spanTriggerMIDINote = document.createElement('span');
+								spanTriggerMIDINote.innerHTML = 'Note: ' + data[i].note;
+								spanTriggerMIDINote.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDINote);
+								
+								spanTriggerMIDIValue = document.createElement('span');
+								spanTriggerMIDIValue.innerHTML = 'Value: ' + ((data[i].value === '*') ? '*' : parseInt(data[i].value));
+								spanTriggerMIDIValue.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDIValue);
+								break;
+							case 'cc':
+								spanTriggerMIDIChannel = document.createElement('span');
+								spanTriggerMIDIChannel.innerHTML = 'Channel: ' + ((data[i].channel === '*') ? '*' : (parseInt(data[i].channel)+1));	
+								spanTriggerMIDIChannel.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDIChannel);
+								
+								spanTriggerMIDIController = document.createElement('span');
+								spanTriggerMIDIController.innerHTML = 'Controller: ' + ((data[i].controller === '*') ? '*' : parseInt(data[i].controller));
+								spanTriggerMIDIController.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDIController);
+								
+								spanTriggerMIDIValue = document.createElement('span');
+								spanTriggerMIDIValue.innerHTML = 'Value: ' + ((data[i].value === '*') ? '*' : parseInt(data[i].value));
+								spanTriggerMIDIValue.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDIValue);
+								break;
+							case 'pc':
+								spanTriggerMIDIChannel = document.createElement('span');
+								spanTriggerMIDIChannel.innerHTML = 'Channel: ' + ((data[i].channel === '*') ? '*' : (parseInt(data[i].channel)+1));
+								spanTriggerMIDIChannel.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDIChannel);
+																
+								spanTriggerMIDIValue = document.createElement('span');
+								spanTriggerMIDIValue.innerHTML = 'Value: ' + ((data[i].value === '*') ? '*' : parseInt(data[i].value));
+								spanTriggerMIDIValue.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDIValue);
+								break;
+							case 'pressure':
+								spanTriggerMIDIChannel = document.createElement('span');
+								spanTriggerMIDIChannel.innerHTML = 'Channel: ' + ((data[i].channel === '*') ? '*' : (parseInt(data[i].channel)+1));
+								spanTriggerMIDIChannel.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDIChannel);
+								
+								spanTriggerMIDIValue = document.createElement('span');
+								spanTriggerMIDIValue.innerHTML = 'Value: ' + ((data[i].value === '*') ? '*' : parseInt(data[i].value));
+								spanTriggerMIDIValue.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDIValue);
+								break;
+							case 'pitchbend':
+								spanTriggerMIDIChannel = document.createElement('span');
+								spanTriggerMIDIChannel.innerHTML = 'Channel: ' + ((data[i].channel === '*') ? '*' : (parseInt(data[i].channel)+1));
+								spanTriggerMIDIChannel.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDIChannel);
+																
+								spanTriggerMIDIValue = document.createElement('span');
+								spanTriggerMIDIValue.innerHTML = 'Value: ' + data[i].value;
+								spanTriggerMIDIValue.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDIValue);
+								break;
+							case 'sysex':
+								spanTriggerMIDISysExMessage = document.createElement('span');
+								spanTriggerMIDISysExMessage.innerHTML = 'SysEx: ' + data[i].message;
+								spanTriggerMIDISysExMessage.style.display = 'block';
+								tdTriggerMIDIData.appendChild(spanTriggerMIDISysExMessage);
+								break;
+							default:
+								break;
+						}
+						
+						trTrigger.appendChild(tdTriggerMIDIData);
+						
+						let tdTriggerMIDIDescription = document.createElement('td');
+						tdTriggerMIDIDescription.innerHTML = ((data[i].description) ? data[i].description : '');
+						trTrigger.appendChild(tdTriggerMIDIDescription);
+						
+						let tdBtnDeleteTrigger = document.createElement('td');
+						let btnDeleteTrigger = document.createElement('button');
+						btnDeleteTrigger.innerHTML = 'Delete';
+						btnDeleteTrigger.setAttribute('onclick', 'DeleteTrigger(\'' + data[i].id + '\');');
+						tdBtnDeleteTrigger.appendChild(btnDeleteTrigger);
+						trTrigger.appendChild(tdBtnDeleteTrigger);
+						
+						tableTriggers.appendChild(trTrigger);
+					}
+					
+					divTriggers.appendChild(tableTriggers);
+				});
+			}
+			
+			function getHosts() {
+				let divHosts = document.getElementById('divHosts');
+				
+				let tableHosts = document.createElement('table');
+				
+				let trHeader = document.createElement('tr');
+				let tdHeaderHost = document.createElement('td');
+				tdHeaderHost.innerHTML = '<b>Host</b>';
+				trHeader.appendChild(tdHeaderHost);
+				let tdHeaderAddress = document.createElement('td');
+				tdHeaderAddress.innerHTML = '<b>Address/Port</b>';
+				trHeader.appendChild(tdHeaderAddress);
+				let tdHeaderMIDIPorts = document.createElement('td');
+				tdHeaderMIDIPorts.innerHTML = '<b>MIDI Out Ports</b>';
+				trHeader.appendChild(tdHeaderMIDIPorts);
+				
+				tableHosts.appendChild(trHeader);
+
+				$.getJSON('/hosts', function(data) {
+					divHosts.innerHTML = '';
+
+					for (let i = 0; i < data.length; i++) {
+						let trHost = document.createElement('tr');
+
+						let tdName = document.createElement('td');
+						tdName.innerHTML = data[i].name;
+						
+						let btnSettings = document.createElement('button');
+						btnSettings.innerHTML = 'View Settings';
+						btnSettings.setAttribute('onclick', 'ViewSettings(\'' + data[i].address + ':' + data[i].port + '\');');
+						tdName.appendChild(document.createElement('br'));
+						tdName.appendChild(btnSettings);
+						
+						trHost.appendChild(tdName);
+
+						let tdAddress = document.createElement('td');
+						tdAddress.innerHTML = data[i].address + '<br />' + 'Port: ' + data[i].port;
+						trHost.appendChild(tdAddress);
+						
+						let el = document.createElement('option');
+						el.textContent = data[i].address + ' (' + data[i].port + ')';
+						el.value = data[i].address + ':' + data[i].port;
+						document.getElementById('selectRelayHost').appendChild(el);
+
+						let tdMIDIPorts = document.createElement('td');
+
+						$.getJSON('http://' + data[i].address + ':' + data[i].port + '/midi_outputs', function(midiData) {
+							for (let j = 0; j < midiData.length; j++) {
+								tdMIDIPorts.innerHTML += midiData[j].name + '<br />';
+							}
+							
+							trHost.appendChild(tdMIDIPorts);
+							tableHosts.appendChild(trHost);
+						});
+					}
+					
+					divHosts.appendChild(tableHosts);
+					
+					let elManual = document.createElement('option');
+					elManual.textContent = '(Manual Entry)';
+					elManual.value = 'manual';
+					document.getElementById('selectRelayHost').appendChild(elManual);
+					
+					getMIDIPorts();
+				});
+			}
+			
+			function getMIDIPorts() {
+				let selectRelayHost = document.getElementById('selectRelayHost');
+				let hostport = selectRelayHost.options[selectRelayHost.selectedIndex].value;
+				
+				let selectRelayMIDIPort = document.getElementById('selectRelayMIDIPort');
+				
+				if (hostport === 'manual') {
+					let host = document.getElementById('inputRelayHost').value;
+					let port = document.getElementById('inputRelayPort').value;
+					hostport = host+':'+port;
+				}
+				
+				$.getJSON('http://' + hostport + '/midi_outputs', function(midiData) {
+					if (midiData.length < 1) {
+						let el = document.createElement('option');
+						el.textContent = '(no ports found)';
+						el.value = 'invalid';
+					}
+					else {
+						for (a in selectRelayMIDIPort.options) {
+							selectRelayMIDIPort.options.remove(0);
+						}
+						for (let i = 0; i < midiData.length; i++) {
+							let el = document.createElement('option');
+							el.textContent = midiData[i].name;
+							el.value = midiData[i].name;
+							selectRelayMIDIPort.appendChild(el);
+						}
+						document.getElementById('divRelay_MIDIPort').style.display = 'block';
+					}
+				});
+			}
+			
+			function ViewSettings(hostport) {
+				window.location = 'http://' + hostport + '/settings';
+			}
+			
+			function populateDropdowns() {
+				let selectMIDIChannel = document.getElementById('selectMIDIChannel');
+				let selectMIDINote = document.getElementById('selectMIDINote');
+				let selectMIDIVelocity = document.getElementById('selectMIDIVelocity');
+				let selectMIDIController = document.getElementById('selectMIDIController');
+				let selectMIDIValue = document.getElementById('selectMIDIValue');
+				
+				let selectRelayMIDIChannel = document.getElementById('selectRelayMIDIChannel');
+				let selectRelayMIDINote = document.getElementById('selectRelayMIDINote');
+				let selectRelayMIDIVelocity = document.getElementById('selectRelayMIDIVelocity');
+				let selectRelayMIDIController = document.getElementById('selectRelayMIDIController');
+				let selectRelayMIDIValue = document.getElementById('selectRelayMIDIValue');
+				
+				let selectRelayMSCDeviceId = document.getElementById('selectRelayMSCDeviceId');
+				let selectRelayMSCCommandFormat = document.getElementById('selectRelayMSCCommandFormat');
+				let selectRelayMSCCommand = document.getElementById('selectRelayMSCCommand');
+				
+				//build MIDI Channels list
+				let el = document.createElement('option');
+				el.textContent = '*';
+				el.value = '*';
+				selectMIDIChannel.appendChild(el.cloneNode(true));
+				
+				for (let i = 1; i <= 16; i++) {
+					let el = document.createElement('option');
+					el.textContent = i;
+					el.value = i-1;
+					selectMIDIChannel.appendChild(el.cloneNode(true));
+					selectRelayMIDIChannel.appendChild(el.cloneNode(true));
+				}
+				
+				//build MIDI Notes list
+				for(let i = 0; i < MIDI_NOTES.length; i++) {
+					let opt = MIDI_NOTES[i];
+					let el = document.createElement('option');
+					el.textContent = opt.label;
+					el.value = opt.id;
+					if (opt.selected) {
+						el.defaultSelected = true;
+					}
+					selectMIDINote.appendChild(el.cloneNode(true));
+					selectRelayMIDINote.appendChild(el.cloneNode(true));
+				}
+
+				//build MIDI Velocity and Value list
+				el = document.createElement('option');
+				el.textContent = '*';
+				el.value = '*';
+				selectMIDIVelocity.appendChild(el.cloneNode(true));
+				selectMIDIValue.appendChild(el.cloneNode(true));
+				if (el.value !== '*') {
+					selectRelayMIDIVelocity.appendChild(el.cloneNode(true));
+					selectRelayMIDIValue.appendChild(el.cloneNode(true));
+				}
+				
+				for (let i = 0; i <= 127; i++) {
+					let el = document.createElement('option');
+					el.textContent = i;
+					el.value = i;
+					selectMIDIVelocity.appendChild(el.cloneNode(true));
+					selectMIDIValue.appendChild(el.cloneNode(true));
+					selectRelayMIDIVelocity.appendChild(el.cloneNode(true));
+					selectRelayMIDIValue.appendChild(el.cloneNode(true));
+				}
+				
+				//build MIDI Controller list
+				for(var i = 0; i < MIDI_CONTROLLERS.length; i++) {
+					var opt = MIDI_CONTROLLERS[i];
+					let el = document.createElement('option');
+					el.textContent = opt.label;
+					el.value = opt.id;
+					selectMIDIController.appendChild(el.cloneNode(true));
+					selectRelayMIDIController.appendChild(el.cloneNode(true));
+				}
+				
+				//build MIDI Show Control Device ID list
+				for (let i = 0; i < 112; i++) {
+					let el = document.createElement('option');
+					el.textContent = i;
+					el.value = i;
+					selectRelayMSCDeviceId.appendChild(el);
+				}
+				for (let i = 1; i < 16; i++) {
+					let el = document.createElement('option');
+					el.textContent = 'Group ' + i;
+					el.value = i;
+					selectRelayMSCDeviceId.appendChild(el);
+				}
+				
+				el = document.createElement('option');
+				el.textContent = 'All Devices';
+				el.value = 'all';
+				selectRelayMSCDeviceId.appendChild(el);
+				
+				//build MSC Command Format list
+				for(var i = 0; i < MSC_commandformat.length; i++) {
+					var opt = MSC_commandformat[i];
+					let el = document.createElement('option');
+					el.textContent = opt.label;
+					el.value = opt.id;
+					selectRelayMSCCommandFormat.appendChild(el);
+				}
+				
+				//build MSC Command list
+				for(var i = 0; i < MSC_command.length; i++) {
+					var opt = MSC_command[i];
+					let el = document.createElement('option');
+					el.textContent = opt.label;
+					el.value = opt.id;
+					selectRelayMSCCommand.appendChild(el);
+				}
+				
+			}
+
+			function DeleteTrigger(triggerID) {
+				$.getJSON('/deletetrigger/' + triggerID, function(data) {
+					ProcessAPIResponse(data);
+				});
+
+				getTriggers();
+			}
+			
+			function ShowAddTrigger() {
+				let btnShowAddTrigger = document.getElementById('btnShowAddTrigger');
+				btnShowAddTrigger.style.display = 'none';
+				
+				let divTriggerFields = document.getElementById('divTriggerFields');
+				divTriggerFields.style.display = 'block';
+			}
+			
+			function showMIDIMessageOptions() {
+				let selectMIDIMessageType = document.getElementById('selectMIDIMessageType');
+				let midiCommand = selectMIDIMessageType.options[selectMIDIMessageType.selectedIndex].value;
+				
+				switch(midiCommand) {
+					case 'noteon':
+					case 'noteoff':
+						document.getElementById('divMIDIMessage_Options_Channel').style.display = 'block';
+						document.getElementById('divMIDIMessage_Options_Note').style.display = 'block';
+						document.getElementById('divMIDIMessage_Options_Velocity').style.display = 'block';
+						document.getElementById('divMIDIMessage_Options_Controller').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Value').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_PitchBend_Value').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_SysExMessage').style.display = 'none';
+						break;
+					case 'aftertouch':
+						document.getElementById('divMIDIMessage_Options_Channel').style.display = 'block';
+						document.getElementById('divMIDIMessage_Options_Note').style.display = 'block';
+						document.getElementById('divMIDIMessage_Options_Velocity').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Controller').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Value').style.display = 'block';
+						document.getElementById('divMIDIMessage_Options_PitchBend_Value').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_SysExMessage').style.display = 'none';
+						break;
+					case 'cc':
+						document.getElementById('divMIDIMessage_Options_Channel').style.display = 'block';
+						document.getElementById('divMIDIMessage_Options_Note').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Velocity').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Controller').style.display = 'block';
+						document.getElementById('divMIDIMessage_Options_Value').style.display = 'block';
+						document.getElementById('divMIDIMessage_Options_PitchBend_Value').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_SysExMessage').style.display = 'none';
+						break;
+					case 'pc':
+						document.getElementById('divMIDIMessage_Options_Channel').style.display = 'block';
+						document.getElementById('divMIDIMessage_Options_Note').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Velocity').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Controller').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Value').style.display = 'block';
+						document.getElementById('divMIDIMessage_Options_PitchBend_Value').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_SysExMessage').style.display = 'none';
+						break;
+					case 'pressure':
+						document.getElementById('divMIDIMessage_Options_Channel').style.display = 'block';
+						document.getElementById('divMIDIMessage_Options_Note').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Velocity').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Controller').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Value').style.display = 'block';
+						document.getElementById('divMIDIMessage_Options_PitchBend_Value').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_SysExMessage').style.display = 'none';
+						break;
+					case 'pitchbend':
+						document.getElementById('divMIDIMessage_Options_Channel').style.display = 'block';
+						document.getElementById('divMIDIMessage_Options_Note').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Velocity').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Controller').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Value').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_PitchBend_Value').style.display = 'block';
+						document.getElementById('divMIDIMessage_Options_SysExMessage').style.display = 'none';
+						break;
+					case 'sysex':
+						document.getElementById('divMIDIMessage_Options_Channel').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Note').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Velocity').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Controller').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Value').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_PitchBend_Value').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_SysExMessage').style.display = 'block';
+						break;
+					default:
+						document.getElementById('divMIDIMessage_Options_Channel').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Note').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Velocity').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Controller').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_Value').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_PitchBend_Value').style.display = 'none';
+						document.getElementById('divMIDIMessage_Options_SysExMessage').style.display = 'none';
+						break;
+				}
+			}
+			
+			function showActionTypeOptions() {
+				let selectActionType = document.getElementById('selectActionType');
+				let actionType = selectActionType.options[selectActionType.selectedIndex].value;
+				
+				switch(actionType) {
+					case 'http':
+						document.getElementById('divMIDIMessage_ActionType_HTTP').style.display = 'block';
+						document.getElementById('divMIDIMessage_ActionType_AppleScript').style.display = 'none';
+						document.getElementById('divMIDIMessage_ActionType_ShellScript').style.display = 'none';
+						break;
+					case 'applescript':
+						document.getElementById('divMIDIMessage_ActionType_HTTP').style.display = 'none';
+						document.getElementById('divMIDIMessage_ActionType_AppleScript').style.display = 'block';
+						document.getElementById('divMIDIMessage_ActionType_ShellScript').style.display = 'none';
+						break;
+					case 'shellscript':
+						document.getElementById('divMIDIMessage_ActionType_HTTP').style.display = 'none';
+						document.getElementById('divMIDIMessage_ActionType_AppleScript').style.display = 'none';
+						document.getElementById('divMIDIMessage_ActionType_ShellScript').style.display = 'block';
+						break;
+					default:
+						document.getElementById('divMIDIMessage_ActionType_HTTP').style.display = 'none';
+						document.getElementById('divMIDIMessage_ActionType_AppleScript').style.display = 'none';
+						document.getElementById('divMIDIMessage_ActionType_ShellScript').style.display = 'none';
+						break;
+				}
+			}
+
+			function AddTrigger() {			
+				let selectMIDIPort = document.getElementById('selectMIDIPort');
+				
+				let selectActionType = document.getElementById('selectActionType');
+							
+				let selectMIDIMessageType = document.getElementById('selectMIDIMessageType');
+				let midiCommand = selectMIDIMessageType.options[selectMIDIMessageType.selectedIndex].value;
+				
+				let selectMIDIChannel = document.getElementById('selectMIDIChannel');
+				let selectMIDINote = document.getElementById('selectMIDINote');
+				let selectMIDIVelocity = document.getElementById('selectMIDIVelocity');
+				let selectMIDIValue = document.getElementById('selectMIDIValue');
+				let selectMIDIController = document.getElementById('selectMIDIController');
+				let inputMIDISysExMessage = document.getElementById('inputMIDISysExMessage');
+				
+				let triggerObj = {};
+				
+				triggerObj.midiport = selectMIDIPort.options[selectMIDIPort.selectedIndex].value;
+				
+				triggerObj.midicommand = selectMIDIMessageType.options[selectMIDIMessageType.selectedIndex].value;
+				
+				let channelValue, parsedChannelValue, velocityValue, parsedVelocityValue, controllerValue, parsedControllerValue, value, parsedValue;
+				
+				switch (midiCommand) {
+					case 'noteon':
+					case 'noteoff':
+						channelValue = selectMIDIChannel.options[selectMIDIChannel.selectedIndex].value;
+						parsedChannelValue = ((channelValue === '*') ? '*' : parseInt(channelValue));
+						triggerObj.channel = parsedChannelValue;
+
+						triggerObj.note = parseInt(selectMIDINote.options[selectMIDINote.selectedIndex].value);
+
+						velocityValue = selectMIDIVelocity.options[selectMIDIVelocity.selectedIndex].value;
+						parsedVelocityValue = ((velocityValue === '*') ? '*' : parseInt(velocityValue));
+						triggerObj.velocity = parsedVelocityValue;
+						break;
+					case 'aftertouch':
+						channelValue = selectMIDIChannel.options[selectMIDIChannel.selectedIndex].value;
+						parsedChannelValue = ((channelValue === '*') ? '*' : parseInt(channelValue));
+						triggerObj.channel = parsedChannelValue;
+
+						triggerObj.note = parseInt(selectMIDINote.options[selectMIDINote.selectedIndex].value);
+
+						value = selectMIDIValue.options[selectMIDIValue.selectedIndex].value;
+						parsedValue = ((value === '*') ? '*' : parseInt(value));
+						triggerObj.value = parsedValue;
+						break;
+					case 'cc':
+						channelValue = selectMIDIChannel.options[selectMIDIChannel.selectedIndex].value;
+						parsedChannelValue = ((channelValue === '*') ? '*' : parseInt(channelValue));
+						triggerObj.channel = parsedChannelValue;
+						
+						controllerValue = selectMIDIController.options[selectMIDIController.selectedIndex].value;
+						parsedControllerValue = ((controllerValue === '*') ? '*' : parseInt(controllerValue));
+						triggerObj.controller = parsedControllerValue;
+
+						value = selectMIDIValue.options[selectMIDIValue.selectedIndex].value;
+						parsedValue = ((value === '*') ? '*' : parseInt(value));
+						triggerObj.value = parsedValue;
+						break;
+					case 'pc':
+						channelValue = selectMIDIChannel.options[selectMIDIChannel.selectedIndex].value;
+						parsedChannelValue = ((channelValue === '*') ? '*' : parseInt(channelValue));
+						triggerObj.channel = parsedChannelValue;
+						
+						value = selectMIDIValue.options[selectMIDIValue.selectedIndex].value;
+						parsedValue = ((value === '*') ? '*' : parseInt(value));
+						triggerObj.value = parsedValue;
+						break;
+					case 'pressure':
+						channelValue = selectMIDIChannel.options[selectMIDIChannel.selectedIndex].value;
+						parsedChannelValue = ((channelValue === '*') ? '*' : parseInt(channelValue));
+						triggerObj.channel = parsedChannelValue;
+
+						value = selectMIDIValue.options[selectMIDIValue.selectedIndex].value;
+						parsedValue = ((value === '*') ? '*' : parseInt(value));
+						triggerObj.value = parsedValue;
+						break;
+					case 'pitchbend':
+						channelValue = selectMIDIChannel.options[selectMIDIChannel.selectedIndex].value;
+						parsedChannelValue = ((channelValue === '*') ? '*' : parseInt(channelValue));
+						triggerObj.channel = parsedChannelValue;
+						
+						value = inputMIDIPitchBendValue.value;
+						parsedValue = ((value === '*') ? '*' : parseInt(value));
+						if (parsedValue !== '*') {
+							if ((parsedValue < 0) || (parsedValue > 16383)) {
+								alert('Invalid Pitch Bend range. Must be between 0 and 16383.');
+								return false;
+							}
+						}
+						triggerObj.value = parsedValue;
+						break;
+					case 'sysex':
+						triggerObj.message = inputMIDISysExMessage.value;
+						break;
+					default:
+						alert('Invalid MIDI Command Type.');
+						return false;
+						break;
+				}
+				
+				triggerObj.actiontype = selectActionType.options[selectActionType.selectedIndex].value;
+				
+				switch(triggerObj.actiontype) {
+					case 'http':
+						triggerObj.url = document.getElementById('txtURL').value;
+						if (document.getElementById('txtJSONData').value !== '') {
+							let jsonData = document.getElementById('txtJSONData').value;
+							try {
+								let jsonData_parsed = JSON.parse(jsonData);
+								triggerObj.jsondata = JSON.stringify(jsonData_parsed);	
+							}
+							catch (error) {
+								alert('The JSON you entered is not valid.');
+								return false;
+							}
+						}
+						break;
+					case 'applescript':
+						triggerObj.applescript = document.getElementById('txtAppleScript').value;
+						break;
+					case 'shellscript':
+						triggerObj.shellscript = document.getElementById('txtShellScript').value;
+						break;
+					default:
+						break;
+				}
+				
+				triggerObj.description = document.getElementById('txtDescription').value;
+				
+				jQuery.ajax({
+					contentType: 'application/json',
+					url: '/addtrigger',
+					type: 'POST',
+					data: JSON.stringify(triggerObj),
+					dataType: 'json',
+					success: function(data) {
+						ProcessAPIResponse(data);
+					}
+				});
+				
+				let btnShowAddTrigger = document.getElementById('btnShowAddTrigger');
+				btnShowAddTrigger.style.display = 'block';
+
+				let divTriggerFields = document.getElementById('divTriggerFields');
+				divTriggerFields.style.display = 'none';
+				
+				getTriggers();
+			}
+
+			function Cancel() {
+				let btnShowAddTrigger = document.getElementById('btnShowAddTrigger');
+				btnShowAddTrigger.style.display = 'block';
+
+				let divTriggerFields = document.getElementById('divTriggerFields');
+				divTriggerFields.style.display = 'none';
+			}
+
+			function RefreshPorts() {
+				$.getJSON('/refresh', function(data) {
+					ProcessAPIResponse(data);
+				});
+
+				loadSettings();
+			}
+			
+			function ProcessAPIResponse(response) {
+				//process the various responses from the API and display them in the log				
+				let responseText = '';
+				
+				switch (response.result) {
+					case 'invalid-midi-port':
+						responseText = 'The MIDI port you specified is invalid or is no longer available.';
+						break;
+					case 'midiin-port-cannot-be-opened':
+							responseText = 'The MIDI Input port cannot be opened due to an internal error.';
+						break;
+					case 'midiin-port-opened':
+						responseText = 'The MIDI Input port is now open.';
+						break;
+					case 'midiin-port-already-opened':
+						responseText = 'The MIDI Input port was already open.';
+						break;
+					case 'midiin-port-cannot-be-closed':
+						responseText = 'The MIDI Input port cannot be closed due to an internal error.';
+						break;
+					case 'midiin-port-closed':
+						responseText = 'The MIDI Input port is now closed.';
+						break;
+					case 'ports-refreshed-successfully':
+						responseText = 'MIDI Input/Output ports were refreshed and updated successfully.';
+						break;
+					case 'invalid-action-type':
+						responseText = 'The action type specified in the Add Trigger API was not valid.';
+						break;
+					case 'trigger-added':
+						responseText = 'The trigger was added successfully.';
+						break;
+					case 'trigger-added-midiin-port-cannot-be-opened':
+						responseText = 'The trigger was added, but the MIDI In port could not be automatically opened.';
+						break;
+					case 'trigger-deleted':
+						responseText = 'The trigger was deleted successfully.';
+						break;
+					case 'trigger-not-found':
+						responseText = 'The Trigger could not be found due to an invalid/incorrect Trigger ID, or it was already deleted.';
+						break;
+					case 'error':
+						responseText = 'Unexpected Error Occurred: ' + response.error;
+					default:
+						responseText = response.result;
+				}
+				
+				let divLog = document.getElementById('divLog');
+				divLog.innerHTML += '<br />' + responseText;				
+				divLog.scrollTop = divLog.scrollHeight;
+			}
+			
+			function showRelayCustomHost() {
+				let selectRelayHost = document.getElementById('selectRelayHost');
+				
+				let value = selectRelayHost.options[selectRelayHost.selectedIndex].value;
+				
+				if (value === 'manual') {
+					document.getElementById('divRelayHost_Custom').style.display = 'block';
+					document.getElementById('divRelay_MIDIPort').style.display = 'none';
+				}
+				else {
+					document.getElementById('divRelayHost_Custom').style.display = 'none';
+					getMIDIPorts();
+				}
+			}
+			
+			function showRelayOptions() {
+				let selectRelayMIDICommand = document.getElementById('selectRelayMIDICommand');
+				let midicommand = selectRelayMIDICommand.options[selectRelayMIDICommand.selectedIndex].value;
+							
+				switch(midicommand) {
+					case 'noteon':
+					case 'noteoff':
+						document.getElementById('divRelay_MIDIChannel').style.display = 'block';
+						document.getElementById('divRelay_MIDINote').style.display = 'block';
+						document.getElementById('divRelay_MIDIVelocity').style.display = 'block';
+						document.getElementById('divRelay_MIDIController').style.display = 'none';
+						document.getElementById('divRelay_MIDIValue').style.display = 'none';
+						document.getElementById('divRelay_MIDIPitchBendValue').style.display = 'none';
+						document.getElementById('divRelay_MSC').style.display = 'none';
+						document.getElementById('divRelay_Sysex').style.display = 'none';
+						break;
+					case 'aftertouch':
+						document.getElementById('divRelay_MIDIChannel').style.display = 'block';
+						document.getElementById('divRelay_MIDINote').style.display = 'block';
+						document.getElementById('divRelay_MIDIVelocity').style.display = 'none';
+						document.getElementById('divRelay_MIDIController').style.display = 'none';
+						document.getElementById('divRelay_MIDIValue').style.display = 'block';
+						document.getElementById('divRelay_MIDIPitchBendValue').style.display = 'none';
+						document.getElementById('divRelay_MSC').style.display = 'none';
+						document.getElementById('divRelay_Sysex').style.display = 'none';
+						break;
+					case 'cc':
+						document.getElementById('divRelay_MIDIChannel').style.display = 'block';
+						document.getElementById('divRelay_MIDINote').style.display = 'none';
+						document.getElementById('divRelay_MIDIVelocity').style.display = 'none';
+						document.getElementById('divRelay_MIDIController').style.display = 'block';
+						document.getElementById('divRelay_MIDIValue').style.display = 'block';
+						document.getElementById('divRelay_MIDIPitchBendValue').style.display = 'none';
+						document.getElementById('divRelay_MSC').style.display = 'none';
+						document.getElementById('divRelay_Sysex').style.display = 'none';
+						break;
+					case 'pc':
+						document.getElementById('divRelay_MIDIChannel').style.display = 'block';
+						document.getElementById('divRelay_MIDINote').style.display = 'none';
+						document.getElementById('divRelay_MIDIVelocity').style.display = 'none';
+						document.getElementById('divRelay_MIDIController').style.display = 'none';
+						document.getElementById('divRelay_MIDIValue').style.display = 'block';
+						document.getElementById('divRelay_MIDIPitchBendValue').style.display = 'none';
+						document.getElementById('divRelay_MSC').style.display = 'none';
+						document.getElementById('divRelay_Sysex').style.display = 'none';
+						break;
+					case 'pressure':
+						document.getElementById('divRelay_MIDIChannel').style.display = 'block';
+						document.getElementById('divRelay_MIDINote').style.display = 'none';
+						document.getElementById('divRelay_MIDIVelocity').style.display = 'none';
+						document.getElementById('divRelay_MIDIController').style.display = 'none';
+						document.getElementById('divRelay_MIDIValue').style.display = 'block';
+						document.getElementById('divRelay_MIDIPitchBendValue').style.display = 'none';
+						document.getElementById('divRelay_MSC').style.display = 'none';
+						document.getElementById('divRelay_Sysex').style.display = 'none';
+						break;
+					case 'pitchbend':
+						document.getElementById('divRelay_MIDIChannel').style.display = 'block';
+						document.getElementById('divRelay_MIDINote').style.display = 'none';
+						document.getElementById('divRelay_MIDIVelocity').style.display = 'none';
+						document.getElementById('divRelay_MIDIController').style.display = 'none';
+						document.getElementById('divRelay_MIDIValue').style.display = 'none';
+						document.getElementById('divRelay_MIDIPitchBendValue').style.display = 'block';
+						document.getElementById('divRelay_MSC').style.display = 'none';
+						document.getElementById('divRelay_Sysex').style.display = 'none';
+						break;
+					case 'msc':
+						document.getElementById('divRelay_MIDIChannel').style.display = 'none';
+						document.getElementById('divRelay_MIDINote').style.display = 'none';
+						document.getElementById('divRelay_MIDIVelocity').style.display = 'none';
+						document.getElementById('divRelay_MIDIController').style.display = 'none';
+						document.getElementById('divRelay_MIDIValue').style.display = 'none';
+						document.getElementById('divRelay_MIDIPitchBendValue').style.display = 'none';
+						document.getElementById('divRelay_MSC').style.display = 'block';
+						document.getElementById('divRelay_Sysex').style.display = 'none';
+						break;
+					case 'sysex':
+						document.getElementById('divRelay_MIDIChannel').style.display = 'none';
+						document.getElementById('divRelay_MIDINote').style.display = 'none';
+						document.getElementById('divRelay_MIDIVelocity').style.display = 'none';
+						document.getElementById('divRelay_MIDIController').style.display = 'none';
+						document.getElementById('divRelay_MIDIValue').style.display = 'none';
+						document.getElementById('divRelay_MIDIPitchBendValue').style.display = 'none';
+						document.getElementById('divRelay_MSC').style.display = 'none';
+						document.getElementById('divRelay_Sysex').style.display = 'block';
+						break;
+					default:
+						document.getElementById('divRelay_MIDIChannel').style.display = 'none';
+						document.getElementById('divRelay_MIDINote').style.display = 'none';
+						document.getElementById('divRelay_MIDIVelocity').style.display = 'none';
+						document.getElementById('divRelay_MIDIController').style.display = 'none';
+						document.getElementById('divRelay_MIDIValue').style.display = 'none';
+						document.getElementById('divRelay_MIDIPitchBendValue').style.display = 'none';
+						document.getElementById('divRelay_MSC').style.display = 'none';
+						document.getElementById('divRelay_Sysex').style.display = 'none';
+						break;
+				}
+			}
+			
+			function sendRelayMessage() {
+				let selectRelayHost = document.getElementById('selectRelayHost');
+				let hostport = selectRelayHost.options[selectRelayHost.selectedIndex].value;
+				if (hostport === 'manual') {
+					let host = document.getElementById('inputRelayHost').value;
+					let port = document.getElementById('inputRelayPort').value;
+					hostport = host+':'+port;
+				}
+				
+				let selectRelayMIDIPort = document.getElementById('selectRelayMIDIPort');
+				let midiport = selectRelayMIDIPort.options[selectRelayMIDIPort.selectedIndex].value;
+				
+				let selectRelayMIDICommand = document.getElementById('selectRelayMIDICommand');
+				let midicommand = selectRelayMIDICommand.options[selectRelayMIDICommand.selectedIndex].value;
+				
+				let selectRelayMIDIChannel = document.getElementById('selectRelayMIDIChannel');
+				let channel = selectRelayMIDIChannel.options[selectRelayMIDIChannel.selectedIndex].value;
+				
+				let selectRelayMIDINote = document.getElementById('selectRelayMIDINote');
+				let note = selectRelayMIDINote.options[selectRelayMIDINote.selectedIndex].value;
+				
+				let selectRelayMIDIVelocity = document.getElementById('selectRelayMIDIVelocity');
+				let velocity = selectRelayMIDIVelocity.options[selectRelayMIDIVelocity.selectedIndex].value;
+				
+				let selectRelayMIDIController = document.getElementById('selectRelayMIDIController');
+				let controller = selectRelayMIDIController.options[selectRelayMIDIController.selectedIndex].value;
+				
+				let selectRelayMIDIValue = document.getElementById('selectRelayMIDIValue');
+				let value = selectRelayMIDIValue.options[selectRelayMIDIValue.selectedIndex].value;
+				
+				let inputRelayMIDIPitchBendValue = document.getElementById('inputRelayMIDIPitchBendValue');
+				let pitchBendValue = inputRelayMIDIPitchBendValue.value;
+				
+				let selectRelayMSCDeviceId = document.getElementById('selectRelayMSCDeviceId');
+				let deviceid = selectRelayMSCDeviceId.options[selectRelayMSCDeviceId.selectedIndex].value;
+				let selectRelayMSCCommandFormat = document.getElementById('selectRelayMSCCommandFormat');
+				let commandformat = selectRelayMSCCommandFormat.options[selectRelayMSCCommandFormat.selectedIndex].value;
+				let selectRelayMSCCommand = document.getElementById('selectRelayMSCCommand');
+				let command = selectRelayMSCCommand.options[selectRelayMSCCommand.selectedIndex].value;
+				let inputRelayMSCCue = document.getElementById('inputRelayMSCCue');
+				let cue = inputRelayMSCCue.value;
+				let inputRelayMSCCueList = document.getElementById('inputRelayMSCCueList');
+				let cueList = inputRelayMSCCueList.value;
+				let inputRelayMSCCuePath = document.getElementById('inputRelayMSCCuePath');
+				let cuePath = inputRelayMSCCuePath.value;
+				
+				let inputRelayMIDISysExMessage = document.getElementById('inputRelayMIDISysExMessage');
+				let sysexMessage = inputRelayMIDISysExMessage.value;
+				
+				let midiObj = {};
+				
+				midiObj.midiport = midiport;
+				midiObj.midicommand = midicommand;
+				
+				let parsedChannel, parsedVelocity, parsedController, parsedValue, parsedPitchBendValue;
+							
+				switch(midicommand) {
+					case 'noteon':
+					case 'noteoff':
+						parsedChannel = ((channel === '*') ? '*' : parseInt(channel));
+						midiObj.channel = parsedChannel;
+
+						midiObj.note = parseInt(note);
+
+						parsedVelocity = ((velocity === '*') ? '*' : parseInt(velocity));
+						midiObj.velocity = parsedVelocity;
+						break;
+					case 'aftertouch':
+						parsedChannel = ((channel === '*') ? '*' : parseInt(channel));
+						midiObj.channel = parsedChannel;
+
+						midiObj.note = parseInt(note);
+
+						parsedValue = ((value === '*') ? '*' : parseInt(value));
+						midiObj.value = parsedValue;
+						break;
+					case 'cc':
+						parsedChannel = ((channel === '*') ? '*' : parseInt(channel));
+						midiObj.channel = parsedChannel;
+						
+						parsedController = ((controller === '*') ? '*' : parseInt(controller));
+						midiObj.controller = parsedController;
+
+						parsedValue = ((value === '*') ? '*' : parseInt(value));
+						midiObj.value = parsedValue;
+						break;
+					case 'pc':
+						parsedChannel = ((channel === '*') ? '*' : parseInt(channel));
+						midiObj.channel = parsedChannel;
+						
+						parsedValue = ((value === '*') ? '*' : parseInt(value));
+						midiObj.value = parsedValue;
+						break;
+					case 'pressure':
+						parsedChannel = ((channel === '*') ? '*' : parseInt(channel));
+						midiObj.channel = parsedChannel;
+
+						parsedValue = ((value === '*') ? '*' : parseInt(value));
+						midiObj.value = parsedValue;
+						break;
+					case 'pitchbend':
+						parsedChannel = ((channel === '*') ? '*' : parseInt(channel));
+						midiObj.channel = parsedChannel;
+						
+						parsedPitchBendValue = ((pitchBendValue === '*') ? '*' : parseInt(pitchBendValue));
+						if (parsedPitchBendValue !== '*') {
+							if ((parsedPitchBendValue < 0) || (parsedPitchBendValue > 16383)) {
+								alert('Invalid Pitch Bend range. Must be between 0 and 16383.');
+								return false;
+							}
+						}
+						midiObj.value = parsedPitchBendValue;
+						break;
+					case 'msc':
+						midiObj.deviceid = deviceid;
+						midiObj.commandformat = commandformat;
+						midiObj.command = command;
+						if (cue !== '') {
+							midiObj.cue = cue;
+						}
+						if (cueList !== '') {
+							midiObj.cuelist = cueList;
+						}
+						if (cuePath !== '') {
+							midiObj.cuepath = cuePath;
+						}
+						break;
+					case 'sysex':
+						midiObj.message = sysexMessage;
+						break;
+					default:
+						alert('Invalid MIDI Command Type.');
+						return false;
+						break;
+				}
+				
+				jQuery.ajax({
+					contentType: 'application/json',
+					url: 'http://' + hostport + '/sendmidi',
+					type: 'POST',
+					data: JSON.stringify(midiObj),
+					dataType: 'json',
+					success: function(data) {
+						ProcessAPIResponse(data);
+					}
+				});
+			}
+		</script>
+	</head>
+	<body onload='loadSettings();'>
+	<div id='logo'><a href='/'><img src='logo.png' height='60' /></a></div>
+	<div id='container'>
+		<br /><br />
+		<div id='divMIDIPortsContainer'>
+			<b>MIDI Input Ports:</b><br /><br />
+			<div id='divMIDIInputs'></div><br />
+			<b>MIDI Output Ports:</b><br /><br />
+			<div id='divMIDIOutputs'></div><br />
+			<button id='btnRefreshPorts' onclick='RefreshPorts();'>Refresh MIDI Ports</button>
+		</div>
+		<div id='divTriggersContainer'>
+			<b>Triggers:</b><br /><br />
+			<div id='divTriggers'></div>
+			<br /><button id='btnShowAddTrigger' onclick='ShowAddTrigger();'>Add New MIDI Trigger</button><br /><br />
+			<div id='divTriggerFields' style='display:none;'>
+				MIDI Input Port:
+				<select id='selectMIDIPort'></select><br />
+				Incoming MIDI Message Type:
+				<select id='selectMIDIMessageType' onchange='showMIDIMessageOptions();'>
+					<option value='0'>(choose a type)</option>
+					<option value='noteon'>Note On</option>
+					<option value='noteoff'>Note Off</option>
+					<option value='aftertouch'>Polyphonic Aftertouch</option>
+					<option value='cc'>Control Change</option>
+					<option value='pc'>Program Change</option>
+					<option value='pressure'>Channel Pressure / Aftertouch</option>
+					<option value='pitchbend'>Pitch Bend / Pitch Wheel</option>
+					<option value='sysex'>SysEx</option>
+				</select><br />
+				<div id='divMIDIMessage_Options'>
+					<div id='divMIDIMessage_Options_Channel' style='display:none;'>Channel: <select id='selectMIDIChannel'></select></div>
+					<div id='divMIDIMessage_Options_Note' style='display:none;'>Note: <select id='selectMIDINote'></select></div>
+					<div id='divMIDIMessage_Options_Velocity' style='display:none;'>Velocity: <select id='selectMIDIVelocity'></select></div>
+					<div id='divMIDIMessage_Options_Controller' style='display:none;'>Controller: <select id='selectMIDIController'></select></div>
+					<div id='divMIDIMessage_Options_Value' style='display:none;'>Value: <select id='selectMIDIValue'></select></div>
+					<div id='divMIDIMessage_Options_PitchBend_Value' style='display:none;'>Value (between 0 and 16383): <input type='text' id='inputMIDIPitchBendValue' value='8192' width='50' /></div>
+					<div id='divMIDIMessage_Options_SysExMessage' style='display:none;'>SysEx Message: <input type='text' id='inputMIDISysExMessage' width='50' /></div>
+				</div>
+				<div id='divMIDIMessage_ActionType' onchange='showActionTypeOptions();'>
+					Action Type:
+					<select id='selectActionType'>
+						<option value='0'>(choose a type)</option>
+						<option value='http'>HTTP GET/POST</option>
+						<option value='applescript'>AppleScript</option>
+						<option value='shellscript'>Shell Script</option>
+					</select>
+				</div>
+				<div id='divMIDIMessage_ActionType_HTTP' style='display:none;'>
+					URL: <input type='text' id='txtURL' value='http://' /><br />
+					JSON Data: <textarea rows='5' cols='40' id='txtJSONData'></textarea>
+				</div>
+				<div id='divMIDIMessage_ActionType_AppleScript' style='display:none;'>
+					AppleScript: <textarea rows='5' cols='40' id='txtAppleScript'></textarea>
+				</div>
+				<div id='divMIDIMessage_ActionType_ShellScript' style='display:none;'>
+					Shell Script: <textarea rows='5' cols='40' id='txtShellScript'></textarea>
+				</div>
+				<div id='divMIDIMessage_Description'>
+					Description: <textarea rows='5' cols='40' id='txtDescription'></textarea>
+				</div>
+				<button id='btnAddTrigger' onclick='AddTrigger();'>Add Trigger</button>
+				<button id='btnCancel' onclick='Cancel();'>Cancel</button>
+			</div>
+		</div>
+		<div id='divHostsContainer'>
+			<b>Hosts:</b><br /><br />
+			<div id='divHosts'></div><br />
+			<button id='btnRefreshHosts' onclick='getHosts();'>Refresh Hosts</button>
+		</div>
+		<div id='divLogContainer'>
+			Activity Log:
+			<div id='divLog'></div>
+		</div>
+		<div id='divRelayContainer'>
+			<div id='divRelayHost'><b>Send MIDI Relay Message:</b><br />
+				<div>Host: <select id='selectRelayHost' onchange='showRelayCustomHost();'></select>&nbsp;<button id='btnRelay_GetMIDIPorts' onclick='getMIDIPorts();'>Get MIDI Ports</button></div>
+				<div id='divRelayHost_Custom' style='display:none;'>
+					Host IP: <input type='text' id='inputRelayHost' width='50' value='192.168.1.1' /> 
+					Host Port: <input type='text' id='inputRelayPort' width='50' value='4000' />
+				</div>
+			</div>
+			<div id='divRelay_MIDIPort'>MIDI Port: <select id='selectRelayMIDIPort'></select></div>
+			<div id='divRelay_MIDICommand'>MIDI Command: 
+				<select id='selectRelayMIDICommand' onchange='showRelayOptions();'>
+					<option value='0'>(choose a type)</option>
+					<option value='noteon'>Note On</option>
+					<option value='noteoff'>Note Off</option>
+					<option value='aftertouch'>Polyphonic Aftertouch</option>
+					<option value='cc'>Control Change</option>
+					<option value='pc'>Program Change</option>
+					<option value='pressure'>Channel Pressure / Aftertouch</option>
+					<option value='pitchbend'>Pitch Bend / Pitch Wheel</option>
+					<option value='msc'>MSC (MIDI Show Control)</option>
+					<option value='sysex'>SysEx</option>
+				</select>
+			</div>
+			<div id='divRelay_MIDIChannel' style='display:none;'>Channel: <select id='selectRelayMIDIChannel'></select></div>
+			<div id='divRelay_MIDINote' style='display:none;'>Note: <select id='selectRelayMIDINote'></select></div>
+			<div id='divRelay_MIDIVelocity' style='display:none;'>Velocity: <select id='selectRelayMIDIVelocity'></select></div>
+			<div id='divRelay_MIDIController' style='display:none;'>Controller: <select id='selectRelayMIDIController'></select></div>
+			<div id='divRelay_MIDIValue' style='display:none;'>Value: <select id='selectRelayMIDIValue'></select></div>
+			<div id='divRelay_MIDIPitchBendValue' style='display:none;'>Value (between 0 and 16383): <input type='text' id='inputRelayMIDIPitchBendValue' size='50' /></div>
+			<div id='divRelay_MSC' style='display:none;'>MSC (MIDI Show Control):
+				<div>Device ID: <select id='selectRelayMSCDeviceId'></select></div>
+				<div>Command Format: <select id='selectRelayMSCCommandFormat'></select></div>
+				<div>Command: <select id='selectRelayMSCCommand'></select></div>
+				<div>Cue (optional): <input type='text' id='inputRelayMSCCue' size='10' /></div>
+				<div>Cue List (optional): <input type='text' id='inputRelayMSCCueList' size='10' /></div>
+				<div>Cue Path (optional): <input type='text' id='inputRelayMSCCuePath' size='10' /></div>
+			</div>
+			<div id='divRelay_Sysex' style='display:none;'>SysEx:
+				<input type='text' id='inputRelayMIDISysExMessage' size='50' />
+			</div>
+			<button id='btnRelay_SendMessage' onclick='sendRelayMessage();'>Send MIDI Relay Message</button>
+		</div>
+	</div>
+	</body>
+</html>
