@@ -23,6 +23,7 @@ const {version} = require('./package.json');
 const exec = require('child_process').exec;
 const figlet = require('figlet');
 const cors = require('cors');
+const path = require('path');
 
 const mdns = require('mdns-js');
 var mdns_service = null; //mdns advertisement service variable
@@ -221,7 +222,7 @@ function initialRESTSetup() {
 	});
 
 	//serve up any files in the static folder like images, CSS, client-side JS, etc.
-	restServer.use(express.static('views/static'));
+	restServer.use(express.static(path.join(__dirname, 'views/static')))
 
 	restServer.use(function (req, res) {
 		res.status(404).send({error: true, url: req.originalUrl + ' not found.'});
@@ -1218,7 +1219,7 @@ function runMIDITrigger(midiTriggerObj) {
 			runMIDITrigger_ShellScript(midiTriggerObj.shellscript);
 			break;
 		default:
-			console.log(clc.red.bold('This trigger type is not currently supported: ') + midiTriggerObj.actiontype);
+			console.log(clc.red.bold('This action type is not currently supported: ') + midiTriggerObj.actiontype);
 			break;
 	}
 }
