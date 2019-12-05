@@ -56,7 +56,6 @@ A web interface is available to view MIDI ports, triggers, and other information
 	* `note` should be an integer of the MIDI Number value that represents the note, between 21 (A0) and 108 (C8).
 	* `velocity` should be a integer between 1 and 127. Defaults to 127 if excluded. A value of 0 is considered a Note Off message.
 	* A response of `{result: 'noteon-sent-successfully'}` indicates the note on message was successfully sent.
-	* You can also make an HTTP GET to `/noteon/[port index]/[channel]/[note]/[velocity]`. `[port index]` is the zero-based index of the port.
 	
 * Note Off
 	```javascript
