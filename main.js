@@ -86,70 +86,24 @@ function initialRESTSetup() {
 
 	restServer.post('/sendmidi', function (req, res) {
 		//sends MIDI using the provided JSON object in the POST body
-		
 		let midiObj = req.body;
 		
-		if (midiObj.midiport) {
-			let index = null;
-
-			MIDI_outputs.find((o, i) => {
-				if (o.name === midiObj.midiport) {
-					index = i;
-				}
-			});
-			
-			if (index === null) {
-				res.send({result: 'invalid-midi-port'});
-			}
-			else {
-				if (midiObj.midicommand) {
-					if (IncomingMIDIRelayTypes.includes(midiObj.midicommand)) {
-						switch(midiObj.midicommand)
-						{
-							case 'noteon':
-								res.send(SendMIDI_Note('on', midiObj.midiport, midiObj.note, midiObj.channel, midiObj.velocity));
-								break;
-							case 'noteoff':
-								res.send(SendMIDI_Note('off', midiObj.midiport, midiObj.note, midiObj.channel, midiObj.velocity));
-								break;
-							case 'aftertouch':
-								res.send(SendMIDI_Aftertouch(midiObj.midiport, midiObj.channel, midiObj.note, midiObj.value));
-								break;
-							case 'cc':
-								res.send(SendMIDI_CC(midiObj.midiport, midiObj.channel, midiObj.controller, midiObj.value));
-								break;
-							case 'pc':
-								res.send(SendMIDI_PC(midiObj.midiport, midiObj.channel, midiObj.value));
-								break;
-							case 'pressure':
-								res.send(SendMIDI_Pressure(midiObj.midiport, midiObj.channel, midiObj.value));
-								break;
-							case 'pitchbend':
-								res.send(SendMIDI_PitchBend(midiObj.midiport, midiObj.channel, midiObj.value));
-								break;
-							case 'msc':
-								res.send(SendMIDI_MSC(midiObj.midiport, midiObj.deviceid, midiObj.commandformat, midiObj.command, midiObj.cue, midiObj.cuelist, midiObj.cuepath));
-								break;
-							case 'sysex':
-								res.send(SendMIDI_SysEx(midiObj.midiport, midiObj.message));
-								break;
-							default:
-								res.send({result: 'invalid-midi-command'});
-								break;
-						}	
-					}
-					else {
-						res.send({result: 'invalid-midi-command'});
-					}
-				}
-				else {
-					res.send({result: 'invalid-midi-command'});
-				}		
-			}
+		function sendResult(json) {
+			res.send(json);
 		}
-		else {
-			res.send({result: 'invalid-midi-port'});
+		
+		SendMIDI(midiObj, sendResult);
+	});
+	
+	restServer.get('/sendmidi', function (req, res) {
+		//sends MIDI using the provided information in the querystring
+		let midiObj = req.query;
+		
+		function sendResult(json) {
+			res.send(json);
 		}
+		
+		SendMIDI(midiObj, sendResult);
 	});
 	
 	restServer.post('/openport', function (req, res) {
@@ -441,7 +395,71 @@ function ClosePort(midiObj) {
 	}
 }
 
-function SendMIDI_Note(messageType, midiPort, note, channel, velocity) {
+function SendMIDI(midiObj, callback) {		
+	if (midiObj.midiport) {
+		let index = null;
+
+		MIDI_outputs.find((o, i) => {
+			if (o.name === midiObj.midiport) {
+				index = i;
+			}
+		});
+
+		if (index === null) {
+			callback({result: 'invalid-midi-port'});
+		}
+		else {
+			if (midiObj.midicommand) {
+				if (IncomingMIDIRelayTypes.includes(midiObj.midicommand)) {
+					switch(midiObj.midicommand)
+					{
+						case 'noteon':
+							SendMIDI_Note('on', midiObj.midiport, parseInt(midiObj.channel), parseInt(midiObj.note), parseInt(midiObj.velocity), callback);
+							break;
+						case 'noteoff':
+							SendMIDI_Note('off', midiObj.midiport, parseInt(midiObj.channel), parseInt(midiObj.note), parseInt(midiObj.velocity), callback);
+							break;
+						case 'aftertouch':
+							SendMIDI_Aftertouch(midiObj.midiport, parseInt(midiObj.channel), parseInt(midiObj.note), parseInt(midiObj.value), callback);
+							break;
+						case 'cc':
+							SendMIDI_CC(midiObj.midiport, parseInt(midiObj.channel), parseInt(midiObj.controller), parseInt(midiObj.value), callback);
+							break;
+						case 'pc':
+							SendMIDI_PC(midiObj.midiport, parseInt(midiObj.channel), parseInt(midiObj.value), callback);
+							break;
+						case 'pressure':
+							SendMIDI_Pressure(midiObj.midiport, parseInt(midiObj.channel), parseInt(midiObj.value), callback);
+							break;
+						case 'pitchbend':
+							SendMIDI_PitchBend(midiObj.midiport, parseInt(midiObj.channel), parseInt(midiObj.value), callback);
+							break;
+						case 'msc':
+							SendMIDI_MSC(midiObj.midiport, midiObj.deviceid, midiObj.commandformat, midiObj.command, midiObj.cue, midiObj.cuelist, midiObj.cuepath, callback);
+							break;
+						case 'sysex':
+							SendMIDI_SysEx(midiObj.midiport, midiObj.message, callback);
+							break;
+						default:
+							callback({result: 'invalid-midi-command'});
+							break;
+					}	
+				}
+				else {
+					callback({result: 'invalid-midi-command'});
+				}
+			}
+			else {
+				callback({result: 'invalid-midi-command'});
+			}		
+		}
+	}
+	else {
+		callback({result: 'invalid-midi-port'});
+	}
+}
+
+function SendMIDI_Note(messageType, midiPort, channel, note, velocity, callback) {
 	try {
 		switch(messageType) {
 			case 'on':
@@ -457,7 +475,7 @@ function SendMIDI_Note(messageType, midiPort, note, channel, velocity) {
 		
 		let port = navigator().openMidiOut(midiPort)
 		.or(function() {
-			return {result: 'could-not-open-midi-out'};
+			callback({result: 'could-not-open-midi-out'});
 		})
 		.and(function() {
 			if (!channel) {
@@ -515,21 +533,21 @@ function SendMIDI_Note(messageType, midiPort, note, channel, velocity) {
 					break;
 			}
 			
-			return returnObj;
+			callback(returnObj);
 		});
 	}
 	catch(error) {
-		return {result: 'error', error: error};
+		callback({result: 'error', error: error});
 	}
 }
 
-function SendMIDI_Aftertouch(midiPort, channel, note, value) {
+function SendMIDI_Aftertouch(midiPort, channel, note, value, callback) {
 	try {
 		console.log(clc.magenta.bold('Sending Polyphonic AfterTouch to Port: ') + midiPort);
 		
 		let port = navigator().openMidiOut(midiPort)
 		.or(function() {
-			return {result: 'could-not-open-midi-out'};
+			callback({result: 'could-not-open-midi-out'});
 		})
 		.and(function() {
 			if (!channel) {
@@ -557,21 +575,21 @@ function SendMIDI_Aftertouch(midiPort, channel, note, value) {
 				}
 			}
 			AddToLog(midiPort, 'aftertouch', rawmessage);
-			return {result: 'aftertouch-sent-successfully', midiport: midiPort, channel: channel, note: note, value: value, message: rawmessage};
+			callback({result: 'aftertouch-sent-successfully', midiport: midiPort, channel: channel, note: note, value: value, message: rawmessage});
 		});
 	}
 	catch(error) {
-		return {result: 'error', error: error};
+		callback({result: 'error', error: error});
 	}
 }
 
-function SendMIDI_CC(midiPort, channel, controller, value) {
+function SendMIDI_CC(midiPort, channel, controller, value, callback) {
 		try {
 		console.log(clc.magenta.bold('Sending Control Change to Port: ') + midiPort);
 		
 		let port = navigator().openMidiOut(midiPort)
 		.or(function() {
-			return {result: 'could-not-open-midi-out'};
+			callback({result: 'could-not-open-midi-out'});
 		})
 		.and(function() {
 			if (!channel) {
@@ -599,21 +617,21 @@ function SendMIDI_CC(midiPort, channel, controller, value) {
 				}
 			}
 			AddToLog(midiPort, 'cc', rawmessage);
-			return {result: 'cc-sent-successfully', midiport: midiPort, channel: channel, controller: controller, value: value, message: rawmessage};
+			callback({result: 'cc-sent-successfully', midiport: midiPort, channel: channel, controller: controller, value: value, message: rawmessage});
 		});
 	}
 	catch(error) {
-		return {result: 'error', error: error};
+		callback({result: 'error', error: error});
 	}
 }
 
-function SendMIDI_PC(midiPort, channel, value) {
+function SendMIDI_PC(midiPort, channel, value, callback) {
 	try {
 		console.log(clc.magenta.bold('Sending Program Change to Port: ') + midiPort);
 		
 		let port = navigator().openMidiOut(midiPort)
 		.or(function() {
-			return {result: 'could-not-open-midi-out'};
+			callback({result: 'could-not-open-midi-out'});
 		})
 		.and(function() {
 			if (!channel) {
@@ -638,21 +656,21 @@ function SendMIDI_PC(midiPort, channel, value) {
 				}
 			}
 			AddToLog(midiPort, 'pc', rawmessage);
-			return {result: 'pc-sent-successfully', midiport: midiPort, channel: channel, value: value, message: rawmessage};
+			callback({result: 'pc-sent-successfully', midiport: midiPort, channel: channel, value: value, message: rawmessage});
 		});
 	}
 	catch(error) {
-		return {result: 'error', error: error};
+		callback({result: 'error', error: error});
 	}
 }
 
-function SendMIDI_Pressure(midiPort, channel, value) {
+function SendMIDI_Pressure(midiPort, channel, value, callback) {
 	try {
 		console.log(clc.magenta.bold('Sending Channel Pressure / Aftertouch to Port: ') + midiPort);
 		
 		let port = navigator().openMidiOut(midiPort)
 		.or(function() {
-			return {result: 'could-not-open-midi-out'};
+			callback({result: 'could-not-open-midi-out'});
 		})
 		.and(function() {
 			if (!channel) {
@@ -677,21 +695,21 @@ function SendMIDI_Pressure(midiPort, channel, value) {
 				}
 			}
 			AddToLog(midiPort, 'pressure', rawmessage);
-			return {result: 'pressure-sent-successfully', midiport: midiPort, channel: channel, value: value, message: rawmessage};
+			callback({result: 'pressure-sent-successfully', midiport: midiPort, channel: channel, value: value, message: rawmessage});
 		});
 	}
 	catch(error) {
-		return {result: 'error', error: error};
+		callback({result: 'error', error: error});
 	}
 }
 
-function SendMIDI_PitchBend(midiPort, channel, value) {
+function SendMIDI_PitchBend(midiPort, channel, value, callback) {
 		try {
 		console.log(clc.magenta.bold('Sending Pitch Bend to Port: ') + midiPort);
 		
 		let port = navigator().openMidiOut(midiPort)
 		.or(function() {
-			return {result: 'could-not-open-midi-out'};
+			callback({result: 'could-not-open-midi-out'});
 		})
 		.and(function() {
 			if (!channel) {
@@ -716,21 +734,21 @@ function SendMIDI_PitchBend(midiPort, channel, value) {
 				}
 			}
 			AddToLog(midiPort, 'pitchbend', rawmessage);
-			return {result: 'pitchbend-sent-successfully', midiport, midiPort, channel: channel, value: value, message: rawmessage};
+			callback({result: 'pitchbend-sent-successfully', midiport, midiPort, channel: channel, value: value, message: rawmessage});
 		});
 	}
 	catch(error) {
-		return {result: 'error', error: error};
+		callback({result: 'error', error: error});
 	}
 }
 
-function SendMIDI_MSC(midiPort, deviceId, commandFormat, command, cue, cueList, cuePath) {
+function SendMIDI_MSC(midiPort, deviceId, commandFormat, command, cue, cueList, cuePath, callback) {
 	try {
 		console.log(clc.magenta.bold('Sending MSC to Port: ') + midiPort);
 		
 		let port = navigator().openMidiOut(midiPort)
 		.or(function() {
-			return {result: 'could-not-open-midi-out'};
+			callback({result: 'could-not-open-midi-out'});
 		})
 		.and(function() {
 			//check if cue, cueList, or cuePath are included (they are optional)
@@ -763,7 +781,7 @@ function SendMIDI_MSC(midiPort, deviceId, commandFormat, command, cue, cueList, 
 				}
 			}
 				AddToLog(midiPort, 'sysex', rawmessage);
-			return {result: 'msc-sent-successfully', midiport: midiPort, deviceid: deviceId, commandformat: commandFormat, command: command, cue: cue, cuelist: cueList, cuepath: cuePath, message: message};
+			callback({result: 'msc-sent-successfully', midiport: midiPort, deviceid: deviceId, commandformat: commandFormat, command: command, cue: cue, cuelist: cueList, cuepath: cuePath, message: message});
 		});
 	}
 	catch(error) {
@@ -939,13 +957,13 @@ function parseIntegerDeviceId(deviceId) {
 	throw new Error('Integer deviceIds must be between 0 (0x00) and 111 (0x6F)');
 }
 
-function SendMIDI_SysEx(midiPort, message) {
+function SendMIDI_SysEx(midiPort, message, callback) {
 	try {
 		console.log(clc.magenta.bold('Sending SysEx MIDI Message to Port: ') + midiPort);
 		
 		let port = navigator().openMidiOut(midiPort)
 		.or(function() {
-			return {result: 'could-not-open-midi-out'};
+			callback({result: 'could-not-open-midi-out'});
 		})
 		.and(function() {
 			let messageArray = message.replace(' ', ',').split(',');
@@ -958,7 +976,7 @@ function SendMIDI_SysEx(midiPort, message) {
 				//not a SysEx message
 				console.log(clc.red.bold('Not a valid SysEx message.'));
 				console.log(messageArray);
-				return {result: 'sysex-invalid', message: messageArray};
+				callback({result: 'sysex-invalid', message: messageArray});
 			}
 			else {
 				let midiObj = {message: messageArray};
@@ -975,12 +993,12 @@ function SendMIDI_SysEx(midiPort, message) {
 					}
 				}
 				AddToLog(midiPort, 'sysex', rawmessage);
-				return {result: 'sysex-sent-successfully', midiport: midiPort, message: rawmessage};	
+				callback({result: 'sysex-sent-successfully', midiport: midiPort, message: rawmessage});
 			}
 		});
 	}
 	catch(error) {
-		return {result: 'error', error: error};
+		callback({result: 'error', error: error});
 	}
 }
 
@@ -1359,6 +1377,7 @@ function AddTrigger(triggerObj) {
 					if (!triggerObj.velocity) {
 						triggerObj.velocity = 1;
 					}
+					break;
 				case 'noteoff':
 					if (!triggerObj.channel) {
 						triggerObj.channel = 0;

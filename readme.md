@@ -36,7 +36,9 @@ A web interface is available to view MIDI ports, triggers, and other information
 
 ## Sending MIDI Relay Messages
 
-Make an HTTP POST request with JSON data in the request body to `/sendmidi` on the server running midi-relay to relay a MIDI Message. Requests can be sent from any computer or device reachable to the midi-relay server.
+* Make an `HTTP POST` request with JSON data in the request body to `/sendmidi` on the server running midi-relay to relay a MIDI Message.
+* You can also make an `HTTP GET` request with the parameters passed as querystrings.
+* Requests can be sent from any computer or device reachable to the midi-relay server.
 
 ### Supported MIDI Relay Types
 * Note On
@@ -54,6 +56,7 @@ Make an HTTP POST request with JSON data in the request body to `/sendmidi` on t
 	* `note` should be an integer of the MIDI Number value that represents the note, between 21 (A0) and 108 (C8).
 	* `velocity` should be a integer between 1 and 127. Defaults to 127 if excluded. A value of 0 is considered a Note Off message.
 	* A response of `{result: 'noteon-sent-successfully'}` indicates the note on message was successfully sent.
+	* You can also make an HTTP GET to `/noteon/[port index]/[channel]/[note]/[velocity]`. `[port index]` is the zero-based index of the port.
 	
 * Note Off
 	```javascript
