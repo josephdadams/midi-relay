@@ -478,13 +478,13 @@ function SendMIDI_Note(messageType, midiPort, channel, note, velocity, callback)
 			callback({result: 'could-not-open-midi-out'});
 		})
 		.and(function() {
-			if (!channel) {
+			if (!Number.isInteger(channel)) {
 			channel = 0;
 			}
-			if (!note) {
+			if (!Number.isInteger(note)) {
 				note = 21;
 			}
-			if (!velocity) {
+			if (!Number.isInteger(velocity)) {
 				if (messageType === 'on') {
 					velocity = 127;
 				}
@@ -550,13 +550,13 @@ function SendMIDI_Aftertouch(midiPort, channel, note, value, callback) {
 			callback({result: 'could-not-open-midi-out'});
 		})
 		.and(function() {
-			if (!channel) {
+			if (!Number.isInteger(channel)) {
 				channel = 0;
 			}
-			if (!note) {
+			if (!Number.isInteger(note)) {
 				note = 21;
 			}
-			if (!value) {
+			if (!Number.isInteger(value)) {
 				value = 1;
 			}
 
@@ -592,13 +592,13 @@ function SendMIDI_CC(midiPort, channel, controller, value, callback) {
 			callback({result: 'could-not-open-midi-out'});
 		})
 		.and(function() {
-			if (!channel) {
+			if (!Number.isInteger(channel)) {
 				channel = 0;
 			}
-			if (!controller) {
+			if (!Number.isInteger(controller)) {
 				controller = 0;
 			}
-			if (!value) {
+			if (!Number.isInteger(value)) {
 				value = 1;
 			}
 
@@ -634,10 +634,10 @@ function SendMIDI_PC(midiPort, channel, value, callback) {
 			callback({result: 'could-not-open-midi-out'});
 		})
 		.and(function() {
-			if (!channel) {
+			if (!Number.isInteger(channel)) {
 				channel = 0;
 			}
-			if (!value) {
+			if (!Number.isInteger(value)) {
 				value = 1;
 			}
 
@@ -673,10 +673,10 @@ function SendMIDI_Pressure(midiPort, channel, value, callback) {
 			callback({result: 'could-not-open-midi-out'});
 		})
 		.and(function() {
-			if (!channel) {
+			if (!Number.isInteger(channel)) {
 				channel = 0;
 			}
-			if (!value) {
+			if (!Number.isInteger(value)) {
 				value = 1;
 			}
 
@@ -712,10 +712,10 @@ function SendMIDI_PitchBend(midiPort, channel, value, callback) {
 			callback({result: 'could-not-open-midi-out'});
 		})
 		.and(function() {
-			if (!channel) {
+			if (!Number.isInteger(channel)) {
 				channel = 0;
 			}
-			if (!value) {
+			if (!Number.isInteger(value)) {
 				value = 1;
 			}
 
