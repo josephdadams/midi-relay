@@ -176,7 +176,10 @@ function initialRESTSetup() {
 	});
 
 	//serve up any files in the static folder like images, CSS, client-side JS, etc.
-	restServer.use(express.static(path.join(__dirname, 'views/static')))
+	restServer.use(express.static(path.join(__dirname, 'views/static')));
+
+	//serve up jQuery from the Node module
+	restServer.use('/js/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist')));
 
 	restServer.use(function (req, res) {
 		res.status(404).send({error: true, url: req.originalUrl + ' not found.'});
