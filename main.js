@@ -1371,70 +1371,70 @@ function AddTrigger(triggerObj) {
 		else {
 			switch(triggerObj.midicommand) {
 				case 'noteon':
-					if (!triggerObj.channel) {
+					if (!Number.isInteger(triggerObj.channel)) {
 						triggerObj.channel = 0;
 					}
-					if (!triggerObj.note) {
+					if (!Number.isInteger(triggerObj.note)) {
 						triggerObj.note = 21;
 					}
-					if (!triggerObj.velocity) {
+					if (!Number.isInteger(triggerObj.velocity)) {
 						triggerObj.velocity = 1;
 					}
 					break;
 				case 'noteoff':
-					if (!triggerObj.channel) {
+					if (!Number.isInteger(triggerObj.channel)) {
 						triggerObj.channel = 0;
 					}
-					if (!triggerObj.note) {
+					if (!Number.isInteger(triggerObj.note)) {
 						triggerObj.note = 21;
 					}
-					if (!triggerObj.velocity) {
+					if (!Number.isInteger(triggerObj.velocity)) {
 						triggerObj.velocity = 0;
 					}
 					break;
 				case 'aftertouch':
-					if (!triggerObj.channel) {
+					if (!Number.isInteger(triggerObj.channel)) {
 						triggerObj.channel = 0;
 					}
-					if (!triggerObj.note) {
+					if (!Number.isInteger(triggerObj.note)) {
 						triggerObj.note = 21;
 					}
-					if (!triggerObj.value) {
+					if (!Number.isInteger(triggerObj.value)) {
 						triggerObj.value = 0;
 					}
 					break;
 				case 'cc':
-					if (!triggerObj.channel) {
+					if (!Number.isInteger(triggerObj.channel)) {
 						triggerObj.channel = 0;
 					}
-					if (!triggerObj.controller) {
-						triggerObj.controller = 0;
+					if (!Number.isInteger(triggerObj.controller)) {
+						triggerObj.controller = 21;
 					}
-					if (!triggerObj.value) {
+					if (!Number.isInteger(triggerObj.value)) {
 						triggerObj.value = 0;
 					}
 					break;
 				case 'pc':
-					if (!triggerObj.channel) {
+					if (!Number.isInteger(triggerObj.channel)) {
 						triggerObj.channel = 0;
 					}
-					if (!triggerObj.value) {
+					if (!Number.isInteger(triggerObj.value)) {
 						triggerObj.value = 0;
 					}
 					break;
 				case 'pressure':
-					if (!triggerObj.channel) {
+					if (!Number.isInteger(triggerObj.channel)) {
 						triggerObj.channel = 0;
 					}
-					if (!triggerObj.value) {
+					if (!Number.isInteger(triggerObj.value)) {
 						triggerObj.value = 0;
 					}
 					break;
 				case 'pitchbend':
-					if (!triggerObj.channel) {
+					if (!Number.isInteger(triggerObj.channel)) {
 						triggerObj.channel = 0;
 					}
-					if (!triggerObj.value) {
+					if (!Number.isInteger(triggerObj.value)) {
 						triggerObj.value = 0;
 					}
 					break;
