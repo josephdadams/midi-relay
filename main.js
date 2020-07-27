@@ -199,13 +199,11 @@ function initialMDNSSetup() {
 	
 	mdns_service.start();
 	
-	//var browser = mdns.createBrowser(); //defaults to mdns.ServiceType.wildcard
 	mdns_browser = mdns.createBrowser(mdns.tcp('midi-relay'));
 
 	mdns_browser.on('ready', function onReady() {
 		mdns_browser.discover();
 	});
-
 
 	mdns_browser.on('update', function onUpdate(data) {
 		for (let i = 0; i < data.type.length; i++) {
@@ -1372,67 +1370,93 @@ function AddTrigger(triggerObj) {
 			switch(triggerObj.midicommand) {
 				case 'noteon':
 					if (!Number.isInteger(triggerObj.channel)) {
-						triggerObj.channel = 0;
+						if (triggerObj.channel !== '*') {
+							triggerObj.channel = 0;
+						}
 					}
 					if (!Number.isInteger(triggerObj.note)) {
 						triggerObj.note = 21;
 					}
 					if (!Number.isInteger(triggerObj.velocity)) {
-						triggerObj.velocity = 1;
+						if (triggerObj.velocity !== '*') {
+							triggerObj.velocity = 1;
+						}
 					}
 					break;
 				case 'noteoff':
 					if (!Number.isInteger(triggerObj.channel)) {
-						triggerObj.channel = 0;
+						if (triggerObj.channel !== '*') {
+							triggerObj.channel = 0;
+						}
 					}
 					if (!Number.isInteger(triggerObj.note)) {
 						triggerObj.note = 21;
 					}
 					if (!Number.isInteger(triggerObj.velocity)) {
-						triggerObj.velocity = 0;
+						if (triggerObj.velocity !== '*') {
+							triggerObj.velocity = 0;
+						}
 					}
 					break;
 				case 'aftertouch':
 					if (!Number.isInteger(triggerObj.channel)) {
-						triggerObj.channel = 0;
+						if (triggerObj.channel !== '*') {
+							triggerObj.channel = 0;
+						}
 					}
 					if (!Number.isInteger(triggerObj.note)) {
 						triggerObj.note = 21;
 					}
 					if (!Number.isInteger(triggerObj.value)) {
-						triggerObj.value = 0;
+						if (triggerObj.value !== '*') {
+							triggerObj.value = 0;
+						}
 					}
 					break;
 				case 'cc':
 					if (!Number.isInteger(triggerObj.channel)) {
-						triggerObj.channel = 0;
+						if (triggerObj.channel !== '*') {
+							triggerObj.channel = 0;
+						}
 					}
 					if (!Number.isInteger(triggerObj.controller)) {
 						triggerObj.controller = 21;
 					}
 					if (!Number.isInteger(triggerObj.value)) {
-						triggerObj.value = 0;
+						if (triggerObj.value !== '*') {
+							triggerObj.value = 0;
+						}
 					}
 					break;
 				case 'pc':
 					if (!Number.isInteger(triggerObj.channel)) {
-						triggerObj.channel = 0;
+						if (triggerObj.channel !== '*') {
+							triggerObj.channel = 0;
+						}
 					}
 					if (!Number.isInteger(triggerObj.value)) {
-						triggerObj.value = 0;
+						if (triggerObj.value !== '*') {
+							triggerObj.value = 0;
+						}
 					}
 					break;
 				case 'pressure':
 					if (!Number.isInteger(triggerObj.channel)) {
-						triggerObj.channel = 0;
+						if (triggerObj.channel !== '*') {
+							triggerObj.channel = 0;
+						}
 					}
 					if (!Number.isInteger(triggerObj.value)) {
-						triggerObj.value = 0;
+						if (triggerObj.value !== '*') {
+							triggerObj.value = 0;
+						}
 					}
 					break;
 				case 'pitchbend':
 					if (!Number.isInteger(triggerObj.channel)) {
-						triggerObj.channel = 0;
+						if (triggerObj.channel !== '*') {
+							triggerObj.channel = 0;
+						}
 					}
 					if (!Number.isInteger(triggerObj.value)) {
 						triggerObj.value = 0;
@@ -1534,12 +1558,19 @@ function DeleteTrigger(triggerID) {
 process.on('uncaughtException', function(err) {
 	if(err.errno === 'EADDRINUSE') {
 		console.log(clc.red.bold('Unable to start server on port ' + listenPort + '.') + ' Is midi-relay already running?');
+		process.exit(1);
 	}
 	else {
-		console.log(err);
+		if (err.toString().indexOf(' has more than 20 characters') > -1) {
+			//MDNS error that doesn't really affect midi-relay
+			console.log('MDNS Error: ' + err.toString());
+		}
+		else {
+			console.log('midi-relay Error occurred:');	
+			console.log(err);
+			process.exit(1);
+		}
 	}
-	
-	process.exit(1);
 });
 
 setUpApp();
