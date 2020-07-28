@@ -80,6 +80,10 @@
 				float: left;
 				margin: 5px;
 			}
+
+			.borderTop {
+				border-top: #999999 3px solid;
+			}
 		</style>
 		<script src='js/jquery/jquery.min.js'></script>
 		<script>
@@ -462,7 +466,7 @@
 
 					for (let i = 0; i < data.length; i++)
 					{
-						let trTrigger = document.createElement('tr');						
+						let trTrigger = document.createElement('tr');
 						
 						/*let tdTriggerID = document.createElement('td');
 						tdTriggerID.innerHTML = data[i].id;
@@ -470,14 +474,17 @@
 						
 						let tdTriggerMIDIPort = document.createElement('td');
 						tdTriggerMIDIPort.innerHTML = data[i].midiport;
+						tdTriggerMIDIPort.className = 'borderTop';
 						trTrigger.appendChild(tdTriggerMIDIPort);
 						
 						let tdTriggerMIDICommand = document.createElement('td');
 						tdTriggerMIDICommand.innerHTML = data[i].midicommand;
 						tdTriggerMIDICommand.style.textAlign = 'center';
+						tdTriggerMIDICommand.className = 'borderTop';
 						trTrigger.appendChild(tdTriggerMIDICommand);
 						
 						let tdTriggerMIDIData = document.createElement('td');
+						tdTriggerMIDIData.className = 'borderTop';
 						
 						let spanTriggerMIDIChannel, spanTriggerMIDINote, spanTriggerMIDIVelocity, spanTriggerMIDIController, spanTriggerMIDIValue, spanTriggerMIDISysExMessage;
 						
@@ -578,9 +585,11 @@
 						
 						let tdTriggerMIDIDescription = document.createElement('td');
 						tdTriggerMIDIDescription.innerHTML = ((data[i].description) ? data[i].description : '');
+						tdTriggerMIDIDescription.className = 'borderTop';
 						trTrigger.appendChild(tdTriggerMIDIDescription);
 
 						let tdBtnEditTrigger = document.createElement('td');
+						tdBtnEditTrigger.className = 'borderTop';
 						let btnEditTrigger = document.createElement('button');
 						btnEditTrigger.innerHTML = 'Edit';
 						btnEditTrigger.setAttribute('onclick', 'ShowEditTrigger(\'' + data[i].id + '\');');
@@ -588,6 +597,7 @@
 						trTrigger.appendChild(tdBtnEditTrigger);
 						
 						let tdBtnDeleteTrigger = document.createElement('td');
+						tdBtnDeleteTrigger.className = 'borderTop';
 						let btnDeleteTrigger = document.createElement('button');
 						btnDeleteTrigger.innerHTML = 'Delete';
 						btnDeleteTrigger.setAttribute('onclick', 'DeleteTrigger(\'' + data[i].id + '\');');
@@ -626,6 +636,7 @@
 						let trHost = document.createElement('tr');
 
 						let tdName = document.createElement('td');
+						tdName.className = 'borderTop';
 						tdName.innerHTML = data[i].name;
 						
 						let btnSettings = document.createElement('button');
@@ -637,6 +648,7 @@
 						trHost.appendChild(tdName);
 
 						let tdAddress = document.createElement('td');
+						tdAddress.className = 'borderTop';
 						tdAddress.innerHTML = data[i].address + '<br />' + 'Port: ' + data[i].port;
 						trHost.appendChild(tdAddress);
 						
@@ -646,6 +658,7 @@
 						document.getElementById('selectRelayHost').appendChild(el);
 
 						let tdMIDIPorts = document.createElement('td');
+						tdMIDIPorts.className = 'borderTop';
 
 						$.getJSON('http://' + data[i].address + ':' + data[i].port + '/midi_outputs', function(midiData) {
 							for (let j = 0; j < midiData.length; j++) {
