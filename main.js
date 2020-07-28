@@ -161,6 +161,14 @@ function initialRESTSetup() {
 		let result = AddTrigger(triggerObj);
 		res.send({result: result});
 	});
+
+	restServer.post('/edittrigger', function (req, res) {
+		//adds the trigger object to the list of triggers
+		let triggerObj = req.body;
+		
+		let result = EditTrigger(triggerObj);
+		res.send({result: result});
+	});
 	
 	restServer.get('/deletetrigger/:triggerid', function (req, res) {
 		//deletes the trigger
@@ -1526,6 +1534,202 @@ function AddTrigger(triggerObj) {
 					}
 					else {
 						return 'trigger-added';
+					}
+				}
+			}
+		}
+	}
+}
+
+function EditTrigger(triggerObj) {
+	//edit the Trigger in the array	
+	let passed = true;
+	
+	let index = null;
+	
+	if (triggerObj.midiport) {
+		MIDI_inputs.find((o, i) => {
+			if (o.name === triggerObj.midiport) {
+				index = i;
+			}
+		});
+
+		if (index === null) {
+			passed = false;
+			return 'invalid-midi-port';
+		}
+	}
+	else {
+		return 'invalid-midi-port';
+	}
+	
+	if (triggerObj.midicommand) {
+		if (!IncomingMIDIMessageTypes.includes(triggerObj.midicommand.toLowerCase())) {
+			return 'invalid-midi-command';
+		}
+		else {
+			switch(triggerObj.midicommand) {
+				case 'noteon':
+					if (!Number.isInteger(triggerObj.channel)) {
+						if (triggerObj.channel !== '*') {
+							triggerObj.channel = 0;
+						}
+					}
+					if (!Number.isInteger(triggerObj.note)) {
+						triggerObj.note = 21;
+					}
+					if (!Number.isInteger(triggerObj.velocity)) {
+						if (triggerObj.velocity !== '*') {
+							triggerObj.velocity = 1;
+						}
+					}
+					break;
+				case 'noteoff':
+					if (!Number.isInteger(triggerObj.channel)) {
+						if (triggerObj.channel !== '*') {
+							triggerObj.channel = 0;
+						}
+					}
+					if (!Number.isInteger(triggerObj.note)) {
+						triggerObj.note = 21;
+					}
+					if (!Number.isInteger(triggerObj.velocity)) {
+						if (triggerObj.velocity !== '*') {
+							triggerObj.velocity = 0;
+						}
+					}
+					break;
+				case 'aftertouch':
+					if (!Number.isInteger(triggerObj.channel)) {
+						if (triggerObj.channel !== '*') {
+							triggerObj.channel = 0;
+						}
+					}
+					if (!Number.isInteger(triggerObj.note)) {
+						triggerObj.note = 21;
+					}
+					if (!Number.isInteger(triggerObj.value)) {
+						if (triggerObj.value !== '*') {
+							triggerObj.value = 0;
+						}
+					}
+					break;
+				case 'cc':
+					if (!Number.isInteger(triggerObj.channel)) {
+						if (triggerObj.channel !== '*') {
+							triggerObj.channel = 0;
+						}
+					}
+					if (!Number.isInteger(triggerObj.controller)) {
+						triggerObj.controller = 21;
+					}
+					if (!Number.isInteger(triggerObj.value)) {
+						if (triggerObj.value !== '*') {
+							triggerObj.value = 0;
+						}
+					}
+					break;
+				case 'pc':
+					if (!Number.isInteger(triggerObj.channel)) {
+						if (triggerObj.channel !== '*') {
+							triggerObj.channel = 0;
+						}
+					}
+					if (!Number.isInteger(triggerObj.value)) {
+						if (triggerObj.value !== '*') {
+							triggerObj.value = 0;
+						}
+					}
+					break;
+				case 'pressure':
+					if (!Number.isInteger(triggerObj.channel)) {
+						if (triggerObj.channel !== '*') {
+							triggerObj.channel = 0;
+						}
+					}
+					if (!Number.isInteger(triggerObj.value)) {
+						if (triggerObj.value !== '*') {
+							triggerObj.value = 0;
+						}
+					}
+					break;
+				case 'pitchbend':
+					if (!Number.isInteger(triggerObj.channel)) {
+						if (triggerObj.channel !== '*') {
+							triggerObj.channel = 0;
+						}
+					}
+					if (!Number.isInteger(triggerObj.value)) {
+						triggerObj.value = 0;
+					}
+					break;
+				case 'sysex':
+					let msgArray = triggerObj.message.replace(' ', ',').split(',');
+					triggerObj.message = '';
+					for (let i = 0; i < msgArray.length; i++) {
+						if (isHex(msgArray[i])) {
+							//convert hex to dec
+							triggerObj.message += parseInt(msgArray[i], 16);
+						}
+						else {
+							//assume dec
+							triggerObj.message += parseInt(msgArray[i]);
+						}
+						if (i < (msgArray-1)) {
+							triggerObj.message += ',';
+						}
+					}
+					break;
+				default:
+					break;
+			}
+		}
+	}
+	else {
+		return 'invalid-midi-command';
+	}
+	
+	if (triggerObj.actiontype) {
+		if (!ActionTypes.includes(triggerObj.actiontype.toLowerCase())) {
+			return 'invalid-action-type';
+		}
+	}
+	else {
+		return 'invalid-action-type';
+	}
+	
+	if (passed) {
+		let tempTriggers = [];
+		tempTriggers.push(triggerObj);
+		Triggers = Triggers.map(obj => tempTriggers.find(o => o.id === obj.id) || obj);
+		
+		console.log(clc.cyan.bold('MIDI Trigger Edited - ' + triggerObj.id));
+		saveMIDITriggers();
+		
+		if (triggerObj.midiport) {			
+			for (let i = 0; i < MIDI_inputs.length; i++) {
+				if (MIDI_inputs[i].name === triggerObj.midiport) {
+					if (!MIDI_inputs[i].opened) {
+						console.log(clc.cyan.bold('Attempting to open MIDI port: ' + triggerObj.midiport));
+						navigator().openMidiIn(triggerObj.midiport)
+						.or(function () {
+							console.log(clc.red.bold('Cannot open MIDI port specified in trigger. It may no longer be available.'));
+							return 'trigger-edited-midiin-port-cannot-be-opened';
+						})
+						.and(function() {
+							for (let i = 0; i < MIDI_inputs.length; i++) {
+								if (MIDI_inputs[i].name === this.name()) {
+									MIDI_inputs[i].opened = true;
+									break;
+								}
+							}
+							console.log(clc.green.bold('Port opened successfully: ' + triggerObj.midiport));
+							this.connect(receiveMIDI.bind({'midiport': triggerObj.midiport}));
+							return 'trigger-edited';	
+						});
+					}
+					else {
+						return 'trigger-edited';
 					}
 				}
 			}

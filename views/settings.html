@@ -74,6 +74,9 @@
 		</style>
 		<script src='js/jquery/jquery.min.js'></script>
 		<script>
+			var selectedTriggerId = null;
+			var triggers = [];
+
 			var MIDI_INPUTS = [];
 			
 			var MIDI_NOTES = [
@@ -428,6 +431,8 @@
 				let tableTriggers = document.createElement('table');
 
 				$.getJSON('/triggers', function(data) {
+					triggers = data;
+
 					divTriggers.innerHTML = '';
 					
 					let trHeader = document.createElement('tr');
@@ -565,6 +570,13 @@
 						let tdTriggerMIDIDescription = document.createElement('td');
 						tdTriggerMIDIDescription.innerHTML = ((data[i].description) ? data[i].description : '');
 						trTrigger.appendChild(tdTriggerMIDIDescription);
+
+						let tdBtnEditTrigger = document.createElement('td');
+						let btnEditTrigger = document.createElement('button');
+						btnEditTrigger.innerHTML = 'Edit';
+						btnEditTrigger.setAttribute('onclick', 'ShowEditTrigger(\'' + data[i].id + '\');');
+						tdBtnEditTrigger.appendChild(btnEditTrigger);
+						trTrigger.appendChild(tdBtnEditTrigger);
 						
 						let tdBtnDeleteTrigger = document.createElement('td');
 						let btnDeleteTrigger = document.createElement('button');
@@ -812,6 +824,194 @@
 				
 				let divTriggerFields = document.getElementById('divTriggerFields');
 				divTriggerFields.style.display = 'block';
+
+				let btnAddTrigger = document.getElementById('btnAddTrigger');
+				btnAddTrigger.style.display = 'block';
+
+				let btnEditTrigger = document.getElementById('btnEditTrigger');
+				btnEditTrigger.style.display = 'none';
+			}
+
+			function ShowEditTrigger(id) {
+				selectedTriggerId = id;
+
+				for (let i = 0; i < triggers.length; i++) {
+					if (triggers[i].id === id) {
+						let selectMIDIPort = document.getElementById('selectMIDIPort');
+						let selectMIDIMessageType = document.getElementById('selectMIDIMessageType');
+						let selectMIDIChannel = document.getElementById('selectMIDIChannel');
+						let selectMIDINote = document.getElementById('selectMIDINote');
+						let selectMIDIVelocity = document.getElementById('selectMIDIVelocity');
+						let selectMIDIValue = document.getElementById('selectMIDIValue');
+						let selectMIDIController = document.getElementById('selectMIDIController');
+						let inputMIDIPitchBendValue = document.getElementById('inputMIDIPitchBendValue');
+						let inputMIDISysExMessage = document.getElementById('inputMIDISysExMessage');
+
+						let selectActionType = document.getElementById('selectActionType');
+
+						for (let j = 0; j < selectMIDIPort.options.length; j++){
+							if (selectMIDIPort.options[j].value === triggers[i].midiport){
+								selectMIDIPort.options[j].selected = true;
+								break;
+							}
+						}
+
+						for (let j = 0; j < selectMIDIMessageType.options.length; j++){
+							if (selectMIDIMessageType.options[j].value === triggers[i].midicommand){
+								selectMIDIMessageType.options[j].selected = true;
+								break;
+							}
+						}
+
+						showMIDIMessageOptions();
+
+						switch(triggers[i].midicommand) {
+							case 'noteon':
+							case 'noteoff':
+								for (let j = 0; j < selectMIDIChannel.options.length; j++){
+									if (selectMIDIChannel.options[j].value === triggers[i].channel){
+										selectMIDIChannel.options[j].selected = true;
+										break;
+									}
+								}
+								for (let j = 0; j < selectMIDINote.options.length; j++){
+									if (selectMIDINote.options[j].value === triggers[i].note){
+										selectMIDINote.options[j].selected = true;
+										break;
+									}
+								}
+								for (let j = 0; j < selectMIDIVelocity.options.length; j++){
+									if (selectMIDIVelocity.options[j].value === triggers[i].velocity){
+										selectMIDIVelocity.options[j].selected = true;
+										break;
+									}
+								}
+								break;
+							case 'aftertouch':
+								for (let j = 0; j < selectMIDIChannel.options.length; j++){
+									if (selectMIDIChannel.options[j].value === triggers[i].channel){
+										selectMIDIChannel.options[j].selected = true;
+										break;
+									}
+								}
+								for (let j = 0; j < selectMIDINote.options.length; j++){
+									if (selectMIDINote.options[j].value === triggers[i].note){
+										selectMIDINote.options[j].selected = true;
+										break;
+									}
+								}
+								for (let j = 0; j < selectMIDIValue.options.length; j++){
+									if (selectMIDIValue.options[j].value == triggers[i].value){
+										selectMIDIValue.options[j].selected = true;
+										break;
+									}
+								}
+								break;
+							case 'cc':
+								for (let j = 0; j < selectMIDIChannel.options.length; j++){
+									if (selectMIDIChannel.options[j].value === triggers[i].channel){
+										selectMIDIChannel.options[j].selected = true;
+										break;
+									}
+								}
+								for (let j = 0; j < selectMIDIController.options.length; j++){
+									if (selectMIDIController.options[j].value == triggers[i].controller){
+										selectMIDIController.options[j].selected = true;
+										break;
+									}
+								}
+								for (let j = 0; j < selectMIDIValue.options.length; j++){
+									if (selectMIDIValue.options[j].value == triggers[i].value){
+										selectMIDIValue.options[j].selected = true;
+										break;
+									}
+								}
+								break;
+							case 'pc':
+								for (let j = 0; j < selectMIDIChannel.options.length; j++){
+									if (selectMIDIChannel.options[j].value === triggers[i].channel){
+										selectMIDIChannel.options[j].selected = true;
+										break;
+									}
+								}
+								for (let j = 0; j < selectMIDIValue.options.length; j++){
+									if (selectMIDIValue.options[j].value == triggers[i].value){
+										selectMIDIValue.options[j].selected = true;
+										break;
+									}
+								}
+								break;
+							case 'pressure':
+								for (let j = 0; j < selectMIDIChannel.options.length; j++){
+									if (selectMIDIChannel.options[j].value === triggers[i].channel){
+										selectMIDIChannel.options[j].selected = true;
+										break;
+									}
+								}
+								for (let j = 0; j < selectMIDIValue.options.length; j++){
+									if (selectMIDIValue.options[j].value == triggers[i].value){
+										selectMIDIValue.options[j].selected = true;
+										break;
+									}
+								}
+								break;
+							case 'pitchbend':
+								for (let j = 0; j < selectMIDIChannel.options.length; j++){
+									if (selectMIDIChannel.options[j].value === triggers[i].channel){
+										selectMIDIChannel.options[j].selected = true;
+										break;
+									}
+								}
+								inputMIDIPitchBendValue.value = triggers[i].value;
+								break;
+							case 'sysex':
+								inputMIDISysExMessage.value = triggers[i].message;
+								break;
+						}
+
+						for (let j = 0; j < selectActionType.options.length; j++){
+							if (selectActionType.options[j].value == triggers[i].actiontype){
+								selectActionType.options[j].selected = true;
+								break;
+							}
+						}
+
+						switch(triggers[i].actiontype) {
+							case 'http':
+								document.getElementById('txtURL').value = triggers[i].url;
+								if (triggers[i].jsondata) {
+									document.getElementById('txtJSONData').value = triggers[i].jsondata;
+								}
+								break;
+							case 'applescript':
+								document.getElementById('txtAppleScript').value = triggers[i].applescript;
+								break;
+							case 'shellscript':
+								document.getElementById('txtShellScript').value = triggers[i].shellscript;
+								break;
+							default:
+								break;
+						}
+
+						document.getElementById('txtDescription').value = triggers[i].description;
+
+						showActionTypeOptions();
+
+						break;
+					}
+				}
+
+				let btnShowAddTrigger = document.getElementById('btnShowAddTrigger');
+				btnShowAddTrigger.style.display = 'none';
+				
+				let divTriggerFields = document.getElementById('divTriggerFields');
+				divTriggerFields.style.display = 'block';
+
+				let btnAddTrigger = document.getElementById('btnAddTrigger');
+				btnAddTrigger.style.display = 'none';
+
+				let btnEditTrigger = document.getElementById('btnEditTrigger');
+				btnEditTrigger.style.display = 'block';
 			}
 			
 			function showMIDIMessageOptions() {
@@ -1074,6 +1274,157 @@
 				getTriggers();
 			}
 
+			function EditTrigger() {
+				let selectMIDIPort = document.getElementById('selectMIDIPort');
+				
+				let selectActionType = document.getElementById('selectActionType');
+							
+				let selectMIDIMessageType = document.getElementById('selectMIDIMessageType');
+				let midiCommand = selectMIDIMessageType.options[selectMIDIMessageType.selectedIndex].value;
+				
+				let selectMIDIChannel = document.getElementById('selectMIDIChannel');
+				let selectMIDINote = document.getElementById('selectMIDINote');
+				let selectMIDIVelocity = document.getElementById('selectMIDIVelocity');
+				let selectMIDIValue = document.getElementById('selectMIDIValue');
+				let selectMIDIController = document.getElementById('selectMIDIController');
+				let inputMIDISysExMessage = document.getElementById('inputMIDISysExMessage');
+				
+				let triggerObj = {};
+
+				triggerObj.id = selectedTriggerId;
+				
+				triggerObj.midiport = selectMIDIPort.options[selectMIDIPort.selectedIndex].value;
+				
+				triggerObj.midicommand = selectMIDIMessageType.options[selectMIDIMessageType.selectedIndex].value;
+				
+				let channelValue, parsedChannelValue, velocityValue, parsedVelocityValue, controllerValue, parsedControllerValue, value, parsedValue;
+				
+				switch (midiCommand) {
+					case 'noteon':
+					case 'noteoff':
+						channelValue = selectMIDIChannel.options[selectMIDIChannel.selectedIndex].value;
+						parsedChannelValue = ((channelValue === '*') ? '*' : parseInt(channelValue));
+						triggerObj.channel = parsedChannelValue;
+
+						triggerObj.note = parseInt(selectMIDINote.options[selectMIDINote.selectedIndex].value);
+
+						velocityValue = selectMIDIVelocity.options[selectMIDIVelocity.selectedIndex].value;
+						parsedVelocityValue = ((velocityValue === '*') ? '*' : parseInt(velocityValue));
+						triggerObj.velocity = parsedVelocityValue;
+						break;
+					case 'aftertouch':
+						channelValue = selectMIDIChannel.options[selectMIDIChannel.selectedIndex].value;
+						parsedChannelValue = ((channelValue === '*') ? '*' : parseInt(channelValue));
+						triggerObj.channel = parsedChannelValue;
+
+						triggerObj.note = parseInt(selectMIDINote.options[selectMIDINote.selectedIndex].value);
+
+						value = selectMIDIValue.options[selectMIDIValue.selectedIndex].value;
+						parsedValue = ((value === '*') ? '*' : parseInt(value));
+						triggerObj.value = parsedValue;
+						break;
+					case 'cc':
+						channelValue = selectMIDIChannel.options[selectMIDIChannel.selectedIndex].value;
+						parsedChannelValue = ((channelValue === '*') ? '*' : parseInt(channelValue));
+						triggerObj.channel = parsedChannelValue;
+						
+						controllerValue = selectMIDIController.options[selectMIDIController.selectedIndex].value;
+						parsedControllerValue = ((controllerValue === '*') ? '*' : parseInt(controllerValue));
+						triggerObj.controller = parsedControllerValue;
+
+						value = selectMIDIValue.options[selectMIDIValue.selectedIndex].value;
+						parsedValue = ((value === '*') ? '*' : parseInt(value));
+						triggerObj.value = parsedValue;
+						break;
+					case 'pc':
+						channelValue = selectMIDIChannel.options[selectMIDIChannel.selectedIndex].value;
+						parsedChannelValue = ((channelValue === '*') ? '*' : parseInt(channelValue));
+						triggerObj.channel = parsedChannelValue;
+						
+						value = selectMIDIValue.options[selectMIDIValue.selectedIndex].value;
+						parsedValue = ((value === '*') ? '*' : parseInt(value));
+						triggerObj.value = parsedValue;
+						break;
+					case 'pressure':
+						channelValue = selectMIDIChannel.options[selectMIDIChannel.selectedIndex].value;
+						parsedChannelValue = ((channelValue === '*') ? '*' : parseInt(channelValue));
+						triggerObj.channel = parsedChannelValue;
+
+						value = selectMIDIValue.options[selectMIDIValue.selectedIndex].value;
+						parsedValue = ((value === '*') ? '*' : parseInt(value));
+						triggerObj.value = parsedValue;
+						break;
+					case 'pitchbend':
+						channelValue = selectMIDIChannel.options[selectMIDIChannel.selectedIndex].value;
+						parsedChannelValue = ((channelValue === '*') ? '*' : parseInt(channelValue));
+						triggerObj.channel = parsedChannelValue;
+						
+						value = inputMIDIPitchBendValue.value;
+						parsedValue = ((value === '*') ? '*' : parseInt(value));
+						if (parsedValue !== '*') {
+							if ((parsedValue < 0) || (parsedValue > 16383)) {
+								alert('Invalid Pitch Bend range. Must be between 0 and 16383.');
+								return false;
+							}
+						}
+						triggerObj.value = parsedValue;
+						break;
+					case 'sysex':
+						triggerObj.message = inputMIDISysExMessage.value;
+						break;
+					default:
+						break;
+				}
+				
+				triggerObj.actiontype = selectActionType.options[selectActionType.selectedIndex].value;
+				
+				switch(triggerObj.actiontype) {
+					case 'http':
+						triggerObj.url = document.getElementById('txtURL').value;
+						if (document.getElementById('txtJSONData').value !== '') {
+							let jsonData = document.getElementById('txtJSONData').value;
+							try {
+								let jsonData_parsed = JSON.parse(jsonData);
+								triggerObj.jsondata = JSON.stringify(jsonData_parsed);	
+							}
+							catch (error) {
+								alert('The JSON you entered is not valid.');
+								return false;
+							}
+						}
+						break;
+					case 'applescript':
+						triggerObj.applescript = document.getElementById('txtAppleScript').value;
+						break;
+					case 'shellscript':
+						triggerObj.shellscript = document.getElementById('txtShellScript').value;
+						break;
+					default:
+						break;
+				}
+				
+				triggerObj.description = document.getElementById('txtDescription').value;
+				
+				jQuery.ajax({
+					contentType: 'application/json',
+					url: '/edittrigger',
+					type: 'POST',
+					data: JSON.stringify(triggerObj),
+					dataType: 'json',
+					success: function(data) {
+						ProcessAPIResponse(data);
+					}
+				});
+				
+				let btnShowAddTrigger = document.getElementById('btnShowAddTrigger');
+				btnShowAddTrigger.style.display = 'block';
+
+				let divTriggerFields = document.getElementById('divTriggerFields');
+				divTriggerFields.style.display = 'none';
+				
+				getTriggers();
+			}
+
 			function Cancel() {
 				let btnShowAddTrigger = document.getElementById('btnShowAddTrigger');
 				btnShowAddTrigger.style.display = 'block';
@@ -1124,6 +1475,12 @@
 						break;
 					case 'trigger-added-midiin-port-cannot-be-opened':
 						responseText = 'The trigger was added, but the MIDI In port could not be automatically opened.';
+						break;
+					case 'trigger-edited':
+						responseText = 'The trigger was edited successfully.';
+						break;
+					case 'trigger-edited-midiin-port-cannot-be-opened':
+						responseText = 'The trigger was edited, but the MIDI In port could not be automatically opened.';
 						break;
 					case 'trigger-deleted':
 						responseText = 'The trigger was deleted successfully.';
@@ -1467,6 +1824,7 @@
 					Description: <textarea rows='5' cols='40' id='txtDescription'></textarea>
 				</div>
 				<button id='btnAddTrigger' onclick='AddTrigger();'>Add Trigger</button>
+				<button id='btnEditTrigger' onclick='EditTrigger();'>Edit Trigger</button>
 				<button id='btnCancel' onclick='Cancel();'>Cancel</button>
 			</div>
 		</div>

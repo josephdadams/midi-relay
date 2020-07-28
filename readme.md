@@ -339,6 +339,8 @@ The API will respond with JSON messages for each action received.
 * `invalid-action-type`: The action type specified in the Add Trigger API was not valid.
 * `trigger-added`: The trigger was added successfully.
 * `trigger-added-midiin-port-cannot-be-opened`: The trigger was added, but the MIDI In port could not be automatically opened.
+* `trigger-edited`: The trigger was edited successfully.
+* `trigger-edited-midiin-port-cannot-be-opened`: The trigger was edited, but the MIDI In port could not be automatically opened.
 * `trigger-deleted`: The trigger was deleted successfully.
 * `trigger-not-found`: The Trigger could not be found due to an invalid/incorrect Trigger ID, or it was already deleted.
 * `error`: An unexpected error occurred. Check the `error` property for more information.
