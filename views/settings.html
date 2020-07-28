@@ -71,6 +71,15 @@
 				float: left;
 				margin: 5px;
 			}
+
+			#divImportExportContainer {
+				background: #ffffff;
+				width: 200px;
+				height: auto;
+				padding: 5px;
+				float: left;
+				margin: 5px;
+			}
 		</style>
 		<script src='js/jquery/jquery.min.js'></script>
 		<script>
@@ -1760,6 +1769,76 @@
 					}
 				});
 			}
+
+			function getFormattedTime() {
+				var today = new Date();
+				var y = today.getFullYear();
+				// JavaScript months are 0-based.
+				var m = today.getMonth() + 1;
+				var d = today.getDate();
+				var h = today.getHours();
+				var mi = today.getMinutes();
+				var s = today.getSeconds();
+				return y + "_" + m + "_" + d;
+			}
+
+			function export_triggers() {
+				let filename = 'midi-relay-triggers' + '_' + getFormattedTime();
+				let type = 'text/plain;charset=UTF-8';
+				$.getJSON('/triggers', function(data) {
+					console.log(JSON.stringify(data));
+					download(JSON.stringify(data), filename, type);
+				});
+			}
+
+			function download(data, filename, type) {
+				var file = new Blob([data], {type: type});
+				if (window.navigator.msSaveOrOpenBlob) // IE10+
+					window.navigator.msSaveOrOpenBlob(file, filename);
+				else { // Others
+					var a = document.createElement("a"),
+							url = URL.createObjectURL(file);
+					a.href = url;
+					a.download = filename;
+					document.body.appendChild(a);
+					a.click();
+					setTimeout(function() {
+						document.body.removeChild(a);
+						window.URL.revokeObjectURL(url);  
+					}, 0); 
+				}
+			}
+
+			function import_triggers() {
+				if (confirm('This will add all triggers in the provided file. New trigger IDs will be generated. Proceed?')) {
+					let fr = new FileReader(); 
+					fr.onload = function() { 
+						try {
+							let importTriggers = JSON.parse(fr.result);
+							for (let i = 0; i < importTriggers.length; i++) {
+								jQuery.ajax({
+									contentType: 'application/json',
+									url: '/addtrigger',
+									type: 'POST',
+									data: JSON.stringify(importTriggers[i]),
+									dataType: 'json',
+									success: function(data) {
+										ProcessAPIResponse(data);
+									}
+								});	
+							}
+
+							getTriggers();
+						}
+						catch (error) {
+							alert('Invalid triggers file provided. See console for more information about this error.');
+							console.log(error);
+						}						
+					} 
+					
+					fr.readAsText(document.getElementById('flImport').files[0]); 
+				}
+			}
 		</script>
 	</head>
 	<body onload='loadSettings();'>
@@ -1878,6 +1957,12 @@
 				<input type='text' id='inputRelayMIDISysExMessage' size='50' />
 			</div>
 			<button id='btnRelay_SendMessage' onclick='sendRelayMessage();'>Send MIDI Relay Message</button>
+		</div>
+		<div id='divImportExportContainer'>
+			<b>Import/Export Data:</b><br />
+			<button id='btnExport_Triggers' onclick='export_triggers();'>Export Triggers</button><br /><br />
+			<input type='file' id='flImport' />
+			<button id='btnImport_Triggers' onclick='import_triggers();'>Import Triggers</button>
 		</div>
 	</div>
 	</body>
