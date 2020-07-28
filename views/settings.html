@@ -877,20 +877,20 @@
 						switch(triggers[i].midicommand) {
 							case 'noteon':
 							case 'noteoff':
-								for (let j = 0; j < selectMIDIChannel.options.length; j++){
-									if (selectMIDIChannel.options[j].value === triggers[i].channel){
+							for (let j = 0; j < selectMIDIChannel.options.length; j++){
+									if (selectMIDIChannel.options[j].value === triggers[i].channel.toString()){
 										selectMIDIChannel.options[j].selected = true;
 										break;
 									}
 								}
 								for (let j = 0; j < selectMIDINote.options.length; j++){
-									if (selectMIDINote.options[j].value === triggers[i].note){
+									if (selectMIDINote.options[j].value === triggers[i].note.toString()){
 										selectMIDINote.options[j].selected = true;
 										break;
 									}
 								}
 								for (let j = 0; j < selectMIDIVelocity.options.length; j++){
-									if (selectMIDIVelocity.options[j].value === triggers[i].velocity){
+									if (selectMIDIVelocity.options[j].value === triggers[i].velocity.toString()){
 										selectMIDIVelocity.options[j].selected = true;
 										break;
 									}
@@ -898,19 +898,19 @@
 								break;
 							case 'aftertouch':
 								for (let j = 0; j < selectMIDIChannel.options.length; j++){
-									if (selectMIDIChannel.options[j].value === triggers[i].channel){
+									if (selectMIDIChannel.options[j].value === triggers[i].channel.toString()){
 										selectMIDIChannel.options[j].selected = true;
 										break;
 									}
 								}
 								for (let j = 0; j < selectMIDINote.options.length; j++){
-									if (selectMIDINote.options[j].value === triggers[i].note){
+									if (selectMIDINote.options[j].value === triggers[i].note.toString()){
 										selectMIDINote.options[j].selected = true;
 										break;
 									}
 								}
 								for (let j = 0; j < selectMIDIValue.options.length; j++){
-									if (selectMIDIValue.options[j].value == triggers[i].value){
+									if (selectMIDIValue.options[j].value == triggers[i].value.toString()){
 										selectMIDIValue.options[j].selected = true;
 										break;
 									}
@@ -918,19 +918,19 @@
 								break;
 							case 'cc':
 								for (let j = 0; j < selectMIDIChannel.options.length; j++){
-									if (selectMIDIChannel.options[j].value === triggers[i].channel){
+									if (selectMIDIChannel.options[j].value === triggers[i].channel.toString()){
 										selectMIDIChannel.options[j].selected = true;
 										break;
 									}
 								}
 								for (let j = 0; j < selectMIDIController.options.length; j++){
-									if (selectMIDIController.options[j].value == triggers[i].controller){
+									if (selectMIDIController.options[j].value == triggers[i].controller.toString()){
 										selectMIDIController.options[j].selected = true;
 										break;
 									}
 								}
 								for (let j = 0; j < selectMIDIValue.options.length; j++){
-									if (selectMIDIValue.options[j].value == triggers[i].value){
+									if (selectMIDIValue.options[j].value == triggers[i].value.toString()){
 										selectMIDIValue.options[j].selected = true;
 										break;
 									}
@@ -938,13 +938,13 @@
 								break;
 							case 'pc':
 								for (let j = 0; j < selectMIDIChannel.options.length; j++){
-									if (selectMIDIChannel.options[j].value === triggers[i].channel){
+									if (selectMIDIChannel.options[j].value === triggers[i].channel.toString()){
 										selectMIDIChannel.options[j].selected = true;
 										break;
 									}
 								}
 								for (let j = 0; j < selectMIDIValue.options.length; j++){
-									if (selectMIDIValue.options[j].value == triggers[i].value){
+									if (selectMIDIValue.options[j].value == triggers[i].value.toString()){
 										selectMIDIValue.options[j].selected = true;
 										break;
 									}
@@ -952,13 +952,13 @@
 								break;
 							case 'pressure':
 								for (let j = 0; j < selectMIDIChannel.options.length; j++){
-									if (selectMIDIChannel.options[j].value === triggers[i].channel){
+									if (selectMIDIChannel.options[j].value === triggers[i].channel.toString()){
 										selectMIDIChannel.options[j].selected = true;
 										break;
 									}
 								}
 								for (let j = 0; j < selectMIDIValue.options.length; j++){
-									if (selectMIDIValue.options[j].value == triggers[i].value){
+									if (selectMIDIValue.options[j].value == triggers[i].value.toString()){
 										selectMIDIValue.options[j].selected = true;
 										break;
 									}
@@ -966,7 +966,7 @@
 								break;
 							case 'pitchbend':
 								for (let j = 0; j < selectMIDIChannel.options.length; j++){
-									if (selectMIDIChannel.options[j].value === triggers[i].channel){
+									if (selectMIDIChannel.options[j].value === triggers[i].channel.toString()){
 										selectMIDIChannel.options[j].selected = true;
 										break;
 									}
@@ -979,7 +979,7 @@
 						}
 
 						for (let j = 0; j < selectActionType.options.length; j++){
-							if (selectActionType.options[j].value == triggers[i].actiontype){
+							if (selectActionType.options[j].value == triggers[i].actiontype.toString()){
 								selectActionType.options[j].selected = true;
 								break;
 							}
