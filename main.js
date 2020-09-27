@@ -981,6 +981,9 @@ function SendMIDI_SysEx(midiPort, message, callback) {
 				//convert it to hexadecimal for comparison
 				statusByte = parseInt(statusByte, 10).toString(16);
 			}
+			else {
+				statusByte = statusByte.substring(2,4).toLowerCase();
+			}
 			if (statusByte.toLowerCase() !== 'f0') {
 				//not a SysEx message
 				console.log(clc.red.bold('Not a valid SysEx message.'));
