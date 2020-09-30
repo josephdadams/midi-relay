@@ -69,7 +69,7 @@ A web interface is available to view MIDI ports, triggers, and other information
 	```
 	
 	* `channel` should be a integer between 0 and 15.
-	* `note` should be an integer of the MIDI Number value that represents the note, between 21 (A0) and 108 (C8).
+	* `note` should be an integer of the MIDI Number value that represents the note, between 0 and 127.
 	* `velocity` should be 0.
 	* A response of `{result: 'noteoff-sent-successfully'}` indicates the note off message was successfully sent.
 
@@ -85,7 +85,7 @@ A web interface is available to view MIDI ports, triggers, and other information
 	```
 	
 	* `channel` should be a integer between 0 and 15.
-	* `note` should be an integer of the MIDI Number value that represents the note, between 21 (A0) and 108 (C8).
+	* `note` should be an integer of the MIDI Number value that represents the note, between 0 and 127.
 	* `value` should be a integer between 0 and 127.
 	* A response of `{result: 'aftertouch-sent-successfully'}` indicates the Aftertouch message was successfully sent.
 	
@@ -101,7 +101,7 @@ A web interface is available to view MIDI ports, triggers, and other information
 	```
 	
 	* `channel` should be a integer between 0 and 15.
-	* `controller` should be a integer between 0 and 15.
+	* `controller` should be a integer between 0 and 127.
 	* `value` should be a integer between 0 and 127.
 	* A response of `{result: 'cc-sent-successfully'}` indicates the CC message was successfully sent.
 	
