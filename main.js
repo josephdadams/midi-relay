@@ -93,6 +93,7 @@ function initialRESTSetup() {
 		}
 		
 		SendMIDI(midiObj, sendResult);
+		processMIDI(midiObj);
 	});
 	
 	restServer.get('/sendmidi', function (req, res) {
@@ -104,6 +105,7 @@ function initialRESTSetup() {
 		}
 		
 		SendMIDI(midiObj, sendResult);
+		processMIDI(midiObj);
 	});
 	
 	restServer.post('/openport', function (req, res) {
