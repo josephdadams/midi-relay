@@ -36,7 +36,8 @@
 	"pkg": {
 		"assets": [
 			"./views/**/*",
-			"./node_modules/figlet/fonts/Standard.flf"
+			"./node_modules/figlet/fonts/Standard.flf",
+			"./node_modules/jazz-midi"
 		]
 	},
 	"repository": {
