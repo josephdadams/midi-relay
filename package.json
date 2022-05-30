@@ -31,7 +31,7 @@
 		"midi-relay": "main.js"
 	},
 	"scripts": {
-		"build": "npx pkg --out-path ./build/ --targets node16-macos-x64,node16-win-x64,node16-linux-x64 ."
+		"build": "npx pkg --out-path ./build/ --compress GZip --targets node16-macos-x64,node16-win-x64,node16-linux-x64 ."
 	},
 	"pkg": {
 		"assets": [
