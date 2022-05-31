@@ -2,7 +2,7 @@
 	"name": "midi-relay",
 	"productName": "MIDI Relay",
 	"description": "Listens for HTTP request with JSON payload and relays MIDI/MSC commands on local ports. Also listens for incoming MIDI messages on local ports and can send HTTP requests or run AppleScripts.",
-	"version": "2.3.0",
+	"version": "2.4.0",
 	"keywords": [
 		"util",
 		"functional",
