@@ -1,49 +1,74 @@
 {
 	"name": "midi-relay",
-	"productName": "MIDI Relay",
-	"description": "Listens for HTTP request with JSON payload and relays MIDI/MSC commands on local ports. Also listens for incoming MIDI messages on local ports and can send HTTP requests or run AppleScripts.",
-	"version": "2.3.0",
-	"keywords": [
-		"util",
-		"functional",
-		"server",
-		"client",
-		"browser",
-		"midi"
-	],
+	"productName": "midi-relay",
+	"version": "3.0.0",
+	"description": "Listens for HTTP requests with JSON payload and relays MIDI/MSC commands on local ports.",
 	"license": "MIT",
-	"author": "Joseph Adams",
+	"repository": "josephdadams/midi-relay",
+	"author": {
+		"name": "Joseph Adams",
+		"email": "josephdadams@gmail.com",
+		"url": "https://josephadams.dev"
+	},
+	"scripts": {
+		"postinstall": "electron-builder install-app-deps",
+		"lint": "xo",
+		"test": "npm run lint",
+		"start": "electron .",
+		"pack": "electron-builder --dir",
+		"dist": "electron-builder --macos --linux --windows",
+		"release": "np"
+	},
 	"dependencies": {
 		"body-parser": "^1.18.3",
-		"cli-color": "^2.0.0",
-		"cors": "^2.8.5",
-		"express": "^4.16.3",
-		"figlet": "^1.2.4",
+		"electron-context-menu": "^3.0.0",
+		"electron-debug": "^3.2.0",
+		"electron-positioner": "^4.1.0",
+		"electron-store": "^8.0.0",
+		"electron-unhandled": "^3.0.2",
+		"electron-updater": "^4.3.8",
+		"electron-util": "^0.15.1",
+		"express": "^4.18.1",
 		"jquery": "^3.3.1",
-		"jzz": "^0.7.9",
-		"lodash": "^4.17.11",
-		"mdns-js": "^1.0.3",
-		"node-osascript": "^2.1.0",
-		"request": "^2.88.0"
+		"jzz": "^1.6.1",
+		"socket.io": "^4.5.1"
 	},
-	"main": "main.js",
-	"bin": {
-		"midi-relay": "main.js"
+	"devDependencies": {
+		"electron": "^12.0.6",
+		"electron-builder": "^23.0.2",
+		"np": "^7.5.0",
+		"xo": "^0.39.1"
 	},
-	"scripts": {},
-	"devDependencies": {},
-	"pkg": {
-		"assets": [
-			"./views/**/*",
-			"./node_modules/figlet/fonts/Standard.flf"
+	"xo": {
+		"envs": [
+			"node",
+			"browser"
 		]
 	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/josephdadams/midi-relay.git"
+	"np": {
+		"publish": false,
+		"releaseDraft": false
 	},
-	"bugs": {
-		"url": "https://github.com/josephdadams/midi-relay/issues"
-	},
-	"homepage": "https://github.com/josephdadams/midi-relay#readme"
+	"build": {
+		"appId": "com.josephadams.midi-relay",
+		"mac": {
+			"category": "public.app-category.productivity",
+			"darkModeSupport": true
+		},
+		"dmg": {
+			"iconSize": 160,
+			"contents": [
+				{
+					"x": 180,
+					"y": 170
+				},
+				{
+					"x": 480,
+					"y": 170,
+					"type": "link",
+					"path": "/Applications"
+				}
+			]
+		}
+	}
 }
