@@ -34,7 +34,7 @@
 		"socket.io": "^4.5.1"
 	},
 	"devDependencies": {
-		"electron": "^12.0.6",
+		"electron": "^18.3.7",
 		"electron-builder": "^23.0.2",
 		"np": "^7.5.0",
 		"xo": "^0.39.1"
