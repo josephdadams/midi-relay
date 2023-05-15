@@ -1,7 +1,7 @@
 {
 	"name": "midi-relay",
 	"productName": "midi-relay",
-	"version": "3.0.1",
+	"version": "3.0.2",
 	"description": "Listens for HTTP requests with JSON payload and relays MIDI/MSC commands on local ports.",
 	"license": "MIT",
 	"repository": "josephdadams/midi-relay",

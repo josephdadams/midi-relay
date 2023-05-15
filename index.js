@@ -37,7 +37,9 @@ contextMenu();
 
 // Note: Must match `build.appId` in package.json
 app.setAppUserModelId(config.get('appUserModelId'));
-app.dock.hide();
+if (process.platform === 'darwin') {
+	app.dock.hide();
+}
 
 // Uncomment this before publishing your first version.
 // It's commented out as it throws an error if there are no published versions.
