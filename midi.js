@@ -4,10 +4,10 @@ var navigator = require('jzz');
 const notifications = require('./notifications.js');
 const contextmenu = require('./contextmenu.js');
 
-var logger = navigator.Widget({ _receive: function(msg) { console.log(msg.toString()); }});
+var logger = navigator.Widget({ _receive: function(msg) { console.log('virtual message received: '); console.log(msg.toString()); }});
 
 function createVirtualMIDIPort() {
-	navigator.addMidiOut('midi-relay Virtual', logger);
+	navigator.addMidiOut('midi-relay', logger);
 }
 
 function GetPorts() {
@@ -46,18 +46,19 @@ function refreshPorts() {
 	}
 }
 
-async function sendMIDI(midiObj, callback) {		
-	console.log(midiObj);
-
+function sendMIDI(midiObj, callback) {
 	if (midiObj.midiport) {
 		let midiPortObj = global.MIDI_OUTPUTS.find((port) => port.name == midiObj.midiport);
 
 		if (midiPortObj) {
 			if (midiObj.midicommand) {
 				if (global.IncomingMIDIRelayTypes.includes(midiObj.midicommand)) {
-					try {
-						
-						
+					let port = navigator().openMidiOut(midiObj.midiport)
+					.or(function () {
+						callback({ result: 'could-not-open-midi-out' });
+					})
+					.and(function () {
+						try {
 							if (!Number.isInteger(midiObj.channel)) {
 								midiObj.channel = 0;
 							}
@@ -115,9 +116,7 @@ async function sendMIDI(midiObj, callback) {
 							}
 
 							if (msg !== null) {
-								let port = await navigator().openMidiOut(midiObj.midiPort);
-								await port.send(msg);
-								await port.close();
+								this.send(msg).close();
 
 								for (let i = 0; i < msg.length; i++) {
 									rawmessage += msg[i];
@@ -126,12 +125,14 @@ async function sendMIDI(midiObj, callback) {
 									}
 								}
 								returnObj = {result: 'midi-sent-successfully', midiObj: midiObj, message: rawmessage};
+								console.log(returnObj);
 								callback(returnObj);
 							}
-					}
-					catch(error) {
-						callback({result: 'error', error: error});
-					}
+						}
+						catch(error) {
+							callback({result: 'error', error: error});
+						}
+					});
 				}
 				else {
 					callback({result: 'invalid-midi-command'});
