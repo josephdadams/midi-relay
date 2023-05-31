@@ -4,6 +4,8 @@ var navigator = require('jzz');
 const notifications = require('./notifications.js');
 const contextmenu = require('./contextmenu.js');
 
+const _ = require('lodash');
+
 var logger = navigator.Widget({ _receive: function(msg) { console.log('virtual message received: '); console.log(msg.toString()); }});
 
 function createVirtualMIDIPort() {
@@ -83,7 +85,7 @@ function sendMIDI(midiObj, callback) {
 							
 							let rawmessage = '';
 							
-							switch(midiObj.midicommand) {
+							switch(midiObj.midicommand.toLowerCase()) {
 								case 'noteon':
 									msg = navigator.MIDI.noteOn(midiObj.channel, midiObj.note, midiObj.velocity);
 									break;
@@ -106,7 +108,7 @@ function sendMIDI(midiObj, callback) {
 									msg = navigator.MIDI.pitchBend(midiObj.channel, midiObj.value);
 									break;
 								case 'msc':
-									msg = BuildMSC(midiObj.deviceId, midiObj.commandFormat, midiObj.command, midiObj.cue, midiObj.cueList, midiObj.cuePath);
+									msg = BuildMSC(midiObj.deviceid, midiObj.commandformat, midiObj.command, midiObj.cue, midiObj.cuelist, midiObj.cuepath);
 									break;	
 								case 'sysex':
 									msg = midiObj.message;
@@ -125,7 +127,6 @@ function sendMIDI(midiObj, callback) {
 									}
 								}
 								returnObj = {result: 'midi-sent-successfully', midiObj: midiObj, message: rawmessage};
-								console.log(returnObj);
 								callback(returnObj);
 							}
 						}
