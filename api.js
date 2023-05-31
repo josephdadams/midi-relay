@@ -47,21 +47,19 @@ class API {
 		server.post('/sendmidi', function (req, res) {
 			let midiObj = req.body;
 
-			function sendResult(json) {
-				res.send(json);
-			}
-
-			util.sendMIDI(midiObj, sendResult);
+			util.sendMIDI(midiObj, function(result) {
+				let commandname = midiObj.midicommand + '-sent-successfully'; //this is just a hack for older versions
+				res.send({result: commandname});
+			});
 		});
 
 		server.get('/sendmidi', function (req,res) {
 			let midiObj = req.query;
 
-			function sendResult(json) {
-				res.send(json);
-			}
-
-			util.sendMIDI(midiObj, sendResult);
+			util.sendMIDI(midiObj, function(result) {
+				let commandname = midiObj.midicommand + '-sent-successfully'; //this is just a hack for older versions
+				res.send({result: commandname});
+			});
 		});
 
 		server.use(function (req, res) {

@@ -127,6 +127,7 @@ function sendMIDI(midiObj, callback) {
 									}
 								}
 								returnObj = {result: 'midi-sent-successfully', midiObj: midiObj, message: rawmessage};
+								console.log(returnObj);
 								callback(returnObj);
 							}
 						}
