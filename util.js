@@ -34,11 +34,23 @@ function processNotification(event, info) { //process the system event
 	}
 }
 
+function startRescanInterval() {
+	if (config.get('allowRescan')) {
+		global.RESCAN_INTERVAL = setInterval(() => {
+			midi.refreshPorts(false);
+		}, 60000);
+	}
+	else {
+		clearInterval(global.RESCAN_INTERVAL);
+	}
+}
+
 module.exports = {
 	startUp() {
 		contextmenu.buildContextMenu();
 		midi.startMIDI();
 		//mdns.startMDNS();
+		startRescanInterval();
 		subscribeToNotifications(); //for system notifications to alert the app of changes like usb devices detected
 	},
 
@@ -51,6 +63,10 @@ module.exports = {
 	},
 
 	refreshPorts() {
-		midi.refreshPorts();
+		midi.refreshPorts(true);
+	},
+
+	startRescanInterval() {
+		startRescanInterval();
 	}
 }

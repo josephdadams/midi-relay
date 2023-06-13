@@ -31,6 +31,12 @@ global.refreshPorts = function() {
 	util.refreshPorts();
 }
 
+global.startRescanInterval = function() {
+	util.startRescanInterval();
+}
+
+global.RESCAN_INTERVAL = null;
+
 unhandled();
 //debug();
 contextMenu();

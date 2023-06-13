@@ -12,23 +12,25 @@ function createVirtualMIDIPort() {
 	navigator.addMidiOut('midi-relay', logger);
 }
 
-function GetPorts() {
+function GetPorts(showNotification) {
 	navigator.requestMIDIAccess().then(function(webmidi) {	
 		let info = navigator.info();
 
 		global.MIDI_OUTPUTS = info.outputs;
 
-		let bodyText = '';
+		if (showNotification == true) {
+			let bodyText = '';
 
-		for (let i = 0; i <  global.MIDI_OUTPUTS.length; i++) {
-			bodyText += global.MIDI_OUTPUTS[i].name + '\n';
+			for (let i = 0; i <  global.MIDI_OUTPUTS.length; i++) {
+				bodyText += global.MIDI_OUTPUTS[i].name + '\n';
+			}
+
+			notifications.showNotification({
+				title: `${global.MIDI_OUTPUTS.length} MIDI Output Ports Found.`,
+				body: bodyText
+			});
 		}
-
-		notifications.showNotification({
-			title: `${global.MIDI_OUTPUTS.length} MIDI Output Ports Found.`,
-			body: bodyText
-		});
-
+		
 		contextmenu.buildContextMenu();
 	}, function(err) {
 		if (err) {
@@ -38,10 +40,11 @@ function GetPorts() {
 	});
 }
 
-function refreshPorts() {
+function refreshPorts(showNotification) {
 	try {
+		console.log('refreshing ports')
 		navigator().refresh();
-		GetPorts();
+		GetPorts(showNotification);
 	}
 	catch(error) {
 		//emit error
@@ -321,7 +324,7 @@ function parseIntegerDeviceId(deviceId) {
 module.exports = {
 	startMIDI() {
 		createVirtualMIDIPort();
-		GetPorts();
+		GetPorts(true);
 	},
 
 	sendMIDI(midiObj, callback) {

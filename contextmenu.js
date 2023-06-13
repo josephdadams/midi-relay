@@ -26,6 +26,15 @@ function buildContextMenu() {
 			}
 		},
 		{
+			label: 'Periodically Rescan for MIDI Ports',
+			type: 'checkbox',
+			checked: config.get('allowRescan'),
+			click: function () {
+				config.set('allowRescan', !config.get('allowRescan'));
+				global.startRescanInterval();
+			}
+		},
+		{
 			type: 'separator'
 		},
 		{

@@ -7,6 +7,7 @@ module.exports = new Store({
 		apiPort: 4000,
 		allowControl: true,
 		allowNotifications: true,
+		allowRescan: true,
 		allowedEvents: [
 			
 		],
