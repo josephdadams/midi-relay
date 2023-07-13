@@ -79,7 +79,9 @@ const createMainWindow = async () => {
 	});
 
 	global.win.on('ready-to-show', () => {
-		global.win.show();
+		if (config.get('showLicense')) {
+			global.win.show();
+		}
 	});
 
 	global.win.on('closed', () => {
@@ -110,7 +112,7 @@ app.on('second-instance', () => {
 
 app.on('window-all-closed', () => {
 	if (!is.macos) {
-		app.quit();
+		//app.quit();
 	}
 });
 

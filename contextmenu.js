@@ -58,6 +58,14 @@ function buildContextMenu() {
 			type: 'separator'
 		},
 		{
+			label: 'Show License on Startup',
+			type: 'checkbox',
+			checked: config.get('showLicense'),
+			click: function () {
+				config.set('showLicense', !config.get('showLicense'));
+			}
+		},
+		{
 			label: 'Request Help/Support',
 			click: function() {
 				shell.openExternal(config.get('supportUrl'))
