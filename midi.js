@@ -140,7 +140,7 @@ function sendMIDI(midiObj, callback) {
 							}
 
 							if (msg !== null) {
-								this.send(msg).close();
+								this.send(msg);
 
 								for (let i = 0; i < msg.length; i++) {
 									rawmessage += msg[i];
