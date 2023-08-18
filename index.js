@@ -21,6 +21,8 @@ global.MIDI_OUTPUTS = [];
 
 global.IncomingMIDIRelayTypes = ['noteon', 'noteoff', 'aftertouch', 'cc', 'pc', 'pressure', 'pitchbend', 'msc', 'sysex'];
 
+global.MIDIRelaysLog = []; //global array of MIDI messages and the datetime they were sent
+
 global.MDNS_HOSTS = [];
 
 global.sendControlStatus = function() {
@@ -79,8 +81,11 @@ const createMainWindow = async () => {
 	});
 
 	global.win.on('ready-to-show', () => {
-		if (config.get('showLicense')) {
+		if (config.get('showLicense') == true) {
 			global.win.show();
+		}
+		else {
+			global.win.hide();
 		}
 	});
 

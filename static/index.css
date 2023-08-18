@@ -1,0 +1,145 @@
+:root {
+	--primary-color: rgb(255, 92, 92);
+	--primary-variant: #ff2d2d;
+	--secondary-color: #1b9999;
+	--on-primary: rgb(250, 250, 250);
+	--on-background: rgb(66, 66, 66);
+	--on-background-alt: rgba(66, 66, 66, 0.7);
+	--background: rgb(255, 255, 255);
+	--box-shadow: 0 5px 20px 1px rgba(0, 0, 0, 0.5);
+  }
+  
+  [data-theme='dark'] {
+	--primary-color: rgb(23, 72, 249);
+	--primary-variant: #342af6;
+	--secondary-color: #03dac5;
+	--on-primary: #000;
+	--on-background: rgba(255, 255, 255, 0.9);
+	--on-background-alt: rgba(255, 255, 255, 0.7);
+	--background: #121212;
+  }
+  
+  html {
+	box-sizing: border-box;
+	scroll-behavior: smooth;
+  }
+  
+  body {
+	margin: 0;
+	color: var(--on-background);
+	background-color: var(--background);
+	font-family: Comfortaa, sans-serif;
+  }
+  
+  /* Dark Mode Toggle */
+  .theme-switch-wrapper {
+	display: flex;
+	align-items: center;
+	z-index: 100;
+	position: fixed;
+	right: 25px;
+	top: 30px;
+  }
+  
+  .theme-switch-wrapper span {
+	margin-right: 10px;
+	font-size: 1rem;
+  }
+  
+  .toggle-text {
+	position: relative;
+	top: 0px;
+	right: -8px;
+	color: var(--on-background);
+	font-weight: bold;
+  }
+  
+  .theme-switch {
+	display: inline-block;
+	height: 34px;
+	position: relative;
+	width: 60px;
+  }
+  
+  .theme-switch input {
+	display: none;
+  }
+  
+  .slider {
+	background: #ccc;
+	bottom: 0;
+	cursor: pointer;
+	left: 0;
+	position: absolute;
+	right: 0;
+	top: 0;
+	transition: 0.4s;
+  }
+  
+  .slider::before {
+	background: #fff;
+	bottom: 4px;
+	content: '';
+	height: 26px;
+	left: 4px;
+	position: absolute;
+	transition: 0.4s;
+	width: 26px;
+  }
+  
+  input:checked + .slider {
+	background: var(--primary-color);
+  }
+  
+  input:checked + .slider::before {
+	transform: translateX(26px);
+  }
+  
+  .slider.round {
+	border-radius: 34px;
+  }
+  
+  .slider.round::before {
+	border-radius: 50%;
+  }
+  
+  .fas {
+	font-size: 30px;
+	margin-right: 5px;
+  }
+
+  #container {
+	display: flex;
+
+}
+
+.logo {
+	display: flex;
+	align-items: center;
+}
+
+#divMIDIPortsContainer {
+	width: 200x;
+	padding: 5px;
+	float: left;
+	margin: 5px;
+}
+
+#divTriggersContainer {
+	width: 200x;
+	padding: 5px;
+	float: left;
+	margin: 5px;
+}
+
+#divImportExportContainer {
+	width: 200px;
+	height: auto;
+	padding: 5px;
+	float: left;
+	margin: 5px;
+}
+
+.borderTop {
+	border-top: #999999 3px solid;
+}

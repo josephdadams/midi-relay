@@ -5,6 +5,7 @@ const socketio = require('socket.io');
 const util = require('./util.js');
 const config = require('./config.js');
 const notifications = require('./notifications.js');
+const path = require('path');
 
 const package_json = require('./package.json');
 const VERSION = package_json.version;
@@ -22,6 +23,8 @@ class API {
 		io = new socketio.Server(httpServer, { allowEIO3: true });
 
 		server.use(express.json()); //parse json in body
+
+		server.use(express.static(path.join(__dirname, 'static')));
 
 		server.get('/', function (req, res) {
 			res.sendFile('index.html', { root: __dirname });
@@ -62,6 +65,10 @@ class API {
 			});
 		});
 
+		server.get('/', function (req, res) {
+			res.redirect('/index.html');
+		});
+
 		server.use(function (req, res) {
 			res.status(404).send({error: true, url: req.originalUrl + ' not found.'});
 		});
@@ -91,6 +98,36 @@ class API {
 					util.sendMIDI(midiObj, function(result) {
 						socket.emit('result', result);
 					});
+				}
+			});
+
+			socket.on('getMidiInputs', function() {
+				socket.emit('midi_inputs', util.getMIDIInputs());
+			});
+
+			socket.on('getTriggers', function() {
+				socket.emit('triggers', util.getTriggers());
+			});
+
+			socket.on('getTriggers_download', function() {
+				socket.emit('triggers_download', util.getTriggers());
+			});
+
+			socket.on('trigger_add', function(triggerObj) {
+				if (triggerObj) {
+					util.addTrigger(triggerObj);
+				}
+			});
+
+			socket.on('trigger_update', function(triggerObj) {
+				if (triggerObj) {
+					util.updateTrigger(triggerObj);
+				}
+			});
+
+			socket.on('trigger_delete', function(triggerObj) {
+				if (triggerObj) {
+					util.deleteTrigger(triggerObj);
 				}
 			});
 		});

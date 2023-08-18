@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>midi-relay</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.min.css" />
+		<link rel="stylesheet" href="index.css">
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="https://kit.fontawesome.com/2b7f9c8b37.js" crossorigin="anonymous"></script>
+	</head>
+	<body onLoad="onLoad();">
+		<div id="container">
+			<div class="theme-switch-wrapper">
+				<!-- Text and icon -->
+				<span id="toggle-icon">
+					<span class="toggle-text"></span>
+					<i class="fas fa-sun"></i>
+				</span>
+				<!-- Switcher -->
+				<label class="theme-switch">
+					<input id="chkLightDarkMode" type="checkbox">
+					<div class="slider round"></div>
+				</label>
+			</div>
+			<div id='divTriggersContainer'>
+				<b>Triggers:</b><br /><br />
+				<div id='divTriggers'></div>
+				<br /><button id='btnShowAddTrigger' onclick='ShowAddTrigger();'>Add New MIDI Trigger</button><br /><br />
+				<div id='divTriggerFields' style='display:none;'>
+					MIDI Input Port:
+					<select id='selectMIDIPort'></select><br />
+					Incoming MIDI Message Type:
+					<select id='selectMIDIMessageType' onchange='showMIDIMessageOptions();'>
+						<option value='0'>(choose a type)</option>
+						<option value='noteon'>Note On</option>
+						<option value='noteoff'>Note Off</option>
+						<option value='aftertouch'>Polyphonic Aftertouch</option>
+						<option value='cc'>Control Change</option>
+						<option value='pc'>Program Change</option>
+						<option value='pressure'>Channel Pressure / Aftertouch</option>
+						<option value='pitchbend'>Pitch Bend / Pitch Wheel</option>
+						<option value='sysex'>SysEx</option>
+					</select><br />
+					<div id='divMIDIMessage_Options'>
+						<div id='divMIDIMessage_Options_Channel' style='display:none;'>Channel: <select id='selectMIDIChannel'></select></div>
+						<div id='divMIDIMessage_Options_Note' style='display:none;'>Note: <select id='selectMIDINote'></select></div>
+						<div id='divMIDIMessage_Options_Velocity' style='display:none;'>Velocity: <select id='selectMIDIVelocity'></select></div>
+						<div id='divMIDIMessage_Options_Controller' style='display:none;'>Controller: <select id='selectMIDIController'></select></div>
+						<div id='divMIDIMessage_Options_Value' style='display:none;'>Value: <select id='selectMIDIValue'></select></div>
+						<div id='divMIDIMessage_Options_PitchBend_Value' style='display:none;'>Value (between 0 and 16383): <input type='text' id='inputMIDIPitchBendValue' value='8192' width='50' /></div>
+						<div id='divMIDIMessage_Options_SysExMessage' style='display:none;'>SysEx Message: <input type='text' id='inputMIDISysExMessage' width='50' /></div>
+					</div>
+					<div id='divMIDIMessage_ActionType' onchange='showActionTypeOptions();'>
+						Action Type:
+						<select id='selectActionType'>
+							<option value='0'>(choose a type)</option>
+							<option value='http'>HTTP GET/POST</option>
+						</select>
+					</div>
+					<div id='divMIDIMessage_ActionType_HTTP' style='display:none;'>
+						URL: <input type='text' id='txtURL' value='http://' /><br />
+						JSON Data: <textarea rows='5' cols='40' id='txtJSONData'></textarea>
+					</div>
+					<div id='divMIDIMessage_ActionType_AppleScript' style='display:none;'>
+						AppleScript: <textarea rows='5' cols='40' id='txtAppleScript'></textarea>
+					</div>
+					<div id='divMIDIMessage_ActionType_ShellScript' style='display:none;'>
+						Shell Script: <textarea rows='5' cols='40' id='txtShellScript'></textarea>
+					</div>
+					<div id='divMIDIMessage_Description'>
+						Description: <textarea rows='5' cols='40' id='txtDescription'></textarea>
+					</div>
+					<button id='btnAddTrigger' onclick='AddTrigger();'>Add Trigger</button>
+					<button id='btnEditTrigger' onclick='EditTrigger();'>Edit Trigger</button>
+					<button id='btnCancel' onclick='Cancel();'>Cancel</button>
+				</div>	
+			</div>
+			<div id='divImportExportContainer'>
+				<b>Import/Export Data:</b><br />
+				<button id='btnExport_Triggers' onclick='export_triggers();'>Export Triggers</button><br /><br />
+				<input type='file' id='flImport' />
+				<button id='btnImport_Triggers' onclick='import_triggers();'>Import Triggers</button>
+			</div>
+		</div>
+		<script src="scripts.js"></script>
+	</body>
+</html>

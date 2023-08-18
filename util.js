@@ -58,6 +58,10 @@ module.exports = {
 		return global.MIDI_OUTPUTS
 	},
 
+	getMIDIInputs() {
+		return global.MIDI_INPUTS;
+	},
+
 	sendMIDI(midiObj, callback) {
 		midi.sendMIDI(midiObj, callback);
 	},
@@ -68,5 +72,21 @@ module.exports = {
 
 	startRescanInterval() {
 		startRescanInterval();
+	},
+
+	getTriggers() {
+		return config.get('triggers');
+	},
+
+	addTrigger(triggerObj) {
+		midi.addTrigger(triggerObj);
+	},
+
+	updateTrigger(triggerObj) {
+		midi.updateTrigger(triggerObj);
+	},
+
+	deleteTrigger(triggerId) {
+		midi.deleteTrigger(triggerId);
 	}
 }
