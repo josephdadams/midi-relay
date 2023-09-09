@@ -133,7 +133,12 @@ function sendMIDI(midiObj, callback) {
 									msg = BuildMSC(midiObj.deviceid, midiObj.commandformat, midiObj.command, midiObj.cue, midiObj.cuelist, midiObj.cuepath);
 									break;	
 								case 'sysex':
-									msg = midiObj.message;
+									try {
+										msg = midiObj.message.split(',');
+									}
+									catch(error) {
+										//some error converting the message into an array, like maybe missing commas
+									}
 									break;
 								default:
 									break;
