@@ -39,6 +39,11 @@ global.startRescanInterval = function() {
 
 global.RESCAN_INTERVAL = null;
 
+global.sendMIDIBack = function(midiObj) {
+	API.sendMIDIBack(midiObj);
+
+}
+
 unhandled();
 //debug();
 contextMenu();

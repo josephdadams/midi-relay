@@ -15,6 +15,7 @@ var logger = navigator.Widget({ _receive: function(msg) { console.log('virtual m
 
 function createVirtualMIDIPort() {
 	navigator.addMidiOut('midi-relay', logger);
+	navigator.addMidiIn('midi-relay', logger);
 }
 
 function GetPorts(showNotification) {
@@ -22,19 +23,14 @@ function GetPorts(showNotification) {
 		let info = navigator.info();
 
 		global.MIDI_OUTPUTS = info.outputs;
+		global.MIDI_INPUTS = info.inputs;
 		
-		//retain the 'opened' property when reloading the array
-		let temp_inputs = info.inputs;
-		for (let i = 0; i < temp_inputs.length; i++) {
-			let port = global.MIDI_INPUTS.find(({ name }) => name === temp_inputs[i].name);
-			if (port) {
-				if (port.opened) {
-					temp_inputs[i].opened = port.opened;
-				}
-			}
+		//open each midi port
+		for (let i = 0; i < global.MIDI_INPUTS.length; i++) {
+			OpenPort(global.MIDI_INPUTS[i].name);
 		}
 
-		global.MIDI_INPUTS = temp_inputs;
+		console.log(global.MIDI_INPUTS);
 
 		loadMIDITriggers(); //open the port used in the triggers
 
@@ -47,7 +43,8 @@ function GetPorts(showNotification) {
 
 			notifications.showNotification({
 				title: `${global.MIDI_OUTPUTS.length} MIDI Output Ports Found.`,
-				body: bodyText
+				body: bodyText,
+				showNotification: true
 			});
 		}
 		
@@ -72,7 +69,7 @@ function refreshPorts(showNotification) {
 
 function sendMIDI(midiObj, callback) {
 	if (midiObj.midiport) {
-		let midiPortObj = global.MIDI_OUTPUTS.find((port) => port.name == midiObj.midiport);
+		let midiPortObj = global.MIDI_OUTPUTS.find((port) => port.name == midiObj.midiport); //find the midi output port in the list of outputs
 
 		if (midiPortObj) {
 			if (midiObj.midicommand) {
@@ -352,7 +349,7 @@ function AddToLog(midiPort, midiCommand, message) {
 	relayObj.midicommand = midiCommand;
 	relayObj.message = message;
 	relayObj.datetime = Date.now();
-	global.MIDIRelaysLog.push(relayObj);
+	//global.MIDIRelaysLog.push(relayObj); //commenting out for now, as I don't really think we need this feature anymore
 }
 
 function CheckLog(midiPort, midiCommand, message, time) {
@@ -397,19 +394,7 @@ function loadMIDITriggers() {
 
 		if (port) {
 			if (!port.opened) {
-				navigator().openMidiIn(Triggers[i].midiport)
-					.or(function () {
-						//error opening
-					})
-					.and(function () {
-						for (let j = 0; j < global.MIDI_INPUTS.length; j++) {
-							if (global.MIDI_INPUTS[j].name === this.name()) {
-								global.MIDI_INPUTS[j].opened = true;
-								break;
-							}
-						}
-						this.connect(receiveMIDI.bind({ 'midiport': Triggers[i].midiport }));
-					});
+				OpenPort(Triggers[i].midiport);
 				break;
 			}
 		}
@@ -417,19 +402,40 @@ function loadMIDITriggers() {
 }
 
 function OpenPort(midiport) {
-	navigator().openMidiIn(midiport)
-	.or(function () {
-		//error opening
-	})
-	.and(function () {
-		for (let i = 0; i < global.MIDI_INPUTS.length; i++) {
-			if (global.MIDI_INPUTS[i].name === this.name()) {
-				global.MIDI_INPUTS[i].opened = true;
-				break;
+	try {
+		navigator().openMidiIn(midiport)
+		.or(function () {
+			//error opening
+		})
+		.and(function () {
+			for (let i = 0; i < global.MIDI_INPUTS.length; i++) {
+				if (global.MIDI_INPUTS[i].name === this.name()) {
+					global.MIDI_INPUTS[i].opened = true;
+					notifications.showNotification({
+						title: `MIDI Port Already Opened: ${midiport}`,
+						body: `MIDI Port Already Opened: ${midiport}`,
+						showNotification: true
+					});
+					break;
+				}
 			}
-		}
-		this.connect(receiveMIDI.bind({ 'midiport': midiport }));
-	});
+
+			this.connect(receiveMIDI.bind({ 'midiport': midiport }));
+
+			notifications.showNotification({
+				title: `MIDI Port Opened: ${midiport}`,
+				body: `MIDI Port Opened: ${midiport}`,
+				showNotification: true
+			});
+		});
+	}
+	catch(error) {
+		notifications.showNotification({
+			title: `Error opening MIDI port: ${midiport}`,
+			body: `Error opening MIDI port: ${midiport}\n\n${error}`,
+			showNotification: true
+		});
+	}
 }
 
 function ClosePort(midiObj) {
@@ -529,6 +535,8 @@ function receiveMIDI(midiArg) {
 	}
 
 	processMIDI(midiObj);
+	console.log(midiObj);
+	global.sendMIDIBack(midiObj);
 }
 
 function processMIDI(midiObj) {

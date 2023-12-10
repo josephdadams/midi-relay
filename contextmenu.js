@@ -16,6 +16,10 @@ function buildContextMenu() {
 			enabled: false
 		},
 		{
+			label: 'MIDI Input Ports Detected: ' + global.MIDI_INPUTS.length,
+			enabled: false
+		},
+		{
 			label: 'MIDI Output Ports Detected: ' + global.MIDI_OUTPUTS.length,
 			enabled: false
 		},

@@ -152,6 +152,10 @@ class API {
 	static sendControlStatus() {
 		io.sockets.emit('control_status', config.get('allowControl'));
 	}
+
+	static sendMIDIBack(midiObj) {
+		io.sockets.emit('midi_back', midiObj);
+	}
 }
 
 module.exports = API;
