@@ -4,6 +4,8 @@ const toggleIcon = document.getElementById('toggle-icon');
 const DARK_THEME = 'dark';
 const LIGHT_THEME = 'light';
 
+let availableTriggers = [];
+
 function toggleDarkLightMode(mode) {
  	// Change icon
   mode === DARK_THEME
@@ -62,6 +64,11 @@ function onLoad() {
 		 // using the function:
 		 removeOptions(selectMIDIPort);
 
+		let el = document.createElement('option');
+		el.textContent = '(Choose a Type)';
+		el.value = "";
+		selectMIDIPort.appendChild(el);
+
 		for (let i = 0; i < data.length; i++)
 		{	
 			let opt = data[i];
@@ -73,6 +80,7 @@ function onLoad() {
 	});
 
 	socket.on('triggers', function(triggers) {
+		availableTriggers = triggers;
 		let divTriggers = document.getElementById('divTriggers');
 	
 		let tableTriggers = document.createElement('table');
@@ -615,7 +623,7 @@ function ShowAddTrigger() {
 
 function ShowEditTrigger(id) {
 	selectedTriggerId = id;
-
+	triggers = availableTriggers;
 	for (let i = 0; i < triggers.length; i++) {
 		if (triggers[i].id === id) {
 			let selectMIDIPort = document.getElementById('selectMIDIPort');
@@ -630,6 +638,7 @@ function ShowEditTrigger(id) {
 
 			let selectActionType = document.getElementById('selectActionType');
 
+			selectMIDIPort.options[0].selected = true;
 			for (let j = 0; j < selectMIDIPort.options.length; j++){
 				if (selectMIDIPort.options[j].value === triggers[i].midiport){
 					selectMIDIPort.options[j].selected = true;
