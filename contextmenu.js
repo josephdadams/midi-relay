@@ -70,6 +70,12 @@ function buildContextMenu() {
 			}
 		},
 		{
+			label: 'Open MIDI Input Trigger Settings',
+			click: function() {
+				shell.openExternal(`http://127.0.0.1:${config.get('apiPort')}`)
+			}
+		},
+		{
 			label: 'Request Help/Support',
 			click: function() {
 				shell.openExternal(config.get('supportUrl'))
