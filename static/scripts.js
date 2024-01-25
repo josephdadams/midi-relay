@@ -1300,6 +1300,28 @@ function formReset() {
 	document.getElementById('txtAppleScript').value = "";
 	document.getElementById('txtShellScript').value = "";
 	document.getElementById('txtDescription').value = "";
+	document.getElementById('bitfocusCompanionInfoPanel').style.maxHeight = null
 
 	showActionTypeOptions();
+}
+
+function showHideAccordion () {
+	const el = document.getElementById("bitfocusCompanionHelpers")
+	el.classList.toggle("active");
+	const panel = el.nextElementSibling;
+	if (panel.style.maxHeight) {
+		panel.style.maxHeight = null;
+	} else {
+		panel.style.maxHeight = panel.scrollHeight + "px";
+	}
+}
+
+function copyToClipboard (el) {
+	const text = document.getElementById(el).innerHTML;
+	if (navigator.clipboard) {
+		navigator.clipboard.writeText(text);
+		alert (`Text Copied: ${text}`);
+	} else {
+		alert('Cannot Copy Text')
+	}
 }

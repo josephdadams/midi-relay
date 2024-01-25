@@ -7,7 +7,6 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.min.css" />
 		<link rel="stylesheet" href="index.css">
 		<script src="/socket.io/socket.io.js"></script>
-		<script src="https://kit.fontawesome.com/2b7f9c8b37.js" crossorigin="anonymous"></script>
 	</head>
 	<body onLoad="onLoad();">
 		<div id="container">
@@ -144,6 +143,44 @@
 						</div>
 					</div>
 					<div id='divMIDIMessage_ActionType_HTTP' style='display:none;'>
+						<div class="row" id="bitfocusCompanionInfo">
+							<button class="accordion" id="bitfocusCompanionHelpers" onclick="showHideAccordion()">BitFocus Companion Helpers</button>
+							<div class="panel" id="bitfocusCompanionInfoPanel">
+								<p>For Call Bitfocus Companion Button Function, use rules below:</p>
+								<ul>
+									<li>Enable Bitfocus Companion HTTP API in Settings -> HTTP API</li>
+									<li>Available Action (action) Button Value:
+										<ul>
+											<li>press - Press and release a button (run both down and up actions)</li>
+											<li>down - Press the button (run down actions and hold)</li>
+											<li>up - Release the button (run up actions)</li>
+											<li>rotate-left - Trigger a left rotation of the button/encoder</li>
+											<li>rotate-right - Trigger a right rotation of the button/encoder</li>
+										</ul>
+									</li>
+									<li>Fill URL with : 
+										<div class="row clipboardText">
+											<div class="col-80">
+												<pre id="copyCompanionUrl" onclick="copyToClipboard('copyCompanionUrl')">http://(companionIP:companionPort)/api/location/(page)/(row)/(column)/(action)</pre>
+											</div>
+											<div class="col-20">
+												<button class="copyButton" onclick="copyToClipboard('copyCompanionUrl')">Copy</button>
+											</div>
+										</div>
+									</li>
+									<li>Fill JSON Data with dummy JSON
+										<div class="row clipboardText">
+											<div class="col-80">
+												<pre id="copyJsonData" onclick="copyToClipboard('copyJsonData')">{"hello":"hello"}</pre>
+											</div>
+											<div class="col-20">
+												<button class="copyButton" onclick="copyToClipboard('copyJsonData')">Copy</button>
+											</div>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
 						<div class="row">
 							<div class="col-40">
 								<label for="txtURL">URL:</label>
@@ -195,8 +232,10 @@
 					<button id='btnAddTrigger' onclick='AddTrigger();'>Add Trigger</button>
 					<button id='btnEditTrigger' onclick='EditTrigger();'>Edit Trigger</button>
 					<button id='btnCancel' onclick='Cancel();' style="display:inline-block">Cancel</button>
+					<br/>
 				</div>	
 			</div>
+			<br/>
 			<hr>
 			<div id='divImportExportContainer'>
 				<h4>Import/Export Data:</h4>

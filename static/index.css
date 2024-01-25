@@ -185,17 +185,31 @@ button {
   cursor: pointer;
 }
 
-/* Floating column for labels: 25% width */
+/* Floating column for labels: 40% width */
 .col-40 {
   float: left;
   width: 40%;
   margin-top: 6px;
 }
 
-/* Floating column for inputs: 75% width */
+/* Floating column for inputs: 60% width */
 .col-60 {
   float: left;
   width: 60%;
+  margin-top: 6px;
+}
+
+/* Floating column for inputs: 80% width */
+.col-80 {
+  float: left;
+  width: 80%;
+  margin-top: 6px;
+}
+
+/* Floating column for inputs: 20% width */
+.col-20 {
+  float: left;
+  width: 20%;
   margin-top: 6px;
 }
 
@@ -212,4 +226,65 @@ button {
     width: 100%;
     margin-top: 0;
   }
+}
+
+#bitfocusCompanionInfo {
+	margin: 10px;
+}
+
+pre {
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	border: 1px solid;
+	margin: 10px;
+	padding: 10px;
+	padding-right: 30px;
+	cursor: pointer;
+}
+
+/* Style the buttons that are used to open and close the accordion panel */
+.accordion {
+  background-color: #00e8f3;
+  color: #414141;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  text-align: left;
+	font-weight: 600;
+  border: none;
+  outline: none;
+	border-radius: 0px;
+  transition: 0.4s;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active, .accordion:hover {
+  background-color: #00e8f3;
+}
+
+/* Style the accordion panel. Note: hidden by default */
+.panel {
+  padding: 0 18px;
+  background-color: #00e8f3;
+	border: 1px solid #00e8f3;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+
+.accordion:after {
+  content: '\02795'; /* Unicode character for "plus" sign (+) */
+  font-size: 13px;
+  color: #777;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
+
+.clipboardText {
+	align-items: center;
+	display: flex;
 }
