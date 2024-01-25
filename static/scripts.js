@@ -103,6 +103,17 @@ function onLoad() {
 		
 		tableTriggers.appendChild(trHeader);
 
+		if (!triggers.length) {
+			let trTrigger = document.createElement('tr');
+			let td = document.createElement('td');
+			td.setAttribute("colspan", 4)
+			td.setAttribute("align", "center")
+			td.innerHTML = 'No Triggers Available';
+			td.className = 'borderTop';
+			trTrigger.appendChild(td);
+			tableTriggers.appendChild(trTrigger);
+		}
+
 		for (let i = 0; i < triggers.length; i++)
 		{
 			let trTrigger = document.createElement('tr');
