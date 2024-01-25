@@ -17,6 +17,7 @@
 		"start": "electron .",
 		"pack": "electron-builder --dir",
 		"dist": "electron-builder --macos --linux --windows",
+		"distWin": "electron-builder --windows",
 		"release": "np"
 	},
 	"dependencies": {
