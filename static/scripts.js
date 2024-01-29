@@ -4,6 +4,8 @@ const toggleIcon = document.getElementById('toggle-icon');
 const DARK_THEME = 'dark';
 const LIGHT_THEME = 'light';
 
+let availableTriggers = [];
+
 function toggleDarkLightMode(mode) {
  	// Change icon
   mode === DARK_THEME
@@ -62,6 +64,11 @@ function onLoad() {
 		 // using the function:
 		 removeOptions(selectMIDIPort);
 
+		let el = document.createElement('option');
+		el.textContent = '(Choose a Type)';
+		el.value = "";
+		selectMIDIPort.appendChild(el);
+
 		for (let i = 0; i < data.length; i++)
 		{	
 			let opt = data[i];
@@ -73,9 +80,11 @@ function onLoad() {
 	});
 
 	socket.on('triggers', function(triggers) {
+		availableTriggers = triggers;
 		let divTriggers = document.getElementById('divTriggers');
 	
 		let tableTriggers = document.createElement('table');
+		tableTriggers.setAttribute("id", "triggersTable")
 
 		divTriggers.innerHTML = '';
 		
@@ -92,8 +101,23 @@ function onLoad() {
 		let tdHeaderMIDIDescription = document.createElement('td');
 		tdHeaderMIDIDescription.innerHTML = '<b>Description</b>';
 		trHeader.appendChild(tdHeaderMIDIDescription);
+		let tdHeaderEditButton = document.createElement('td');
+		trHeader.appendChild(tdHeaderEditButton);
+		let tdHeaderDeleteButton = document.createElement('td');
+		trHeader.appendChild(tdHeaderDeleteButton);
 		
 		tableTriggers.appendChild(trHeader);
+
+		if (!triggers.length) {
+			let trTrigger = document.createElement('tr');
+			let td = document.createElement('td');
+			td.setAttribute("colspan", 4)
+			td.setAttribute("align", "center")
+			td.innerHTML = 'No Triggers Available';
+			td.className = 'borderTop';
+			trTrigger.appendChild(td);
+			tableTriggers.appendChild(trTrigger);
+		}
 
 		for (let i = 0; i < triggers.length; i++)
 		{
@@ -600,6 +624,7 @@ function DeleteTrigger(triggerID) {
 }
 			
 function ShowAddTrigger() {
+	formReset();
 	let btnShowAddTrigger = document.getElementById('btnShowAddTrigger');
 	btnShowAddTrigger.style.display = 'none';
 	
@@ -607,7 +632,7 @@ function ShowAddTrigger() {
 	divTriggerFields.style.display = 'block';
 
 	let btnAddTrigger = document.getElementById('btnAddTrigger');
-	btnAddTrigger.style.display = 'block';
+	btnAddTrigger.style.display = 'inline-block';
 
 	let btnEditTrigger = document.getElementById('btnEditTrigger');
 	btnEditTrigger.style.display = 'none';
@@ -615,7 +640,7 @@ function ShowAddTrigger() {
 
 function ShowEditTrigger(id) {
 	selectedTriggerId = id;
-
+	triggers = availableTriggers;
 	for (let i = 0; i < triggers.length; i++) {
 		if (triggers[i].id === id) {
 			let selectMIDIPort = document.getElementById('selectMIDIPort');
@@ -630,6 +655,7 @@ function ShowEditTrigger(id) {
 
 			let selectActionType = document.getElementById('selectActionType');
 
+			selectMIDIPort.options[0].selected = true;
 			for (let j = 0; j < selectMIDIPort.options.length; j++){
 				if (selectMIDIPort.options[j].value === triggers[i].midiport){
 					selectMIDIPort.options[j].selected = true;
@@ -792,7 +818,7 @@ function ShowEditTrigger(id) {
 	btnAddTrigger.style.display = 'none';
 
 	let btnEditTrigger = document.getElementById('btnEditTrigger');
-	btnEditTrigger.style.display = 'block';
+	btnEditTrigger.style.display = 'inline-block';
 }
 
 function showMIDIMessageOptions() {
@@ -1242,5 +1268,60 @@ function import_triggers() {
 		catch(error) {
 			alert('No file or invalid file selected.');
 		}
+	}
+}
+
+function formReset() {
+	let selectMIDIPort = document.getElementById('selectMIDIPort');
+	let selectMIDIMessageType = document.getElementById('selectMIDIMessageType');
+	let selectMIDIChannel = document.getElementById('selectMIDIChannel');
+	let selectMIDINote = document.getElementById('selectMIDINote');
+	let selectMIDIVelocity = document.getElementById('selectMIDIVelocity');
+	let selectMIDIValue = document.getElementById('selectMIDIValue');
+	let selectMIDIController = document.getElementById('selectMIDIController');
+	let inputMIDIPitchBendValue = document.getElementById('inputMIDIPitchBendValue');
+	let inputMIDISysExMessage = document.getElementById('inputMIDISysExMessage');
+
+	let selectActionType = document.getElementById('selectActionType');
+
+	selectMIDIPort.options[0].selected = true;
+	selectMIDIMessageType.options[0].selected = true;
+	showMIDIMessageOptions();
+	selectMIDIChannel.options[0].selected = true;
+	selectMIDINote.options[0].selected = true;
+	selectMIDIVelocity.options[0].selected = true;
+	selectMIDIController.options[0].selected = true;
+	selectMIDIValue.options[0].selected = true;
+	inputMIDIPitchBendValue.value = "";
+	inputMIDISysExMessage.value = "";
+	selectActionType.options[0].selected = true;
+	document.getElementById('txtURL').value = "http://";		
+	document.getElementById('txtJSONData').value = "";		
+	document.getElementById('txtAppleScript').value = "";
+	document.getElementById('txtShellScript').value = "";
+	document.getElementById('txtDescription').value = "";
+	document.getElementById('bitfocusCompanionInfoPanel').style.maxHeight = null
+
+	showActionTypeOptions();
+}
+
+function showHideAccordion () {
+	const el = document.getElementById("bitfocusCompanionHelpers")
+	el.classList.toggle("active");
+	const panel = el.nextElementSibling;
+	if (panel.style.maxHeight) {
+		panel.style.maxHeight = null;
+	} else {
+		panel.style.maxHeight = panel.scrollHeight + "px";
+	}
+}
+
+function copyToClipboard (el) {
+	const text = document.getElementById(el).innerHTML;
+	if (navigator.clipboard) {
+		navigator.clipboard.writeText(text);
+		alert (`Text Copied: ${text}`);
+	} else {
+		alert('Cannot Copy Text')
 	}
 }
