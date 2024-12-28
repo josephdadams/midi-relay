@@ -1,57 +1,57 @@
-'use strict';
+'use strict'
 
-const {app, systemPreferences} = require('electron');
+const { app, systemPreferences } = require('electron')
 
-const config = require('./config.js');
+const config = require('./config.js')
 
-const midi = require('./midi.js');
-const mdns = require('./mdns.js');
+const midi = require('./midi.js')
+const mdns = require('./mdns.js')
 
-const notifications = require('./notifications.js');
-const contextmenu = require('./contextmenu.js');
+const notifications = require('./notifications.js')
+const contextmenu = require('./contextmenu.js')
 
-function subscribeToNotifications() { //system events that can notify the app of a system change - perhaps like USB device being plugged in
-	let allowedEvents = config.get('allowedEvents');
+function subscribeToNotifications() {
+	//system events that can notify the app of a system change - perhaps like USB device being plugged in
+	let allowedEvents = config.get('allowedEvents')
 	for (let i = 0; i < allowedEvents.length; i++) {
 		systemPreferences.subscribeNotification(allowedEvents[i], (event, userInfo) => {
-			processNotification(event, userInfo);
-		});
+			processNotification(event, userInfo)
+		})
 	}
 }
 
-function processNotification(event, info) { //process the system event
+function processNotification(event, info) {
+	//process the system event
 	try {
 		if (config.get('allowedEvents').includes(event)) {
 			//do the stuff with the things
-			switch(event) {
+			switch (event) {
 				default:
-					break;
+					break
 			}
 		}
-	}
-	catch(error) {
-		console.log(error);
+	} catch (error) {
+		console.log(error)
 	}
 }
 
 function startRescanInterval() {
 	if (config.get('allowRescan')) {
 		global.RESCAN_INTERVAL = setInterval(() => {
-			midi.refreshPorts(false);
-		}, 60000);
-	}
-	else {
-		clearInterval(global.RESCAN_INTERVAL);
+			midi.refreshPorts(false)
+		}, 60000)
+	} else {
+		clearInterval(global.RESCAN_INTERVAL)
 	}
 }
 
 module.exports = {
 	startUp() {
-		contextmenu.buildContextMenu();
-		midi.startMIDI();
+		contextmenu.buildContextMenu()
+		midi.startMIDI()
 		//mdns.startMDNS();
-		startRescanInterval();
-		subscribeToNotifications(); //for system notifications to alert the app of changes like usb devices detected
+		startRescanInterval()
+		subscribeToNotifications() //for system notifications to alert the app of changes like usb devices detected
 	},
 
 	getMIDIOutputs() {
@@ -59,34 +59,34 @@ module.exports = {
 	},
 
 	getMIDIInputs() {
-		return global.MIDI_INPUTS;
+		return global.MIDI_INPUTS
 	},
 
 	sendMIDI(midiObj, callback) {
-		midi.sendMIDI(midiObj, callback);
+		midi.sendMIDI(midiObj, callback)
 	},
 
 	refreshPorts() {
-		midi.refreshPorts(true);
+		midi.refreshPorts(true)
 	},
 
 	startRescanInterval() {
-		startRescanInterval();
+		startRescanInterval()
 	},
 
 	getTriggers() {
-		return config.get('triggers');
+		return config.get('triggers')
 	},
 
 	addTrigger(triggerObj) {
-		midi.addTrigger(triggerObj);
+		midi.addTrigger(triggerObj)
 	},
 
 	updateTrigger(triggerObj) {
-		midi.updateTrigger(triggerObj);
+		midi.updateTrigger(triggerObj)
 	},
 
 	deleteTrigger(triggerId) {
-		midi.deleteTrigger(triggerId);
-	}
+		midi.deleteTrigger(triggerId)
+	},
 }

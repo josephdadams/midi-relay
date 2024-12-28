@@ -9,12 +9,14 @@ midi-relay is designed to allow you to send an HTTP POST request, with JSON data
 # midi-relay v3.0 and higher:
 
 **RUNNING THIS SOFTWARE FROM BINARY:**
+
 1. Download a binary release from <https://github.com/josephdadams/midi-relay/releases> for your OS.
 1. As of v3.0.0, only desktop application versions are available. To run midi-relay from terminal, use an older version.
 
 # midi-relay < v3.0:
 
 **RUNNING DIRECTLY WITHIN NODE FOR VERSIONS < 3.0:**
+
 1. Install `node` if not already installed. <https://nodejs.org/en/download/>
 1. Download the midi-relay source code.
 1. Open a terminal window and change directory to the folder where you placed the source code.
@@ -22,6 +24,7 @@ midi-relay is designed to allow you to send an HTTP POST request, with JSON data
 1. If this folder does not contain the `midi_triggers.json` file, a new one will be created the next time you add a trigger either via the API or the Settings page.
 
 **RUNNING AS A SERVICE, FOR VERSIONS < 3.0:**
+
 1. Open a terminal window and change directory to the folder where you placed the source code.
 1. Install the Node.js library, `pm2`, by typing `npm install -g pm2`. This will install it globally on your system.
 1. After `pm2` is installed, type `pm2 start main.js --name midi-relay` to daemonize it as a service.

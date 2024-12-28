@@ -7,9 +7,9 @@
 	--on-background-alt: rgba(66, 66, 66, 0.7);
 	--background: rgb(255, 255, 255);
 	--box-shadow: 0 5px 20px 1px rgba(0, 0, 0, 0.5);
-  }
-  
-  [data-theme='dark'] {
+}
+
+[data-theme='dark'] {
 	--primary-color: rgb(23, 72, 249);
 	--primary-variant: #342af6;
 	--secondary-color: #03dac5;
@@ -17,55 +17,55 @@
 	--on-background: rgba(255, 255, 255, 0.9);
 	--on-background-alt: rgba(255, 255, 255, 0.7);
 	--background: #121212;
-  }
-  
-  html {
+}
+
+html {
 	box-sizing: border-box;
 	scroll-behavior: smooth;
-  }
-  
-  body {
+}
+
+body {
 	margin: 0;
 	color: var(--on-background);
 	background-color: var(--background);
 	font-family: Comfortaa, sans-serif;
-  }
-  
-  /* Dark Mode Toggle */
-  .theme-switch-wrapper {
+}
+
+/* Dark Mode Toggle */
+.theme-switch-wrapper {
 	display: flex;
 	align-items: center;
 	z-index: 100;
 	position: fixed;
 	right: 7%;
 	top: 30px;
-  }
-  
-  .theme-switch-wrapper span {
+}
+
+.theme-switch-wrapper span {
 	margin-right: 10px;
 	font-size: 1rem;
-  }
-  
-  .toggle-text {
+}
+
+.toggle-text {
 	position: relative;
 	top: 0px;
 	right: -8px;
 	color: var(--on-background);
 	font-weight: bold;
-  }
-  
-  .theme-switch {
+}
+
+.theme-switch {
 	display: inline-block;
 	height: 10px;
 	position: relative;
 	width: 48px;
-  }
-  
-  .theme-switch input {
+}
+
+.theme-switch input {
 	display: none;
-  }
-  
-  .slider {
+}
+
+.slider {
 	background: #ccc;
 	bottom: 0;
 	cursor: pointer;
@@ -74,9 +74,9 @@
 	right: 0;
 	top: 0;
 	transition: 0.4s;
-  }
-  
-  .slider::before {
+}
+
+.slider::before {
 	background: #fff;
 	bottom: 4px;
 	content: '';
@@ -85,30 +85,30 @@
 	position: absolute;
 	transition: 0.4s;
 	width: 26px;
-  }
-  
-  input:checked + .slider {
+}
+
+input:checked + .slider {
 	background: var(--primary-color);
-  }
-  
-  input:checked + .slider::before {
+}
+
+input:checked + .slider::before {
 	transform: translateX(26px);
-  }
-  
-  .slider.round {
+}
+
+.slider.round {
 	border-radius: 34px;
-  }
-  
-  .slider.round::before {
+}
+
+.slider.round::before {
 	border-radius: 50%;
-  }
-  
-  .fas {
+}
+
+.fas {
 	font-size: 30px;
 	margin-right: 5px;
-  }
+}
 
-  #container {
+#container {
 	display: flex;
 	width: 600px;
 	margin: 20px auto;
@@ -116,9 +116,8 @@
 	display: block;
 
 	#titleText {
-	text-align: center;
+		text-align: center;
 	}
-
 }
 
 .logo {
@@ -133,12 +132,12 @@
 	margin: 5px;
 }
 
-#triggersTable{
+#triggersTable {
 	margin: 0 auto;
 	border-collapse: collapse;
 }
 
-#triggersTable td{
+#triggersTable td {
 	border-top: #999999 3px solid;
 	border-bottom: #999999 3px solid;
 	padding: 5px;
@@ -160,72 +159,77 @@
 }
 
 /* Style inputs, select elements and textareas */
-input[type=text], [type=file], select, textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  resize: vertical;
+input[type='text'],
+[type='file'],
+select,
+textarea {
+	width: 100%;
+	padding: 12px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+	resize: vertical;
 }
 
 /* Style the label to display next to the inputs */
 label {
-  padding: 12px 12px 12px 0;
-  display: inline-block;
+	padding: 12px 12px 12px 0;
+	display: inline-block;
 }
 
 /* Style the submit button */
 button {
-  background-color: #04AA6D;
-  color: white;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+	background-color: #04aa6d;
+	color: white;
+	padding: 12px 20px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
 }
 
 /* Floating column for labels: 40% width */
 .col-40 {
-  float: left;
-  width: 40%;
-  margin-top: 6px;
+	float: left;
+	width: 40%;
+	margin-top: 6px;
 }
 
 /* Floating column for inputs: 60% width */
 .col-60 {
-  float: left;
-  width: 60%;
-  margin-top: 6px;
+	float: left;
+	width: 60%;
+	margin-top: 6px;
 }
 
 /* Floating column for inputs: 80% width */
 .col-80 {
-  float: left;
-  width: 80%;
-  margin-top: 6px;
+	float: left;
+	width: 80%;
+	margin-top: 6px;
 }
 
 /* Floating column for inputs: 20% width */
 .col-20 {
-  float: left;
-  width: 20%;
-  margin-top: 6px;
+	float: left;
+	width: 20%;
+	margin-top: 6px;
 }
 
 /* Clear floats after the columns */
 .row:after {
-  content: "";
-  display: table;
-  clear: both;
+	content: '';
+	display: table;
+	clear: both;
 }
 
 /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
 @media screen and (max-width: 600px) {
-  .col-25, .col-75, input[type=submit] {
-    width: 100%;
-    margin-top: 0;
-  }
+	.col-25,
+	.col-75,
+	input[type='submit'] {
+		width: 100%;
+		margin-top: 0;
+	}
 }
 
 #bitfocusCompanionInfo {
@@ -244,44 +248,45 @@ pre {
 
 /* Style the buttons that are used to open and close the accordion panel */
 .accordion {
-  background-color: #00e8f3;
-  color: #414141;
-  cursor: pointer;
-  padding: 18px;
-  width: 100%;
-  text-align: left;
+	background-color: #00e8f3;
+	color: #414141;
+	cursor: pointer;
+	padding: 18px;
+	width: 100%;
+	text-align: left;
 	font-weight: 600;
-  border: none;
-  outline: none;
+	border: none;
+	outline: none;
 	border-radius: 0px;
-  transition: 0.4s;
+	transition: 0.4s;
 }
 
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-.active, .accordion:hover {
-  background-color: #00e8f3;
+.active,
+.accordion:hover {
+	background-color: #00e8f3;
 }
 
 /* Style the accordion panel. Note: hidden by default */
 .panel {
-  padding: 0 18px;
-  background-color: #00e8f3;
+	padding: 0 18px;
+	background-color: #00e8f3;
 	border: 1px solid #00e8f3;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.2s ease-out;
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.2s ease-out;
 }
 
 .accordion:after {
-  content: '\02795'; /* Unicode character for "plus" sign (+) */
-  font-size: 13px;
-  color: #777;
-  float: right;
-  margin-left: 5px;
+	content: '\02795'; /* Unicode character for "plus" sign (+) */
+	font-size: 13px;
+	color: #777;
+	float: right;
+	margin-left: 5px;
 }
 
 .active:after {
-  content: "\2796"; /* Unicode character for "minus" sign (-) */
+	content: '\2796'; /* Unicode character for "minus" sign (-) */
 }
 
 .clipboardText {

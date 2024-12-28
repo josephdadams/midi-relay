@@ -1,57 +1,56 @@
-'use strict';
-const path = require('path');
-const {app, BrowserWindow, Tray, nativeImage} = require('electron');
+'use strict'
+const path = require('path')
+const { app, BrowserWindow, Tray, nativeImage } = require('electron')
 /// const {autoUpdater} = require('electron-updater');
-const {is} = require('electron-util');
-const unhandled = require('electron-unhandled');
-const debug = require('electron-debug');
-const contextMenu = require('electron-context-menu');
-const config = require('./config.js');
-const util = require('./util.js');
-const API = require('./api.js');
+const { is } = require('electron-util')
+const unhandled = require('electron-unhandled')
+const debug = require('electron-debug')
+const contextMenu = require('electron-context-menu')
+const config = require('./config.js')
+const util = require('./util.js')
+const API = require('./api.js')
 
-const notifications = require('./notifications.js');
+const notifications = require('./notifications.js')
 
-global.tray = undefined;
+global.tray = undefined
 
-global.win = undefined;
+global.win = undefined
 
-global.MIDI_INPUTS = [];
-global.MIDI_OUTPUTS = [];
+global.MIDI_INPUTS = []
+global.MIDI_OUTPUTS = []
 
-global.IncomingMIDIRelayTypes = ['noteon', 'noteoff', 'aftertouch', 'cc', 'pc', 'pressure', 'pitchbend', 'msc', 'sysex'];
+global.IncomingMIDIRelayTypes = ['noteon', 'noteoff', 'aftertouch', 'cc', 'pc', 'pressure', 'pitchbend', 'msc', 'sysex']
 
-global.MIDIRelaysLog = []; //global array of MIDI messages and the datetime they were sent
+global.MIDIRelaysLog = [] //global array of MIDI messages and the datetime they were sent
 
-global.MDNS_HOSTS = [];
+global.MDNS_HOSTS = []
 
-global.sendControlStatus = function() {
-	API.sendControlStatus();
+global.sendControlStatus = function () {
+	API.sendControlStatus()
 }
 
-global.refreshPorts = function() {
-	util.refreshPorts();
+global.refreshPorts = function () {
+	util.refreshPorts()
 }
 
-global.startRescanInterval = function() {
-	util.startRescanInterval();
+global.startRescanInterval = function () {
+	util.startRescanInterval()
 }
 
-global.RESCAN_INTERVAL = null;
+global.RESCAN_INTERVAL = null
 
-global.sendMIDIBack = function(midiObj) {
-	API.sendMIDIBack(midiObj);
-
+global.sendMIDIBack = function (midiObj) {
+	API.sendMIDIBack(midiObj)
 }
 
-unhandled();
+unhandled()
 //debug();
-contextMenu();
+contextMenu()
 
 // Note: Must match `build.appId` in package.json
-app.setAppUserModelId(config.get('appUserModelId'));
+app.setAppUserModelId(config.get('appUserModelId'))
 if (process.platform === 'darwin') {
-	app.dock.hide();
+	app.dock.hide()
 }
 
 // Uncomment this before publishing your first version.
@@ -66,14 +65,14 @@ if (process.platform === 'darwin') {
 // }
 
 // Prevent window from being garbage collected
-let mainWindow;
+let mainWindow
 
 const createMainWindow = async () => {
 	global.win = new BrowserWindow({
 		webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false,
-        },
+			nodeIntegration: true,
+			contextIsolation: false,
+		},
 		title: app.name,
 		show: true,
 		x: 0,
@@ -82,75 +81,74 @@ const createMainWindow = async () => {
 		height: 800,
 		frame: true,
 		transparent: false,
-		shadow: false
-	});
+		shadow: false,
+	})
 
 	global.win.on('ready-to-show', () => {
 		if (config.get('showLicense') == true) {
-			global.win.show();
+			global.win.show()
+		} else {
+			global.win.hide()
 		}
-		else {
-			global.win.hide();
-		}
-	});
+	})
 
 	global.win.on('closed', () => {
 		// Dereference the window
 		// For multiple windows store them in an array
-		mainWindow = undefined;
-	});
+		mainWindow = undefined
+	})
 
-	await global.win.loadFile(path.join(__dirname, 'index.html'));
+	await global.win.loadFile(path.join(__dirname, 'index.html'))
 
-	return global.win;
-};
+	return global.win
+}
 
 // Prevent multiple instances of the app
 if (!app.requestSingleInstanceLock()) {
-	app.quit();
+	app.quit()
 }
 
 app.on('second-instance', () => {
 	if (mainWindow) {
 		if (mainWindow.isMinimized()) {
-			mainWindow.restore();
+			mainWindow.restore()
 		}
 
 		//mainWindow.show();
 	}
-});
+})
 
 app.on('window-all-closed', () => {
 	if (!is.macos) {
 		//app.quit();
 	}
-});
+})
 
 app.on('activate', async () => {
 	if (!mainWindow) {
-		mainWindow = await createMainWindow();
+		mainWindow = await createMainWindow()
 	}
-});
+})
 
-(async () => {
-	await app.whenReady();
-	
-	mainWindow = await createMainWindow();
+;(async () => {
+	await app.whenReady()
 
-	const icon = nativeImage.createFromDataURL(config.get('icon'));
-	tray = new Tray(icon.resize({ width: 24, height: 24 }));
+	mainWindow = await createMainWindow()
 
-	tray.setToolTip('midi-relay');
+	const icon = nativeImage.createFromDataURL(config.get('icon'))
+	tray = new Tray(icon.resize({ width: 24, height: 24 }))
 
-	API.start(config.get('apiPort'));
-})();
+	tray.setToolTip('midi-relay')
 
-process.on('uncaughtException', function(err) {
+	API.start(config.get('apiPort'))
+})()
+
+process.on('uncaughtException', function (err) {
 	notifications.showNotification({
 		title: 'Uncaught Exception',
 		body: `The following uncaught exception has occured:\n\n${err.toString()}\n\nThe program will exit in 10 seconds.`,
-		showNotification: true
-	});
+		showNotification: true,
+	})
 
-	setTimeout(process.exit(1), 10000);
-});
+	setTimeout(process.exit(1), 10000)
+})

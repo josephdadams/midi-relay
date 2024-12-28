@@ -1,11 +1,11 @@
 <!doctype html>
 <html>
 	<head>
-		<meta charset="utf-8">
+		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>midi-relay</title>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.min.css" />
-		<link rel="stylesheet" href="index.css">
+		<link rel="stylesheet" href="index.css" />
 		<script src="/socket.io/socket.io.js"></script>
 	</head>
 	<body onLoad="onLoad();">
@@ -21,22 +21,22 @@
 				</span>
 				<!-- Switcher -->
 				<label class="theme-switch">
-					<input id="chkLightDarkMode" type="checkbox">
+					<input id="chkLightDarkMode" type="checkbox" />
 					<div class="slider round"></div>
 				</label>
 			</div>
-			<div id='divTriggersContainer'>
+			<div id="divTriggersContainer">
 				<h4>Triggers:</h4>
-				<div id='divTriggers'></div>
-				<br/>
-				<button id='btnShowAddTrigger' onclick='ShowAddTrigger();'>Add New MIDI Trigger</button><br /><br />
-				<div id='divTriggerFields' style='display:none;'>
+				<div id="divTriggers"></div>
+				<br />
+				<button id="btnShowAddTrigger" onclick="ShowAddTrigger();">Add New MIDI Trigger</button><br /><br />
+				<div id="divTriggerFields" style="display: none">
 					<div class="row">
 						<div class="col-40">
 							<label for="selectMIDIPort">MIDI Input Port:</label>
 						</div>
 						<div class="col-60">
-							<select id='selectMIDIPort'></select>						
+							<select id="selectMIDIPort"></select>
 						</div>
 					</div>
 					<div class="row">
@@ -44,112 +44,115 @@
 							<label for="selectMIDIMessageType">Incoming MIDI Message Type:</label>
 						</div>
 						<div class="col-60">
-							<select id='selectMIDIMessageType' onchange='showMIDIMessageOptions();'>
-								<option value='0'>(Choose a Type)</option>
-								<option value='noteon'>Note On</option>
-								<option value='noteoff'>Note Off</option>
-								<option value='aftertouch'>Polyphonic Aftertouch</option>
-								<option value='cc'>Control Change</option>
-								<option value='pc'>Program Change</option>
-								<option value='pressure'>Channel Pressure / Aftertouch</option>
-								<option value='pitchbend'>Pitch Bend / Pitch Wheel</option>
-								<option value='sysex'>SysEx</option>
+							<select id="selectMIDIMessageType" onchange="showMIDIMessageOptions();">
+								<option value="0">(Choose a Type)</option>
+								<option value="noteon">Note On</option>
+								<option value="noteoff">Note Off</option>
+								<option value="aftertouch">Polyphonic Aftertouch</option>
+								<option value="cc">Control Change</option>
+								<option value="pc">Program Change</option>
+								<option value="pressure">Channel Pressure / Aftertouch</option>
+								<option value="pitchbend">Pitch Bend / Pitch Wheel</option>
+								<option value="sysex">SysEx</option>
 							</select>
 						</div>
-					</div>					
-					<div id='divMIDIMessage_Options'>
-						<div id='divMIDIMessage_Options_Channel' style='display:none;'>
+					</div>
+					<div id="divMIDIMessage_Options">
+						<div id="divMIDIMessage_Options_Channel" style="display: none">
 							<div class="row">
 								<div class="col-40">
 									<label for="selectMIDIChannel">Channel:</label>
 								</div>
 								<div class="col-60">
-									<select id='selectMIDIChannel'></select>						
+									<select id="selectMIDIChannel"></select>
 								</div>
 							</div>
 						</div>
-						<div id='divMIDIMessage_Options_Note' style='display:none;'>
+						<div id="divMIDIMessage_Options_Note" style="display: none">
 							<div class="row">
 								<div class="col-40">
 									<label for="selectMIDINote">Note:</label>
 								</div>
 								<div class="col-60">
-									<select id='selectMIDINote'></select>						
+									<select id="selectMIDINote"></select>
 								</div>
 							</div>
 						</div>
-						<div id='divMIDIMessage_Options_Velocity' style='display:none;'>
+						<div id="divMIDIMessage_Options_Velocity" style="display: none">
 							<div class="row">
 								<div class="col-40">
 									<label for="selectMIDIVelocity">Velocity:</label>
 								</div>
 								<div class="col-60">
-									<select id='selectMIDIVelocity'></select>						
+									<select id="selectMIDIVelocity"></select>
 								</div>
 							</div>
 						</div>
-						<div id='divMIDIMessage_Options_Controller' style='display:none;'>
+						<div id="divMIDIMessage_Options_Controller" style="display: none">
 							<div class="row">
 								<div class="col-40">
 									<label for="selectMIDIController">Controller:</label>
 								</div>
 								<div class="col-60">
-									<select id='selectMIDIController'></select>						
+									<select id="selectMIDIController"></select>
 								</div>
 							</div>
 						</div>
-						<div id='divMIDIMessage_Options_Value' style='display:none;'>
+						<div id="divMIDIMessage_Options_Value" style="display: none">
 							<div class="row">
 								<div class="col-40">
 									<label for="selectMIDIValue">Value:</label>
 								</div>
 								<div class="col-60">
-									<select id='selectMIDIValue'></select>						
+									<select id="selectMIDIValue"></select>
 								</div>
 							</div>
 						</div>
-						<div id='divMIDIMessage_Options_PitchBend_Value' style='display:none;'>
+						<div id="divMIDIMessage_Options_PitchBend_Value" style="display: none">
 							<div class="row">
 								<div class="col-40">
 									<label for="inputMIDIPitchBendValue">Value (between 0 and 16383):</label>
 								</div>
 								<div class="col-60">
-									<input type='text' id='inputMIDIPitchBendValue' value='8192' width='50' />				
+									<input type="text" id="inputMIDIPitchBendValue" value="8192" width="50" />
 								</div>
 							</div>
 						</div>
-						<div id='divMIDIMessage_Options_SysExMessage' style='display:none;'>
+						<div id="divMIDIMessage_Options_SysExMessage" style="display: none">
 							<div class="row">
 								<div class="col-40">
 									<label for="inputMIDISysExMessage">SysEx Message:</label>
 								</div>
 								<div class="col-60">
-									<input type='text' id='inputMIDISysExMessage' width='50' />					
+									<input type="text" id="inputMIDISysExMessage" width="50" />
 								</div>
 							</div>
 						</div>
 					</div>
-					<div id='divMIDIMessage_ActionType' onchange='showActionTypeOptions();'>
+					<div id="divMIDIMessage_ActionType" onchange="showActionTypeOptions();">
 						<div class="row">
 							<div class="col-40">
 								<label for="selectActionType">Action Type:</label>
 							</div>
 							<div class="col-60">
-								<select id='selectActionType'>
-									<option value='0'>(Choose a Type)</option>
-									<option value='http'>HTTP GET/POST</option>
+								<select id="selectActionType">
+									<option value="0">(Choose a Type)</option>
+									<option value="http">HTTP GET/POST</option>
 								</select>
 							</div>
 						</div>
 					</div>
-					<div id='divMIDIMessage_ActionType_HTTP' style='display:none;'>
+					<div id="divMIDIMessage_ActionType_HTTP" style="display: none">
 						<div class="row" id="bitfocusCompanionInfo">
-							<button class="accordion" id="bitfocusCompanionHelpers" onclick="showHideAccordion()">BitFocus Companion Helpers</button>
+							<button class="accordion" id="bitfocusCompanionHelpers" onclick="showHideAccordion()">
+								BitFocus Companion Helpers
+							</button>
 							<div class="panel" id="bitfocusCompanionInfoPanel">
 								<p>For Call Bitfocus Companion Button Function, use rules below:</p>
 								<ul>
 									<li>Enable Bitfocus Companion HTTP API in Settings -> HTTP API</li>
-									<li>Available Action (action) Button Value:
+									<li>
+										Available Action (action) Button Value:
 										<ul>
 											<li>press - Press and release a button (run both down and up actions)</li>
 											<li>down - Press the button (run down actions and hold)</li>
@@ -158,17 +161,21 @@
 											<li>rotate-right - Trigger a right rotation of the button/encoder</li>
 										</ul>
 									</li>
-									<li>Fill URL with : 
+									<li>
+										Fill URL with :
 										<div class="row clipboardText">
 											<div class="col-80">
-												<pre id="copyCompanionUrl" onclick="copyToClipboard('copyCompanionUrl')">http://(companionIP:companionPort)/api/location/(page)/(row)/(column)/(action)</pre>
+												<pre id="copyCompanionUrl" onclick="copyToClipboard('copyCompanionUrl')">
+http://(companionIP:companionPort)/api/location/(page)/(row)/(column)/(action)</pre
+												>
 											</div>
 											<div class="col-20">
 												<button class="copyButton" onclick="copyToClipboard('copyCompanionUrl')">Copy</button>
 											</div>
 										</div>
 									</li>
-									<li>Fill JSON Data with dummy JSON
+									<li>
+										Fill JSON Data with dummy JSON
 										<div class="row clipboardText">
 											<div class="col-80">
 												<pre id="copyJsonData" onclick="copyToClipboard('copyJsonData')">{"hello":"hello"}</pre>
@@ -186,7 +193,7 @@
 								<label for="txtURL">URL:</label>
 							</div>
 							<div class="col-60">
-								<input type='text' id='txtURL' value='http://' />
+								<input type="text" id="txtURL" value="http://" />
 							</div>
 						</div>
 						<div class="row">
@@ -194,61 +201,61 @@
 								<label for="txtJSONData">JSON Data:</label>
 							</div>
 							<div class="col-60">
-								<textarea rows='5' cols='40' id='txtJSONData'></textarea>
+								<textarea rows="5" cols="40" id="txtJSONData"></textarea>
 							</div>
 						</div>
 					</div>
-					<div id='divMIDIMessage_ActionType_AppleScript' style='display:none;'>
+					<div id="divMIDIMessage_ActionType_AppleScript" style="display: none">
 						<div class="row">
 							<div class="col-40">
 								<label for="txtAppleScript">AppleScript:</label>
 							</div>
 							<div class="col-60">
-								<textarea rows='5' cols='40' id='txtAppleScript'></textarea>
+								<textarea rows="5" cols="40" id="txtAppleScript"></textarea>
 							</div>
 						</div>
 					</div>
-					<div id='divMIDIMessage_ActionType_ShellScript' style='display:none;'>
+					<div id="divMIDIMessage_ActionType_ShellScript" style="display: none">
 						<div class="row">
 							<div class="col-40">
 								<label for="txtShellScript">Shell Script:</label>
 							</div>
 							<div class="col-60">
-								<textarea rows='5' cols='40' id='txtShellScript'></textarea>
+								<textarea rows="5" cols="40" id="txtShellScript"></textarea>
 							</div>
 						</div>
 					</div>
-					<div id='divMIDIMessage_Description'>
+					<div id="divMIDIMessage_Description">
 						<div class="row">
 							<div class="col-40">
 								<label for="txtDescription">Description:</label>
 							</div>
 							<div class="col-60">
-								<textarea rows='5' cols='40' id='txtDescription'></textarea>
+								<textarea rows="5" cols="40" id="txtDescription"></textarea>
 							</div>
 						</div>
 					</div>
-					<br/>
-					<button id='btnAddTrigger' onclick='AddTrigger();'>Add Trigger</button>
-					<button id='btnEditTrigger' onclick='EditTrigger();'>Edit Trigger</button>
-					<button id='btnCancel' onclick='Cancel();' style="display:inline-block">Cancel</button>
-					<br/>
-				</div>	
+					<br />
+					<button id="btnAddTrigger" onclick="AddTrigger();">Add Trigger</button>
+					<button id="btnEditTrigger" onclick="EditTrigger();">Edit Trigger</button>
+					<button id="btnCancel" onclick="Cancel();" style="display: inline-block">Cancel</button>
+					<br />
+				</div>
 			</div>
-			<br/>
-			<hr>
-			<div id='divImportExportContainer'>
+			<br />
+			<hr />
+			<div id="divImportExportContainer">
 				<h4>Import/Export Data:</h4>
-				<button id='btnExport_Triggers' onclick='export_triggers();'>Export Triggers</button><br /><br />
+				<button id="btnExport_Triggers" onclick="export_triggers();">Export Triggers</button><br /><br />
 				<div class="row">
 					<div class="col-40">
 						<label for="flImport">Triggers Settings File:</label>
 					</div>
 					<div class="col-60">
-						<input type='file' id='flImport' />
+						<input type="file" id="flImport" />
 					</div>
 				</div>
-				<button id='btnImport_Triggers' onclick='import_triggers();'>Import Triggers</button>
+				<button id="btnImport_Triggers" onclick="import_triggers();">Import Triggers</button>
 			</div>
 		</div>
 		<script src="scripts.js"></script>
