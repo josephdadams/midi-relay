@@ -1,24 +1,52 @@
 {
 	"name": "midi-relay",
-	"productName": "midi-relay",
-	"version": "3.3.0",
+	"version": "3.4.0",
+	"author": "Joseph Adams <joseph@josephadams.dev>",
 	"description": "Listens for HTTP requests with JSON payload and relays MIDI/MSC commands on local ports.",
-	"license": "MIT",
-	"repository": "josephdadams/midi-relay",
-	"author": {
-		"name": "Joseph Adams",
-		"email": "josephdadams@gmail.com",
-		"url": "https://josephadams.dev"
-	},
+	"main": "index.js",
 	"scripts": {
-		"postinstall": "electron-builder install-app-deps",
-		"lint": "xo",
-		"test": "npm run lint",
 		"start": "electron .",
+		"format": "prettier -w .",
+		"lint:raw": "eslint --ext .ts --ext .js --ignore-pattern dist --ignore-pattern pkg",
+		"lint": "yarn lint:raw .",
 		"pack": "electron-builder --dir",
 		"dist": "electron-builder --macos --linux --windows",
-		"distWin": "electron-builder --windows",
-		"release": "np"
+		"distWin": "electron-builder --windows"
+	},
+	"build": {
+		"appId": "com.josephadams.midi-relay",
+		"productName": "midi-relay",
+		"mac": {
+			"target": [
+				{
+					"target": "dmg",
+					"arch": [
+						"x64",
+						"arm64"
+					]
+				}
+			],
+			"category": "public.app-category.utilities",
+			"icon": "static/icon.png",
+			"identity": "Joseph Adams (R2PY2DC3A4)",
+			"extendInfo": {
+				"NSApplicationSupportsSecureRestorableState": true,
+				"electronTeamId": "R2PY2DC3A4"
+			},
+			"hardenedRuntime": true,
+			"gatekeeperAssess": true,
+			"entitlements": "entitlements.mac.plist",
+			"entitlementsInherit": "entitlements.mac.plist"
+		},
+		"win": {
+			"target": "nsis",
+			"icon": "static/icon.ico"
+		},
+		"linux": {
+			"target": "AppImage",
+			"icon": "static/icon.png"
+		},
+		"generateUpdatesFilesForAllChannels": false
 	},
 	"dependencies": {
 		"body-parser": "^1.18.3",
@@ -39,41 +67,9 @@
 		"socket.io": "^4.5.1"
 	},
 	"devDependencies": {
-		"electron": "^18.3.7",
-		"electron-builder": "^24.3.0",
-		"np": "^7.5.0",
-		"xo": "^0.54.2"
-	},
-	"xo": {
-		"envs": [
-			"node",
-			"browser"
-		]
-	},
-	"np": {
-		"publish": false,
-		"releaseDraft": false
-	},
-	"build": {
-		"appId": "com.josephadams.midi-relay",
-		"mac": {
-			"category": "public.app-category.productivity",
-			"darkModeSupport": true
-		},
-		"dmg": {
-			"iconSize": 160,
-			"contents": [
-				{
-					"x": 180,
-					"y": 170
-				},
-				{
-					"x": 480,
-					"y": 170,
-					"type": "link",
-					"path": "/Applications"
-				}
-			]
-		}
+		"@electron/notarize": "^2.5.0",
+		"electron": "^33.2.1",
+		"electron-builder": "^25.1.8",
+		"prettier": "^3.3.3"
 	}
 }
