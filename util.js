@@ -88,5 +88,13 @@ module.exports = {
 
 	deleteTrigger(triggerId) {
 		midi.deleteTrigger(triggerId);
-	}
+	},
+
+	toggleInputDisabled(inputId) {
+		midi.toggleInputDisabled(inputId);
+	},
+
+	isInputDisabled(inputId) {
+		return midi.isInputDisabled(inputId);
+	},
 }

@@ -2,6 +2,8 @@ const { app, Menu, shell } = require('electron');
 
 const config = require('./config.js');
 
+const _ = require('lodash');
+
 const package_json = require('./package.json');
 const VERSION = package_json.version;
 
@@ -16,12 +18,12 @@ function buildContextMenu() {
 			enabled: false
 		},
 		{
-			label: 'MIDI Input Ports Detected: ' + global.MIDI_INPUTS.length,
-			enabled: false
+			label: 'MIDI Inputs',
+			submenu: buildMidiInputsSubmenu()
 		},
 		{
-			label: 'MIDI Output Ports Detected: ' + global.MIDI_OUTPUTS.length,
-			enabled: false
+			label: 'MIDI Outputs',
+			submenu: buildMidiOutputsSubmenu()
 		},
 		{
 			label: 'Rescan for MIDI Ports',
@@ -90,6 +92,35 @@ function buildContextMenu() {
 	]);
 
 	tray.setContextMenu(contextMenu);
+}
+
+function buildMidiInputsSubmenu() {
+	let items = _.map(global.MIDI_INPUTS, (value, _) => {
+		return {
+			label: value.name,
+			type: 'checkbox',
+			checked: !global.isInputDisabled(value.id),
+			enabled: value.id !== 'midi-relay',
+			click: function () {
+				global.toggleInputDisabled(value.id);
+			}
+		}
+	});
+
+	return Menu.buildFromTemplate(items);
+}
+
+function buildMidiOutputsSubmenu() {
+	let items = _.map(global.MIDI_OUTPUTS, (value, _) => {
+		return {
+			label: value.name,
+			enabled: false,
+			type: 'checkbox',
+			checked: true,
+		}
+	});
+
+	return Menu.buildFromTemplate(items);
 }
 
 module.exports = {
