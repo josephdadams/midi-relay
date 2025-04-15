@@ -28,13 +28,15 @@ function GetPorts(showNotification) {
 		function (webmidi) {
 			let info = navigator.info()
 
-			global.MIDI_OUTPUTS = info.outputs
-			global.MIDI_INPUTS = info.inputs
-
-			//open each midi port
-			for (let i = 0; i < global.MIDI_INPUTS.length; i++) {
-				OpenPort(global.MIDI_INPUTS[i].name)
-			}
+		global.MIDI_OUTPUTS = info.outputs;
+		global.MIDI_INPUTS = info.inputs;
+		
+		//open each non-disabled midi port
+		let portsToOpen = global.MIDI_INPUTS.filter((port) => !isInputDisabled(port.id))
+		portsToOpen.forEach((port) => {
+			OpenPort(port.name);
+		})
+		console.log(global.MIDI_INPUTS);
 
 			console.log(global.MIDI_INPUTS)
 
@@ -411,22 +413,24 @@ function loadMIDITriggers() {
 
 function OpenPort(midiport) {
 	try {
-		navigator()
-			.openMidiIn(midiport)
-			.or(function () {
-				//error opening
-			})
-			.and(function () {
-				for (let i = 0; i < global.MIDI_INPUTS.length; i++) {
-					if (global.MIDI_INPUTS[i].name === this.name()) {
-						global.MIDI_INPUTS[i].opened = true
-						notifications.showNotification({
-							title: `MIDI Port Already Opened: ${midiport}`,
-							body: `MIDI Port Already Opened: ${midiport}`,
-							showNotification: true,
-						})
-						break
-					}
+		navigator().openMidiIn(midiport)
+		.or(function () {
+			//error opening
+		})
+		.and(function () {
+			const port = this
+			for (let i = 0; i < global.MIDI_INPUTS.length; i++) {
+				if (global.MIDI_INPUTS[i].name === port.name()) {
+					global.MIDI_INPUTS[i].opened = true;
+					global.MIDI_INPUTS[i].close = () => {
+						port.close();
+					};
+					notifications.showNotification({
+						title: `MIDI Port Already Opened: ${midiport}`,
+						body: `MIDI Port Already Opened: ${midiport}`,
+						showNotification: true
+					});
+					break;
 				}
 
 				this.connect(receiveMIDI.bind({ midiport: midiport }))
@@ -973,6 +977,26 @@ function deleteTrigger(triggerID) {
 	config.set('triggers', Triggers)
 }
 
+function toggleInputDisabled(inputId) {
+	let disabledInputs = config.get('disabledInputs');
+	let disabledIdx = disabledInputs.indexOf(inputId);
+	if (disabledIdx > -1) {
+		disabledInputs.splice(disabledIdx, 1);
+	} else {
+		disabledInputs.push(inputId);
+	}
+	config.set('disabledInputs', disabledInputs);
+
+	const openedDisabledInputs = global.MIDI_INPUTS.filter((port) => port.opened === true && disabledInputs.includes(port.id));
+	openedDisabledInputs.forEach(disabledInput => disabledInput.close());
+
+	refreshPorts();
+}
+
+function isInputDisabled(inputId) {
+	return config.get('disabledInputs').includes(inputId);
+}
+
 module.exports = {
 	startMIDI() {
 		createVirtualMIDIPort()
@@ -996,6 +1020,14 @@ module.exports = {
 	},
 
 	deleteTrigger(triggerId) {
-		deleteTrigger(triggerId)
+		deleteTrigger(triggerId);
+	},
+
+	toggleInputDisabled(inputId) {
+		toggleInputDisabled(inputId);
+	},
+
+	isInputDisabled(inputId) {
+		return isInputDisabled(inputId);
 	},
 }

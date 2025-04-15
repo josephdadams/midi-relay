@@ -1,7 +1,7 @@
 {
 	"name": "midi-relay",
+	"productName": "midi-relay",
 	"version": "3.4.0",
-	"author": "Joseph Adams <joseph@josephadams.dev>",
 	"description": "Listens for HTTP requests with JSON payload and relays MIDI/MSC commands on local ports.",
 	"main": "index.js",
 	"scripts": {
