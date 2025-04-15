@@ -33,6 +33,14 @@ global.refreshPorts = function() {
 	util.refreshPorts();
 }
 
+global.toggleInputDisabled = function(inputId) {
+	util.toggleInputDisabled(inputId);
+}
+
+global.isInputDisabled = function(inputId) {
+	return util.isInputDisabled(inputId);
+}
+
 global.startRescanInterval = function() {
 	util.startRescanInterval();
 }
