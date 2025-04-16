@@ -440,7 +440,8 @@ function OpenPort(midiport) {
 					body: `MIDI Port Opened: ${midiport}`,
 					showNotification: true,
 				})
-			})
+			}
+		})
 	} catch (error) {
 		notifications.showNotification({
 			title: `Error opening MIDI port: ${midiport}`,
