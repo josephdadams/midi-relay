@@ -2,10 +2,10 @@ const { app, Menu, shell } = require('electron')
 
 const config = require('./config.js')
 
-const _ = require('lodash');
+const _ = require('lodash')
 
-const package_json = require('./package.json');
-const VERSION = package_json.version;
+const package_json = require('./package.json')
+const VERSION = package_json.version
 
 function buildContextMenu() {
 	let contextMenu = Menu.buildFromTemplate([
@@ -19,11 +19,11 @@ function buildContextMenu() {
 		},
 		{
 			label: 'MIDI Inputs',
-			submenu: buildMidiInputsSubmenu()
+			submenu: buildMidiInputsSubmenu(),
 		},
 		{
 			label: 'MIDI Outputs',
-			submenu: buildMidiOutputsSubmenu()
+			submenu: buildMidiOutputsSubmenu(),
 		},
 		{
 			label: 'Rescan for MIDI Ports',
@@ -102,12 +102,12 @@ function buildMidiInputsSubmenu() {
 			checked: !global.isInputDisabled(value.id),
 			enabled: value.id !== 'midi-relay',
 			click: function () {
-				global.toggleInputDisabled(value.id);
-			}
+				global.toggleInputDisabled(value.id)
+			},
 		}
-	});
+	})
 
-	return Menu.buildFromTemplate(items);
+	return Menu.buildFromTemplate(items)
 }
 
 function buildMidiOutputsSubmenu() {
@@ -118,9 +118,9 @@ function buildMidiOutputsSubmenu() {
 			type: 'checkbox',
 			checked: true,
 		}
-	});
+	})
 
-	return Menu.buildFromTemplate(items);
+	return Menu.buildFromTemplate(items)
 }
 
 module.exports = {

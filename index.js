@@ -33,16 +33,16 @@ global.refreshPorts = function () {
 	util.refreshPorts()
 }
 
-global.toggleInputDisabled = function(inputId) {
-	util.toggleInputDisabled(inputId);
+global.toggleInputDisabled = function (inputId) {
+	util.toggleInputDisabled(inputId)
 }
 
-global.isInputDisabled = function(inputId) {
-	return util.isInputDisabled(inputId);
+global.isInputDisabled = function (inputId) {
+	return util.isInputDisabled(inputId)
 }
 
-global.startRescanInterval = function() {
-	util.startRescanInterval();
+global.startRescanInterval = function () {
+	util.startRescanInterval()
 }
 
 global.RESCAN_INTERVAL = null
@@ -137,7 +137,6 @@ app.on('activate', async () => {
 		mainWindow = await createMainWindow()
 	}
 })
-
 ;(async () => {
 	await app.whenReady()
 
