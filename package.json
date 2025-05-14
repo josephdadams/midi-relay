@@ -81,9 +81,9 @@
 		"express": "^4.18.1",
 		"http": "^0.0.1-security",
 		"jquery": "^3.3.1",
-		"jzz": "^1.6.1",
 		"lodash": "^4.17.21",
 		"mdns-js": "^1.0.3",
+		"midi": "^2.0.0",
 		"request": "^2.88.2",
 		"socket.io": "^4.5.1"
 	},

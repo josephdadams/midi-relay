@@ -364,13 +364,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/webmidi@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "@types/webmidi@npm:2.1.0"
-  checksum: 10c0/fd2db43735e8b8f7e6d88aa2393e46ce75fce2cea47b04f3b23a4597a806efbccbbbf9e2afcea98bdc067ccdc92f71d6c19e9bf0d536760da6c8b17c217aa76b
-  languageName: node
-  linkType: hard
-
 "@types/yauzl@npm:^2.9.1":
   version: 2.10.3
   resolution: "@types/yauzl@npm:2.10.3"
@@ -703,6 +696,15 @@ __metadata:
   dependencies:
     tweetnacl: "npm:^0.14.3"
   checksum: 10c0/ddfe85230b32df25aeebfdccfbc61d3bc493ace49c884c9c68575de1f5dcf733a5d7de9def3b0f318b786616b8d85bad50a28b1da1750c43e0012c93badcc148
+  languageName: node
+  linkType: hard
+
+"bindings@npm:~1.5.0":
+  version: 1.5.0
+  resolution: "bindings@npm:1.5.0"
+  dependencies:
+    file-uri-to-path: "npm:1.0.0"
+  checksum: 10c0/3dab2491b4bb24124252a91e656803eac24292473e56554e35bbfe3cc1875332cfa77600c3bac7564049dc95075bf6fcc63a4609920ff2d64d0fe405fcf0d4ba
   languageName: node
   linkType: hard
 
@@ -1958,6 +1960,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"file-uri-to-path@npm:1.0.0":
+  version: 1.0.0
+  resolution: "file-uri-to-path@npm:1.0.0"
+  checksum: 10c0/3b545e3a341d322d368e880e1c204ef55f1d45cdea65f7efc6c6ce9e0c4d22d802d5629320eb779d006fe59624ac17b0e848d83cc5af7cd101f206cb704f5519
+  languageName: node
+  linkType: hard
+
 "filelist@npm:^1.0.4":
   version: 1.0.4
   resolution: "filelist@npm:1.0.4"
@@ -2655,13 +2664,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jazz-midi@npm:^1.7.9":
-  version: 1.7.9
-  resolution: "jazz-midi@npm:1.7.9"
-  checksum: 10c0/3ce8891ae3d43922ba9bf4dcf9cb5676470afb24843848234eea00846f4bdb4918b495e123f416ea6fb353b982f7717672ecc40cfb46242a9dde64e84aee65e5
-  languageName: node
-  linkType: hard
-
 "jquery@npm:^3.3.1":
   version: 3.7.1
   resolution: "jquery@npm:3.7.1"
@@ -2779,16 +2781,6 @@ __metadata:
     json-schema: "npm:0.4.0"
     verror: "npm:1.10.0"
   checksum: 10c0/5e4bca99e90727c2040eb4c2190d0ef1fe51798ed5714e87b841d304526190d960f9772acc7108fa1416b61e1122bcd60e4460c91793dce0835df5852aab55af
-  languageName: node
-  linkType: hard
-
-"jzz@npm:^1.6.1":
-  version: 1.8.7
-  resolution: "jzz@npm:1.8.7"
-  dependencies:
-    "@types/webmidi": "npm:^2.1.0"
-    jazz-midi: "npm:^1.7.9"
-  checksum: 10c0/63c8e85bfc62ca4787ec27a602c59fce00da9c251402c2ba71b3c899b914ccf63de7a654c5651e5bd722b88048effdbc2be568b973aba29a275d16c8b0f6114e
   languageName: node
   linkType: hard
 
@@ -3009,14 +3001,25 @@ __metadata:
     express: "npm:^4.18.1"
     http: "npm:^0.0.1-security"
     jquery: "npm:^3.3.1"
-    jzz: "npm:^1.6.1"
     lodash: "npm:^4.17.21"
     mdns-js: "npm:^1.0.3"
+    midi: "npm:^2.0.0"
     prettier: "npm:^3.3.3"
     request: "npm:^2.88.2"
     socket.io: "npm:^4.5.1"
   languageName: unknown
   linkType: soft
+
+"midi@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "midi@npm:2.0.0"
+  dependencies:
+    bindings: "npm:~1.5.0"
+    nan: "npm:^2.14.2"
+    node-gyp: "npm:latest"
+  checksum: 10c0/7232f4f216998f2bd1c1382f1b6c33e0876def64580c98684d9092c49efccef7409e3b3a3c329d32067c21ea36ddf34041c36fe0eaa6c47de35ef1b5436d2217
+  languageName: node
+  linkType: hard
 
 "mime-db@npm:1.52.0":
   version: 1.52.0
@@ -3283,6 +3286,15 @@ __metadata:
   version: 2.1.3
   resolution: "ms@npm:2.1.3"
   checksum: 10c0/d924b57e7312b3b63ad21fc5b3dc0af5e78d61a1fc7cfb5457edaf26326bf62be5307cc87ffb6862ef1c2b33b0233cdb5d4f01c4c958cc0d660948b65a287a48
+  languageName: node
+  linkType: hard
+
+"nan@npm:^2.14.2":
+  version: 2.22.2
+  resolution: "nan@npm:2.22.2"
+  dependencies:
+    node-gyp: "npm:latest"
+  checksum: 10c0/971f963b8120631880fa47a389c71b00cadc1c1b00ef8f147782a3f4387d4fc8195d0695911272d57438c11562fb27b24c4ae5f8c05d5e4eeb4478ba51bb73c5
   languageName: node
   linkType: hard
 
