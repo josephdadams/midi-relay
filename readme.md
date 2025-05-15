@@ -9,7 +9,7 @@
 
 Created by **Joseph Adams**, distributed under the **MIT License**.  
 
-More info: [www.techministry.blog](http://www.techministry.blog)
+More info: [www.josephadams.dev](http://www.josephadams.dev)
 
 ---
 
