@@ -20,7 +20,10 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: yarn install --production
+        run: yarn install
+
+      - name: Rebuild native modules for Electron
+        run: yarn rebuild
 
       # macOS-specific steps for code signing and notarization
       - name: Import Apple Developer Certificate (macOS only)
