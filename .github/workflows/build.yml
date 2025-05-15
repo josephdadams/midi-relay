@@ -22,6 +22,11 @@ jobs:
       - name: Install ALSA build dependencies (Linux only)
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get update && sudo apt-get install -y libasound2-dev
+
+      - name: Install distutils via Homebrew (macOS only)
+        if: matrix.os == 'macos-latest'
+        run: |
+            brew install python-setuptools
         
       - name: Install dependencies
         run: yarn install
