@@ -19,11 +19,15 @@ jobs:
         with:
           node-version: 20
 
+      - name: Install ALSA build dependencies (Linux only)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev
+        
       - name: Install dependencies
-        run: yarn install
-
+        run: yarn install --frozen-lockfile
+        
       - name: Rebuild native modules for Electron
-        run: yarn rebuild
+        run: npx @electron/rebuild -f -w midi
 
       # macOS-specific steps for code signing and notarization
       - name: Import Apple Developer Certificate (macOS only)
