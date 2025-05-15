@@ -10,9 +10,9 @@ const path = require('path')
 const package_json = require('./package.json')
 const VERSION = package_json.version
 
-var server = null
-var httpServer = null
-var io = null
+let server = null
+let httpServer = null
+let io = null
 
 class API {
 	static start(port) {
@@ -26,8 +26,8 @@ class API {
 
 		server.use(express.static(path.join(__dirname, 'static')))
 
-		server.get('/', function (req, res) {
-			res.sendFile('index.html', { root: __dirname })
+		server.get('/', (req, res) => {
+			res.sendFile('index.html', { root: path.join(__dirname, 'static') })
 		})
 
 		server.get('/version', function (req, res) {
@@ -136,7 +136,7 @@ class API {
 			httpServer.listen(port)
 			console.log('REST/Socket.io API server started on: ' + port)
 		} catch (error) {
-			if (error.toString().indexOf('EADDRINUSE') > -1) {
+			if (error.code === 'EADDRINUSE') {
 				notifications.showNotification({
 					title: 'Error',
 					body: 'Unable to start server. is midi-relay already running?',
