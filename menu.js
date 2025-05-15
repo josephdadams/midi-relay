@@ -30,7 +30,7 @@ ${debugInfo()}`
 
 			openNewGitHubIssue({
 				user: 'josephdadams',
-				repo: 'beacon',
+				repo: 'midi-relay',
 				body,
 			})
 		},
