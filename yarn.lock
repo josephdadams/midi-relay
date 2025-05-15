@@ -54,6 +54,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@electron/node-gyp@git+https://github.com/electron/node-gyp.git#06b29aafb7708acef8b3669835c8a7857ebc92d2":
+  version: 10.2.0-electron.1
+  resolution: "@electron/node-gyp@https://github.com/electron/node-gyp.git#commit=06b29aafb7708acef8b3669835c8a7857ebc92d2"
+  dependencies:
+    env-paths: "npm:^2.2.0"
+    exponential-backoff: "npm:^3.1.1"
+    glob: "npm:^8.1.0"
+    graceful-fs: "npm:^4.2.6"
+    make-fetch-happen: "npm:^10.2.1"
+    nopt: "npm:^6.0.0"
+    proc-log: "npm:^2.0.1"
+    semver: "npm:^7.3.5"
+    tar: "npm:^6.2.1"
+    which: "npm:^2.0.2"
+  bin:
+    node-gyp: ./bin/node-gyp.js
+  checksum: 10c0/e8c97bb5347bf0871312860010b70379069359bf05a6beb9e4d898d0831f9f8447f35b887a86d5241989e804813cf72054327928da38714a6102f791e802c8d9
+  languageName: node
+  linkType: hard
+
 "@electron/notarize@npm:2.5.0, @electron/notarize@npm:^2.5.0":
   version: 2.5.0
   resolution: "@electron/notarize@npm:2.5.0"
@@ -103,6 +123,31 @@ __metadata:
   bin:
     electron-rebuild: lib/cli.js
   checksum: 10c0/7d72ea5a0ab656b356cfe300ccdfdb25c06292a31e1729142243460aebe1a9b4c2a50469c6fb114b756575f8713a0532ec6b128e16eb944e8df446a5786ec581
+  languageName: node
+  linkType: hard
+
+"@electron/rebuild@npm:^3.3.0":
+  version: 3.7.2
+  resolution: "@electron/rebuild@npm:3.7.2"
+  dependencies:
+    "@electron/node-gyp": "git+https://github.com/electron/node-gyp.git#06b29aafb7708acef8b3669835c8a7857ebc92d2"
+    "@malept/cross-spawn-promise": "npm:^2.0.0"
+    chalk: "npm:^4.0.0"
+    debug: "npm:^4.1.1"
+    detect-libc: "npm:^2.0.1"
+    fs-extra: "npm:^10.0.0"
+    got: "npm:^11.7.0"
+    node-abi: "npm:^3.45.0"
+    node-api-version: "npm:^0.2.0"
+    node-gyp: "npm:latest"
+    ora: "npm:^5.1.0"
+    read-binary-file-arch: "npm:^1.0.6"
+    semver: "npm:^7.3.5"
+    tar: "npm:^6.0.5"
+    yargs: "npm:^17.0.1"
+  bin:
+    electron-rebuild: lib/cli.js
+  checksum: 10c0/e561819926c30c7ad284f721d1d66453f59f8e5ea54a7cc9148a00e8ab3cedb6aa57fe4789f39a3454a3eb90b41a5f7d7461246ee3a16c63c8d3db23db94a391
   languageName: node
   linkType: hard
 
@@ -1597,30 +1642,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-rebuild@npm:^3.2.9":
-  version: 3.2.9
-  resolution: "electron-rebuild@npm:3.2.9"
-  dependencies:
-    "@malept/cross-spawn-promise": "npm:^2.0.0"
-    chalk: "npm:^4.0.0"
-    debug: "npm:^4.1.1"
-    detect-libc: "npm:^2.0.1"
-    fs-extra: "npm:^10.0.0"
-    got: "npm:^11.7.0"
-    lzma-native: "npm:^8.0.5"
-    node-abi: "npm:^3.0.0"
-    node-api-version: "npm:^0.1.4"
-    node-gyp: "npm:^9.0.0"
-    ora: "npm:^5.1.0"
-    semver: "npm:^7.3.5"
-    tar: "npm:^6.0.5"
-    yargs: "npm:^17.0.1"
-  bin:
-    electron-rebuild: lib/src/cli.js
-  checksum: 10c0/250ad711d65406910b425fe053ca87b37c61e9b9670cd8ae5db21438c195d7e1096242da94f1b413483e42f02931a1e34151641ba6529a6cb48d551410185b9c
-  languageName: node
-  linkType: hard
-
 "electron-store@npm:^8.0.0":
   version: 8.2.0
   resolution: "electron-store@npm:8.2.0"
@@ -2243,7 +2264,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^8.0.1":
+"glob@npm:^8.0.1, glob@npm:^8.1.0":
   version: 8.1.0
   resolution: "glob@npm:8.1.0"
   dependencies:
@@ -2437,13 +2458,6 @@ __metadata:
     quick-lru: "npm:^5.1.1"
     resolve-alpn: "npm:^1.0.0"
   checksum: 10c0/6a9b72a033e9812e1476b9d776ce2f387bc94bc46c88aea0d5dab6bd47d0a539b8178830e77054dd26d1142c866d515a28a4dc7c3ff4232c88ff2ebe4f5d12d1
-  languageName: node
-  linkType: hard
-
-"http@npm:^0.0.1-security":
-  version: 0.0.1-security
-  resolution: "http@npm:0.0.1-security"
-  checksum: 10c0/c0354c2afb6027a80756a30b1fb06607608c0408d100a5e3610d762dd1a320cb2611b0c3cf5ccb969b80f839e2735237ecc9897841e936d098161c38ee153ee5
   languageName: node
   linkType: hard
 
@@ -2916,21 +2930,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lzma-native@npm:^8.0.5":
-  version: 8.0.6
-  resolution: "lzma-native@npm:8.0.6"
-  dependencies:
-    node-addon-api: "npm:^3.1.0"
-    node-gyp: "npm:latest"
-    node-gyp-build: "npm:^4.2.1"
-    readable-stream: "npm:^3.6.0"
-  bin:
-    lzmajs: bin/lzmajs
-  checksum: 10c0/ff469a29de753445097dabf88ca1a332e47ead39204480b6323472d716657d97c7e3adf68437e54142277c55d4f19d96b49d14553cbf07977cb84833f73e9b6a
-  languageName: node
-  linkType: hard
-
-"make-fetch-happen@npm:^10.0.3":
+"make-fetch-happen@npm:^10.0.3, make-fetch-happen@npm:^10.2.1":
   version: 10.2.1
   resolution: "make-fetch-happen@npm:10.2.1"
   dependencies:
@@ -3026,19 +3026,18 @@ __metadata:
   resolution: "midi-relay@workspace:."
   dependencies:
     "@electron/notarize": "npm:^2.5.0"
+    "@electron/rebuild": "npm:^3.3.0"
     body-parser: "npm:^1.18.3"
     electron: "npm:^25.8.4"
     electron-builder: "npm:^25.1.8"
     electron-context-menu: "npm:^3.0.0"
     electron-debug: "npm:^3.2.0"
     electron-positioner: "npm:^4.1.0"
-    electron-rebuild: "npm:^3.2.9"
     electron-store: "npm:^8.0.0"
     electron-unhandled: "npm:^3.0.2"
     electron-updater: "npm:^6.3.0"
     electron-util: "npm:^0.15.1"
     express: "npm:^4.18.1"
-    http: "npm:^0.0.1-security"
     jquery: "npm:^3.3.1"
     lodash: "npm:^4.17.21"
     mdns-js: "npm:^1.0.3"
@@ -3365,15 +3364,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-abi@npm:^3.0.0":
-  version: 3.75.0
-  resolution: "node-abi@npm:3.75.0"
-  dependencies:
-    semver: "npm:^7.3.5"
-  checksum: 10c0/c43a2409407df3737848fd96202b0a49e15039994aecce963969e9ef7342a8fc544aba94e0bfd8155fb9de5f5fe9a4b6ccad8bf509e7c46caf096fc4491d63f2
-  languageName: node
-  linkType: hard
-
 "node-abi@npm:^3.45.0":
   version: 3.71.0
   resolution: "node-abi@npm:3.71.0"
@@ -3392,41 +3382,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-addon-api@npm:^3.1.0":
-  version: 3.2.1
-  resolution: "node-addon-api@npm:3.2.1"
-  dependencies:
-    node-gyp: "npm:latest"
-  checksum: 10c0/41f21c9d12318875a2c429befd06070ce367065a3ef02952cfd4ea17ef69fa14012732f510b82b226e99c254da8d671847ea018cad785f839a5366e02dd56302
-  languageName: node
-  linkType: hard
-
-"node-api-version@npm:^0.1.4":
-  version: 0.1.4
-  resolution: "node-api-version@npm:0.1.4"
-  dependencies:
-    semver: "npm:^7.3.5"
-  checksum: 10c0/3f46ece55e1a254da2d20d2b7f1be11125d37788607aa807ef75b321de289739accc30df46395bee87f1fef210472eacbe421adaa540f3b6d9e986b289a37674
-  languageName: node
-  linkType: hard
-
 "node-api-version@npm:^0.2.0":
   version: 0.2.0
   resolution: "node-api-version@npm:0.2.0"
   dependencies:
     semver: "npm:^7.3.5"
   checksum: 10c0/a5bdc7559237d2acebadc9ac0f29dd1279726e4226a8b3256ea605f6ad4a5c48528a2b6684d09237d33f0b714a95573d7f14a2a628642d31e05c79395e2c7873
-  languageName: node
-  linkType: hard
-
-"node-gyp-build@npm:^4.2.1":
-  version: 4.8.4
-  resolution: "node-gyp-build@npm:4.8.4"
-  bin:
-    node-gyp-build: bin.js
-    node-gyp-build-optional: optional.js
-    node-gyp-build-test: build-test.js
-  checksum: 10c0/444e189907ece2081fe60e75368784f7782cfddb554b60123743dfb89509df89f1f29c03bbfa16b3a3e0be3f48799a4783f487da6203245fa5bed239ba7407e1
   languageName: node
   linkType: hard
 
@@ -3754,6 +3715,13 @@ __metadata:
   bin:
     prettier: bin/prettier.cjs
   checksum: 10c0/99e076a26ed0aba4ebc043880d0f08bbb8c59a4c6641cdee6cdadf2205bdd87aa1d7823f50c3aea41e015e99878d37c58d7b5f0e663bba0ef047f94e36b96446
+  languageName: node
+  linkType: hard
+
+"proc-log@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "proc-log@npm:2.0.1"
+  checksum: 10c0/701c501429775ce34cec28ef6a1c976537274b42917212fb8a5975ebcecb0a85612907fd7f99ff28ff4c2112bb84a0f4322fc9b9e1e52a8562fcbb1d5b3ce608
   languageName: node
   linkType: hard
 
@@ -4477,7 +4445,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar@npm:^6.0.5, tar@npm:^6.1.11, tar@npm:^6.1.12, tar@npm:^6.1.2":
+"tar@npm:^6.0.5, tar@npm:^6.1.11, tar@npm:^6.1.12, tar@npm:^6.1.2, tar@npm:^6.2.1":
   version: 6.2.1
   resolution: "tar@npm:6.2.1"
   dependencies:

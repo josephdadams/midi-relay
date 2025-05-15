@@ -16,8 +16,8 @@
 		"pack": "electron-builder --dir",
 		"dist": "electron-builder --macos --linux --windows",
 		"distWin": "electron-builder --windows",
-		"rebuild": "electron-rebuild",
-		"postinstall": "electron-rebuild"
+		"rebuild": "npx @electron/rebuild -f -w midi",
+		"postinstall": "npx @electron/rebuild -f -w midi"
 	},
 	"build": {
 		"appId": "com.josephadams.midi-relay",
@@ -81,7 +81,6 @@
 		"electron-updater": "^6.3.0",
 		"electron-util": "^0.15.1",
 		"express": "^4.18.1",
-		"http": "^0.0.1-security",
 		"jquery": "^3.3.1",
 		"lodash": "^4.17.21",
 		"mdns-js": "^1.0.3",
@@ -91,9 +90,12 @@
 	},
 	"devDependencies": {
 		"@electron/notarize": "^2.5.0",
+		"@electron/rebuild": "^3.3.0",
 		"electron": "^25.8.4",
 		"electron-builder": "^25.1.8",
-		"electron-rebuild": "^3.2.9",
 		"prettier": "^3.3.3"
+	},
+	"engines": {
+		"node": ">=18.0.0"
 	}
 }
