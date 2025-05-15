@@ -1,7 +1,7 @@
 {
 	"name": "midi-relay",
 	"productName": "midi-relay",
-	"version": "3.5.1",
+	"version": "3.6.0",
 	"author": {
 		"name": "Joseph Adams",
 		"email": "joseph@josephadams.dev"
@@ -15,7 +15,9 @@
 		"lint": "yarn lint:raw .",
 		"pack": "electron-builder --dir",
 		"dist": "electron-builder --macos --linux --windows",
-		"distWin": "electron-builder --windows"
+		"distWin": "electron-builder --windows",
+		"rebuild": "electron-rebuild",
+		"postinstall": "electron-rebuild"
 	},
 	"build": {
 		"appId": "com.josephadams.midi-relay",
@@ -89,8 +91,9 @@
 	},
 	"devDependencies": {
 		"@electron/notarize": "^2.5.0",
-		"electron": "^33.2.1",
+		"electron": "^25.8.4",
 		"electron-builder": "^25.1.8",
+		"electron-rebuild": "^3.2.9",
 		"prettier": "^3.3.3"
 	}
 }
