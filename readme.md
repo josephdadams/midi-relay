@@ -7,7 +7,7 @@
 
 ## About
 
-Created by **Joseph Adams**, distributed under the **MIT License**.  
+Created by **Joseph Adams**, distributed under the **MIT License**.
 
 More info: [www.josephadams.dev](http://www.josephadams.dev)
 

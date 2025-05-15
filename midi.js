@@ -104,7 +104,7 @@ function OpenPort(portName) {
 
 				inputMap.set(portName, input)
 
-				let port = global.MIDI_INPUTS.find(p => p.name === portName)
+				let port = global.MIDI_INPUTS.find((p) => p.name === portName)
 				if (port) port.opened = true
 
 				notifications.showNotification({
@@ -198,9 +198,7 @@ function BuildMSC(deviceId, commandFormat, command, cue, cueList, cuePath) {
 	let cuePath_hex = null
 
 	try {
-		deviceId_hex = isNaN(parseInt(deviceId))
-			? parseStringDeviceId(deviceId)
-			: parseIntegerDeviceId(parseInt(deviceId))
+		deviceId_hex = isNaN(parseInt(deviceId)) ? parseStringDeviceId(deviceId) : parseIntegerDeviceId(parseInt(deviceId))
 	} catch (err) {
 		console.warn('Error parsing MSC deviceId:', err.message)
 		return []
@@ -905,7 +903,7 @@ function toggleInputDisabled(inputId) {
 	const wasDisabled = disabledInputs.includes(inputId)
 
 	//get name from id
-	const input = global.MIDI_INPUTS.find(p => p.id === inputId)
+	const input = global.MIDI_INPUTS.find((p) => p.id === inputId)
 	if (!input) {
 		console.warn(`MIDI Input with ID ${inputId} not found.`)
 		return
@@ -914,7 +912,7 @@ function toggleInputDisabled(inputId) {
 
 	// Toggle state
 	if (wasDisabled) {
-		disabledInputs = disabledInputs.filter(id => id !== inputId)
+		disabledInputs = disabledInputs.filter((id) => id !== inputId)
 	} else {
 		disabledInputs.push(inputId)
 	}
@@ -923,7 +921,7 @@ function toggleInputDisabled(inputId) {
 
 	// Close the port if it's now disabled
 	if (!wasDisabled) {
-		const disabledInput = global.MIDI_INPUTS.find(p => p.id === inputId && p.opened)
+		const disabledInput = global.MIDI_INPUTS.find((p) => p.id === inputId && p.opened)
 		if (disabledInput) {
 			const input = inputMap.get(disabledInput.name)
 			if (input && typeof input.closePort === 'function') {
