@@ -24,7 +24,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libasound2-dev
         
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
         
       - name: Rebuild native modules for Electron
         run: npx @electron/rebuild -f -w midi
