@@ -57,9 +57,6 @@ contextMenu()
 
 // Note: Must match `build.appId` in package.json
 app.setAppUserModelId(config.get('appUserModelId'))
-if (process.platform === 'darwin') {
-	app.dock.hide()
-}
 
 // Uncomment this before publishing your first version.
 // It's commented out as it throws an error if there are no published versions.
@@ -71,9 +68,6 @@ if (process.platform === 'darwin') {
 //
 // 	autoUpdater.checkForUpdates();
 // }
-
-// Prevent window from being garbage collected
-let mainWindow
 
 const createMainWindow = async () => {
 	global.win = new BrowserWindow({
@@ -103,7 +97,7 @@ const createMainWindow = async () => {
 	global.win.on('closed', () => {
 		// Dereference the window
 		// For multiple windows store them in an array
-		mainWindow = undefined
+		global.win = undefined
 	})
 
 	await global.win.loadFile(path.join(__dirname, 'index.html'))
@@ -117,12 +111,12 @@ if (!app.requestSingleInstanceLock()) {
 }
 
 app.on('second-instance', () => {
-	if (mainWindow) {
-		if (mainWindow.isMinimized()) {
-			mainWindow.restore()
+	if (global.win) {
+		if (global.win.isMinimized()) {
+			global.win.restore()
 		}
 
-		//mainWindow.show();
+		//global.win.show();
 	}
 })
 
@@ -133,29 +127,46 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', async () => {
-	if (!mainWindow) {
-		mainWindow = await createMainWindow()
+	if (!global.win) {
+		global.win = await createMainWindow()
 	}
 })
 ;(async () => {
 	await app.whenReady()
 
-	mainWindow = await createMainWindow()
+	global.win = await createMainWindow()
 
 	const icon = nativeImage.createFromDataURL(config.get('icon'))
-	tray = new Tray(icon.resize({ width: 24, height: 24 }))
+	global.tray = new Tray(icon.resize({ width: 24, height: 24 }))
 
-	tray.setToolTip('midi-relay')
+	global.tray.setToolTip('midi-relay')
+
+	if (process.platform === 'darwin') {
+	app.dock.hide()
+}
 
 	API.start(config.get('apiPort'))
 })()
 
-process.on('uncaughtException', function (err) {
-	notifications.showNotification({
-		title: 'Uncaught Exception',
-		body: `The following uncaught exception has occured:\n\n${err.toString()}\n\nThe program will exit in 10 seconds.`,
-		showNotification: true,
-	})
+function gracefulShutdown() {
+	try {
+		util.shutdownMIDI && util.shutdownMIDI()
+	} catch {}
+}
 
-	setTimeout(process.exit(1), 10000)
+app.on('before-quit', gracefulShutdown)
+app.on('will-quit', gracefulShutdown)
+
+process.on('SIGINT', gracefulShutdown)
+process.on('SIGTERM', gracefulShutdown)
+
+process.on('uncaughtException', (err) => {
+	try {
+		notifications.showNotification({
+			title: 'Uncaught Exception',
+			body: `The following uncaught exception occurred:\n\n${err.stack || err}`,
+			showNotification: true,
+		})
+	} catch {}
+	setTimeout(() => process.exit(1), 10000) // ← invoke later
 })

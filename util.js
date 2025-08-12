@@ -97,4 +97,8 @@ module.exports = {
 	isInputDisabled(inputId) {
 		return midi.isInputDisabled(inputId)
 	},
+
+	shutdownMIDI() {
+		midi.shutdownMIDI()
+	},
 }

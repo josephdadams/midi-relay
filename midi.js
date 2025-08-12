@@ -1,9 +1,6 @@
 //MIDI library variables
 const midi = require('midi')
 
-const request = require('request')
-const http = require('http')
-
 const notifications = require('./notifications.js')
 const contextmenu = require('./contextmenu.js')
 
@@ -11,11 +8,17 @@ const config = require('./config.js')
 
 const _ = require('lodash')
 
+const BOUNCE_MS = 75 //bounceback debounce time in milliseconds
+
 let virtualOutput = new midi.Output()
 let virtualInput = new midi.Input()
 
+let virtualCreated = false
+
 function createVirtualMIDIPort() {
 	try {
+		if (virtualCreated) return
+		virtualCreated = true
 		virtualOutput.openVirtualPort('midi-relay')
 		virtualInput.openVirtualPort('midi-relay')
 
@@ -49,51 +52,100 @@ function GetPorts(showNotification) {
 	global.MIDI_OUTPUTS = []
 	global.MIDI_INPUTS = []
 
+	outputMap.clear()
+
 	const output = new midi.Output()
 	const input = new midi.Input()
 
 	for (let i = 0; i < output.getPortCount(); i++) {
-		const name = output.getPortName(i)
+		let name = ''
+		try {
+			name = output.getPortName(i)
+		} catch (error) {
+			console.warn(`Error getting output port name at index ${i}:`, error)
+			continue // Skip this port if there's an error
+		}
+
 		global.MIDI_OUTPUTS.push({ id: name, name })
 		outputMap.set(name, i)
 	}
 
+	// Build current port-name sets
+	const currentInputs = new Set()
 	for (let i = 0; i < input.getPortCount(); i++) {
-		const name = input.getPortName(i)
-		const alreadyExists = global.MIDI_INPUTS.find((p) => p.name === name)
-		if (!alreadyExists) {
-			global.MIDI_INPUTS.push({ id: i, name, opened: false })
+		let name = ''
+		try {
+			name = input.getPortName(i)
+		} catch (error) {
+			console.warn(`Error getting input port name at index ${i}:`, error)
+			continue // Skip this port if there's an error
+		}
+		currentInputs.add(name)
+		const opened = inputMap.has(name)
+		global.MIDI_INPUTS.push({ id: name, name, opened })
+	}
+
+	// Close & remove any inputs that no longer exist
+	for (const [name, inst] of inputMap.entries()) {
+		if (!currentInputs.has(name)) {
+			try {
+				inst.removeAllListeners('message')
+			} catch {}
+			try {
+				inst.closePort()
+			} catch {}
+			inputMap.delete(name)
 		}
 	}
 
-	let portsToOpen = global.MIDI_INPUTS.filter((port) => !isInputDisabled(port.id) && !port.opened)
-	portsToOpen.forEach((port) => OpenPort(port.name))
+	const portsToOpen = global.MIDI_INPUTS.filter((p) => !isInputDisabled(p.name) && !p.opened)
+	portsToOpen.forEach((p) => OpenPort(p.name))
 
 	loadMIDITriggers()
 
-	if (showNotification) {
-		let bodyText = global.MIDI_OUTPUTS.map((port) => port.name).join('\n')
-		notifications.showNotification({
-			title: `${global.MIDI_OUTPUTS.length} MIDI Output Ports Found.`,
-			body: bodyText,
-			showNotification: true,
-		})
-	}
+	let bodyText = global.MIDI_OUTPUTS.map((port) => port.name).join('\n')
+	notifications.showNotification({
+		title: `${global.MIDI_OUTPUTS.length} MIDI Output Ports Found.`,
+		body: bodyText,
+		showNotification: showNotification,
+	})
 
 	contextmenu.buildContextMenu()
 }
 
 function OpenPort(portName) {
 	if (inputMap.has(portName)) {
-		// Already opened
+		console.log(`MIDI port ${portName} already opened (inputMap).`)
 		return
+	}
+
+	console.log(`Opening MIDI port: ${portName}`)
+
+	//check if already opened in MIDI_INPUTS
+	let portInfo = global.MIDI_INPUTS.find((p) => p.name === portName)
+	if (!portInfo) {
+		console.warn(`MIDI Input port ${portName} not found.`)
+		return
+	} else {
+		if (portInfo.opened) {
+			// Already opened
+			console.log(`MIDI port ${portName} is already opened.`)
+			return
+		}
 	}
 
 	const input = new midi.Input()
 	const portCount = input.getPortCount()
 
 	for (let i = 0; i < portCount; i++) {
-		if (input.getPortName(i) === portName) {
+		let inputPortName = ''
+		try {
+			inputPortName = input.getPortName(i)
+		} catch (error) {
+			console.warn(`Error getting input port name at index ${i}:`, error)
+			continue // Skip this port if there's an error
+		}
+		if (inputPortName === portName) {
 			try {
 				input.openPort(i)
 				input.ignoreTypes(false, false, false)
@@ -162,7 +214,13 @@ function sendMIDI(midiObj, callback) {
 			message = [0xe0 + midiObj.channel, lsb, msb]
 			break
 		case 'sysex':
-			message = midiObj.message.split(',').map((v) => parseInt(v))
+			const parts = (midiObj.message || '')
+				.split(',')
+				.map((s) => s.trim())
+				.filter(Boolean)
+			message = parts.map((s) => (s.startsWith('0x') ? parseInt(s, 16) : parseInt(s, 10))).filter(Number.isFinite)
+			if (message[0] !== 0xf0) message.unshift(0xf0)
+			if (message[message.length - 1] !== 0xf7) message.push(0xf7)
 			break
 		case 'msc':
 			message = BuildMSC(
@@ -181,6 +239,9 @@ function sendMIDI(midiObj, callback) {
 
 	try {
 		output.sendMessage(message)
+		// add bounceback entry (comma-joined like receive path)
+		const raw = Array.isArray(message) ? message.join(',') : String(message)
+		AddToLog(midiObj.midiport, midiObj.midicommand, raw)
 		callback({ result: 'midi-sent-successfully', midiObj, message })
 	} catch (err) {
 		callback({ result: 'error', error: err.message })
@@ -325,8 +386,7 @@ function stringToByteArray(str) {
 
 	var ret = []
 	for (var i = 0; i < str.length; i++) {
-		var char = parseInt(str.charCodeAt(i))
-		ret.push(char)
+		ret.push(str.charCodeAt(i))
 	}
 	return ret
 }
@@ -351,10 +411,20 @@ function parseStringDeviceId(deviceId) {
 
 function parseIntegerDeviceId(deviceId) {
 	if (deviceId >= 0x00 && deviceId <= 0x6f) {
-		return _.parseInt(deviceId)
+		return Number(deviceId)
 	}
 
 	throw new Error('Integer deviceIds must be between 0 (0x00) and 111 (0x6F)')
+}
+
+function AddToLog(midiPort, midiCommand, message) {
+	if (!global.MIDIRelaysLog) global.MIDIRelaysLog = []
+	global.MIDIRelaysLog.push({
+		midiport: midiPort,
+		midicommand: midiCommand,
+		message,
+		datetime: Date.now(),
+	})
 }
 
 function CheckLog(midiPort, midiCommand, message, time) {
@@ -369,7 +439,7 @@ function CheckLog(midiPort, midiCommand, message, time) {
 			if (global.MIDIRelaysLog[i].midicommand === midiCommand) {
 				if (global.MIDIRelaysLog[i].message === message) {
 					//check to see when it arrived, it could be a bounceback
-					if (time - global.MIDIRelaysLog[i].datetime < 15) {
+					if (time - global.MIDIRelaysLog[i].datetime < BOUNCE_MS) {
 						//bounceback, send false
 						passed = false
 					}
@@ -397,10 +467,14 @@ function CleanUpLog() {
 			i--
 		}
 	}
+
+	if (global.MIDIRelaysLog.length > 1000) {
+		global.MIDIRelaysLog.splice(0, global.MIDIRelaysLog.length - 1000)
+	}
 }
 
 function loadMIDITriggers() {
-	let Triggers = config.get('triggers')
+	let Triggers = config.get('triggers') || []
 
 	for (let i = 0; i < Triggers.length; i++) {
 		let port = global.MIDI_INPUTS.find(({ name }) => name === Triggers[i].midiport)
@@ -408,7 +482,6 @@ function loadMIDITriggers() {
 		if (port) {
 			if (!port.opened) {
 				OpenPort(Triggers[i].midiport)
-				break
 			}
 		}
 	}
@@ -468,90 +541,128 @@ function receiveMIDI(portName, message) {
 			break
 		default:
 			midiObj.midicommand = 'unsupported'
+			break
 	}
 
 	processMIDI(midiObj)
-	global.sendMIDIBack(midiObj)
+	if (typeof global.sendMIDIBack === 'function') {
+		global.sendMIDIBack(midiObj)
+	}
 }
 
 function processMIDI(midiObj) {
-	let Triggers = config.get('triggers')
+	console.log('Processing MIDI message:', midiObj)
+	if (midiObj.midicommand === 'unsupported') {
+		console.log('Unsupported MIDI command:', midiObj.midicommand)
+		return
+	}
 
-	let port = global.MIDI_INPUTS.find(({ name }) => name === midiObj.midiport)
+	let Triggers = config.get('triggers') || []
 
-	if (port.opened) {
-		let passed = true
-		passed = CheckLog(midiObj.midiport, midiObj.midicommand, midiObj.rawmessage, Date.now()) //debounce, make sure we didn't already process this message
-		if (passed) {
-			for (let i = 0; i < Triggers.length; i++) {
-				if (Triggers[i].midiport === midiObj.midiport && Triggers[i].midicommand === midiObj.midicommand) {
-					switch (Triggers[i].midicommand) {
-						case 'noteon':
-						case 'noteoff':
-							if (parseInt(Triggers[i].channel) === parseInt(midiObj.channel) || Triggers[i].channel === '*') {
-								if (parseInt(Triggers[i].note) === parseInt(midiObj.note)) {
-									if (parseInt(Triggers[i].velocity) === parseInt(midiObj.velocity) || Triggers[i].velocity === '*') {
-										//trigger is a match, run the trigger
-										setTimeout(runMIDITrigger, 1, Triggers[i])
-									}
+	// Trust inputMap for “is opened?”
+	const isOpened = inputMap.has(midiObj.midiport)
+
+	// Also try to find the info row, but don’t assume it exists
+	const port = global.MIDI_INPUTS.find((p) => p.name === midiObj.midiport)
+
+	const actuallyOpen = isOpened || (port && port.opened)
+	if (!actuallyOpen) {
+		console.warn(`MIDI port ${midiObj.midiport} is not opened. Skipping processing.`)
+		return
+	}
+
+	console.log('Triggers: ', Triggers)
+
+	// Check if the message is already in the log to prevent bouncebacks
+	let passed = CheckLog(midiObj.midiport, midiObj.midicommand, midiObj.rawmessage, Date.now()) //debounce, make sure we didn't already process this message
+	if (passed) {
+		console.log('MIDI message passed debounce check:', midiObj.rawmessage)
+		console.log('Checking triggers for matches...')
+		let matched = false
+		for (let i = 0; i < Triggers.length; i++) {
+			if (Triggers[i].midiport === midiObj.midiport && Triggers[i].midicommand === midiObj.midicommand) {
+				switch (Triggers[i].midicommand) {
+					case 'noteon':
+					case 'noteoff':
+						if (parseInt(Triggers[i].channel) === parseInt(midiObj.channel) || Triggers[i].channel === '*') {
+							if (parseInt(Triggers[i].note) === parseInt(midiObj.note)) {
+								if (parseInt(Triggers[i].velocity) === parseInt(midiObj.velocity) || Triggers[i].velocity === '*') {
+									//trigger is a match, run the trigger
+									setTimeout(runMIDITrigger, 1, Triggers[i])
+									matched = true
 								}
 							}
-							break
-						case 'aftertouch':
-							if (parseInt(Triggers[i].channel) === parseInt(midiObj.channel) || Triggers[i].channel === '*') {
-								if (parseInt(Triggers[i].note) === parseInt(midiObj.note)) {
-									if (parseInt(Triggers[i].value) === parseInt(midiObj.value) || Triggers[i].value === '*') {
-										//trigger is a match, run the trigger
-										setTimeout(runMIDITrigger, 1, Triggers[i])
-									}
-								}
-							}
-							break
-						case 'cc':
-							if (parseInt(Triggers[i].channel) === parseInt(midiObj.channel) || Triggers[i].channel === '*') {
-								if (parseInt(Triggers[i].controller) === parseInt(midiObj.controller)) {
-									if (parseInt(Triggers[i].value) === parseInt(midiObj.value) || Triggers[i].value === '*') {
-										//trigger is a match, run the trigger
-										setTimeout(runMIDITrigger, 1, Triggers[i])
-									}
-								}
-							}
-							break
-						case 'pc':
-							if (parseInt(Triggers[i].channel) === parseInt(midiObj.channel) || Triggers[i].channel === '*') {
+						}
+						break
+					case 'aftertouch':
+						if (parseInt(Triggers[i].channel) === parseInt(midiObj.channel) || Triggers[i].channel === '*') {
+							if (parseInt(Triggers[i].note) === parseInt(midiObj.note)) {
 								if (parseInt(Triggers[i].value) === parseInt(midiObj.value) || Triggers[i].value === '*') {
 									//trigger is a match, run the trigger
 									setTimeout(runMIDITrigger, 1, Triggers[i])
+									matched = true
 								}
 							}
-							break
-						case 'pressure':
-							if (parseInt(Triggers[i].channel) === parseInt(midiObj.channel) || Triggers[i].channel === '*') {
+						}
+						break
+					case 'cc':
+						if (parseInt(Triggers[i].channel) === parseInt(midiObj.channel) || Triggers[i].channel === '*') {
+							if (parseInt(Triggers[i].controller) === parseInt(midiObj.controller)) {
 								if (parseInt(Triggers[i].value) === parseInt(midiObj.value) || Triggers[i].value === '*') {
 									//trigger is a match, run the trigger
 									setTimeout(runMIDITrigger, 1, Triggers[i])
+									matched = true
 								}
 							}
-							break
-						case 'pitchbend':
-							if (parseInt(Triggers[i].channel) === parseInt(midiObj.channel) || Triggers[i].channel === '*') {
-								if (parseInt(Triggers[i].value) === parseInt(midiObj.value) || Triggers[i].value === '*') {
-									//trigger is a match, run the trigger
-									setTimeout(runMIDITrigger, 1, Triggers[i])
-								}
-							}
-							break
-						case 'sysex':
-							if (Triggers[i].message === midiObj.message) {
+						}
+						break
+					case 'pc':
+						if (parseInt(Triggers[i].channel) === parseInt(midiObj.channel) || Triggers[i].channel === '*') {
+							if (parseInt(Triggers[i].value) === parseInt(midiObj.value) || Triggers[i].value === '*') {
+								//trigger is a match, run the trigger
 								setTimeout(runMIDITrigger, 1, Triggers[i])
+								matched = true
 							}
-							break
-						default:
-							break
-					}
+						}
+						break
+					case 'pressure':
+						if (parseInt(Triggers[i].channel) === parseInt(midiObj.channel) || Triggers[i].channel === '*') {
+							if (parseInt(Triggers[i].value) === parseInt(midiObj.value) || Triggers[i].value === '*') {
+								//trigger is a match, run the trigger
+								setTimeout(runMIDITrigger, 1, Triggers[i])
+								matched = true
+							}
+						}
+						break
+					case 'pitchbend':
+						if (parseInt(Triggers[i].channel) === parseInt(midiObj.channel) || Triggers[i].channel === '*') {
+							if (parseInt(Triggers[i].value) === parseInt(midiObj.value) || Triggers[i].value === '*') {
+								//trigger is a match, run the trigger
+								setTimeout(runMIDITrigger, 1, Triggers[i])
+								matched = true
+							}
+						}
+						break
+					case 'sysex':
+						if (Triggers[i].message === midiObj.message) {
+							setTimeout(runMIDITrigger, 1, Triggers[i])
+							matched = true
+						}
+						break
+					default:
+						break
 				}
 			}
 		}
+
+		if (!matched) {
+			console.log('No matching triggers found for MIDI message:', midiObj.rawmessage)
+			return
+		}
+		AddToLog(midiObj.midiport, midiObj.midicommand, midiObj.rawmessage) //add to log after processing
+	}
+	else {
+		console.log('MIDI message did not pass debounce check, skipping processing:', midiObj.rawmessage)
 	}
 }
 
@@ -565,40 +676,22 @@ function runMIDITrigger(midiTriggerObj) {
 	}
 }
 
-function runMIDITrigger_HTTP(midiTriggerObj) {
+async function runMIDITrigger_HTTP(midiTriggerObj) {
+	const url = midiTriggerObj.url
 	if (midiTriggerObj.jsondata) {
-		//if JSON data is present, send as HTTP POST with the data, otherwise send it as GET
+		const body =
+			typeof midiTriggerObj.jsondata === 'string' ? midiTriggerObj.jsondata : JSON.stringify(midiTriggerObj.jsondata)
 		try {
-			request.post(
-				midiTriggerObj.url,
-				{ json: JSON.parse(midiTriggerObj.jsondata), strictSSL: false },
-				function (error, response, body) {
-					if (!error && response.statusCode == 200) {
-						console.log(body)
-					} else {
-						console.log(error)
-						console.log(response)
-						console.log(body)
-					}
-				},
-			)
-		} catch (error) {}
+			await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body })
+		} catch (error) {
+			safeNotify({ title: 'HTTP Trigger Error', body: `POST ${url} failed: ${error.message}`, showNotification: true })
+		}
 	} else {
-		http
-			.get(midiTriggerObj.url, (resp) => {
-				let data = ''
-
-				resp.on('data', (chunk) => {
-					data += chunk
-				})
-
-				resp.on('end', () => {
-					console.log(data)
-				})
-			})
-			.on('error', (err) => {
-				console.log('Error: ' + err.message)
-			})
+		try {
+			await fetch(url)
+		} catch (error) {
+			safeNotify({ title: 'HTTP Trigger Error', body: `GET ${url} failed: ${error.message}`, showNotification: true })
+		}
 	}
 }
 
@@ -716,7 +809,11 @@ function addTrigger(triggerObj) {
 			}
 			break
 		case 'sysex':
-			let msgArray = triggerObj.message.replace(' ', ',').split(',')
+			const msgArray = String(triggerObj.message || '')
+				.replace(/[;\s]+/g, ',') // spaces/semicolons → commas
+				.split(',')
+				.map((s) => s.trim())
+				.filter(Boolean)
 			triggerObj.message = ''
 			for (let i = 0; i < msgArray.length; i++) {
 				if (isHex(msgArray[i])) {
@@ -726,7 +823,7 @@ function addTrigger(triggerObj) {
 					//assume dec
 					triggerObj.message += parseInt(msgArray[i])
 				}
-				if (i < msgArray - 1) {
+				if (i < msgArray.length - 1) {
 					triggerObj.message += ','
 				}
 			}
@@ -735,7 +832,7 @@ function addTrigger(triggerObj) {
 			break
 	}
 
-	let Triggers = config.get('triggers')
+	let Triggers = config.get('triggers') || []
 	Triggers.push(triggerObj)
 	config.set('triggers', Triggers)
 
@@ -752,7 +849,7 @@ function addTrigger(triggerObj) {
 
 function updateTrigger(triggerObj) {
 	//update the Trigger in the array
-	let Triggers = config.get('triggers')
+	let Triggers = config.get('triggers') || []
 
 	switch (triggerObj.midicommand) {
 		case 'noteon':
@@ -850,7 +947,11 @@ function updateTrigger(triggerObj) {
 			}
 			break
 		case 'sysex':
-			let msgArray = triggerObj.message.replace(' ', ',').split(',')
+			const msgArray = String(triggerObj.message || '')
+				.replace(/[;\s]+/g, ',') // spaces/semicolons → commas
+				.split(',')
+				.map((s) => s.trim())
+				.filter(Boolean)
 			triggerObj.message = ''
 			for (let i = 0; i < msgArray.length; i++) {
 				if (isHex(msgArray[i])) {
@@ -860,7 +961,7 @@ function updateTrigger(triggerObj) {
 					//assume dec
 					triggerObj.message += parseInt(msgArray[i])
 				}
-				if (i < msgArray - 1) {
+				if (i < msgArray.length - 1) {
 					triggerObj.message += ','
 				}
 			}
@@ -888,7 +989,7 @@ function updateTrigger(triggerObj) {
 
 function deleteTrigger(triggerID) {
 	//delete the specified trigger from the array
-	let Triggers = config.get('triggers')
+	let Triggers = config.get('triggers') || []
 	Triggers.find((o, i) => {
 		if (o.id === triggerID) {
 			Triggers.splice(i, 1)
@@ -898,35 +999,33 @@ function deleteTrigger(triggerID) {
 	config.set('triggers', Triggers)
 }
 
-function toggleInputDisabled(inputId) {
-	let disabledInputs = config.get('disabledInputs')
-	const wasDisabled = disabledInputs.includes(inputId)
-
-	//get name from id
-	const input = global.MIDI_INPUTS.find((p) => p.id === inputId)
-	if (!input) {
-		console.warn(`MIDI Input with ID ${inputId} not found.`)
-		return
-	}
-	const inputName = input.name
+function toggleInputDisabled(inputName) {
+	let disabledInputs = config.get('disabledInputs') || []
+	const wasDisabled = disabledInputs.includes(inputName)
 
 	// Toggle state
 	if (wasDisabled) {
-		disabledInputs = disabledInputs.filter((id) => id !== inputId)
+		disabledInputs = disabledInputs.filter((name) => name !== inputName)
 	} else {
-		disabledInputs.push(inputId)
+		disabledInputs.push(inputName)
 	}
 
 	config.set('disabledInputs', disabledInputs)
 
 	// Close the port if it's now disabled
 	if (!wasDisabled) {
-		const disabledInput = global.MIDI_INPUTS.find((p) => p.id === inputId && p.opened)
+		const disabledInput = global.MIDI_INPUTS.find((p) => p.name === inputName && p.opened)
 		if (disabledInput) {
 			const input = inputMap.get(disabledInput.name)
 			if (input && typeof input.closePort === 'function') {
 				try {
 					input.closePort()
+					const inst = inputMap.get(disabledInput.name)
+					if (inst) {
+						try {
+							inst.removeAllListeners('message')
+						} catch {}
+					}
 					inputMap.delete(disabledInput.name)
 					disabledInput.opened = false
 				} catch (err) {
@@ -947,8 +1046,28 @@ function toggleInputDisabled(inputId) {
 	refreshPorts()
 }
 
-function isInputDisabled(inputId) {
-	return config.get('disabledInputs').includes(inputId)
+function isInputDisabled(inputName) {
+	let disabledInputs = config.get('disabledInputs') || []
+	return disabledInputs.includes(inputName)
+}
+
+function shutdownMIDI() {
+	try {
+		virtualInput.removeAllListeners('message')
+		virtualInput.closePort()
+	} catch {}
+	try {
+		virtualOutput.closePort()
+	} catch {}
+	for (const [name, inst] of inputMap.entries()) {
+		try {
+			inst.removeAllListeners('message')
+		} catch {}
+		try {
+			inst.closePort()
+		} catch {}
+	}
+	inputMap.clear()
 }
 
 module.exports = {
@@ -977,11 +1096,15 @@ module.exports = {
 		deleteTrigger(triggerId)
 	},
 
-	toggleInputDisabled(inputId) {
-		toggleInputDisabled(inputId)
+	toggleInputDisabled(inputName) {
+		toggleInputDisabled(inputName)
 	},
 
-	isInputDisabled(inputId) {
-		return isInputDisabled(inputId)
+	isInputDisabled(inputName) {
+		return isInputDisabled(inputName)
+	},
+
+	shutdownMIDI() {
+		shutdownMIDI()
 	},
 }
