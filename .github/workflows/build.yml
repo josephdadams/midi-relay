@@ -26,11 +26,11 @@ jobs:
       - name: Install distutils via Homebrew (macOS only)
         if: matrix.os == 'macos-latest'
         run: |
-            brew install python-setuptools
-        
+          brew install python-setuptools
+
       - name: Install dependencies
         run: yarn install
-        
+
       - name: Rebuild native modules via postinstall
         run: yarn postinstall
 
