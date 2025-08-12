@@ -31,8 +31,8 @@ jobs:
       - name: Install dependencies
         run: yarn install
         
-      - name: Rebuild native modules for Electron
-        run: npx @electron/rebuild -f -w midi
+      - name: Rebuild native modules via postinstall
+        run: yarn postinstall
 
       # macOS-specific steps for code signing and notarization
       - name: Import Apple Developer Certificate (macOS only)

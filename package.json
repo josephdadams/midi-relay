@@ -15,9 +15,7 @@
 		"lint": "yarn lint:raw .",
 		"pack": "electron-builder --dir",
 		"dist": "electron-builder --macos --linux --windows",
-		"distWin": "electron-builder --windows",
-		"rebuild": "npx @electron/rebuild -f -w midi",
-		"postinstall": "npx @electron/rebuild -f -w midi"
+		"postinstall": "electron-builder install-app-deps"
 	},
 	"build": {
 		"appId": "com.josephadams.midi-relay",
