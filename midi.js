@@ -8,12 +8,18 @@ const config = require('./config.js')
 
 const _ = require('lodash')
 
-const BOUNCE_MS = 75 //bounceback debounce time in milliseconds
+const BOUNCE_MS = 300
+
+const COLD_START_MS = 300;
+const appStartedAt = Date.now();//bounceback debounce time in milliseconds
 
 let virtualOutput = new midi.Output()
 let virtualInput = new midi.Input()
 
 let virtualCreated = false
+
+const drainingInputs = new Map(); // portName -> untilTimestamp (ms)
+const DRAIN_MS = 200;
 
 function createVirtualMIDIPort() {
 	try {
@@ -150,9 +156,14 @@ function OpenPort(portName) {
 				input.openPort(i)
 				input.ignoreTypes(false, false, false)
 
-				input.on('message', (deltaTime, message) => {
-					receiveMIDI(portName, message)
-				})
+				drainingInputs.set(portName, Date.now() + DRAIN_MS);
+				input.on('message', (_, message) => {
+					const until = drainingInputs.get(portName) || 0;
+					if (Date.now() < until) return;     // drop stale burst
+					receiveMIDI(portName, message);
+				});
+				// when DRAIN_MS elapses, stop tracking
+				setTimeout(() => drainingInputs.delete(portName), DRAIN_MS + 10);
 
 				inputMap.set(portName, input)
 
@@ -507,6 +518,11 @@ function receiveMIDI(portName, message) {
 	console.log('Data2:', data2)
 	console.log('Raw message:', message.join(','))
 
+	if (Date.now() - appStartedAt < COLD_START_MS) {
+		console.log('Ignoring MIDI message during cold start period.')
+		return
+	}
+
 	switch (status) {
 		case 8:
 			midiObj.midicommand = 'noteoff'
@@ -551,6 +567,7 @@ function receiveMIDI(portName, message) {
 }
 
 function processMIDI(midiObj) {
+	console.log('Current Time: ', new Date().toISOString())
 	console.log('Processing MIDI message:', midiObj)
 	if (midiObj.midicommand === 'unsupported') {
 		console.log('Unsupported MIDI command:', midiObj.midicommand)
@@ -571,7 +588,7 @@ function processMIDI(midiObj) {
 		return
 	}
 
-	console.log('Triggers: ', Triggers)
+	//console.log('Triggers: ', Triggers)
 
 	// Check if the message is already in the log to prevent bouncebacks
 	let passed = CheckLog(midiObj.midiport, midiObj.midicommand, midiObj.rawmessage, Date.now()) //debounce, make sure we didn't already process this message
