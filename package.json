@@ -82,7 +82,7 @@
 		"electron-util": "^0.15.1",
 		"express": "^4.18.1",
 		"jquery": "^3.3.1",
-		"lodash": "^4.17.21",
+		"lodash": "^4.17.23",
 		"mdns-js": "^1.0.3",
 		"midi": "^2.0.0",
 		"request": "^2.88.2",
