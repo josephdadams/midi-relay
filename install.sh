@@ -66,18 +66,17 @@ echo ""
 echo "Preparing installation directory..."
 
 if [ -d "$INSTALL_DIR/.git" ]; then
-  echo "Git repo detected — pulling latest..."
+  echo "Existing repo detected — resetting to origin/main..."
   cd $INSTALL_DIR
-  sudo -u $SERVICE_USER git pull
+  sudo git fetch origin
+  sudo git reset --hard origin/main
+  sudo git clean -fd
+  sudo chown -R $SERVICE_USER:$SERVICE_USER $INSTALL_DIR
 else
-  echo "Removing existing directory (if any)..."
+  echo "Fresh install — cloning repository..."
   sudo rm -rf $INSTALL_DIR
-
-  echo "Recreating directory with correct ownership..."
   sudo mkdir -p $INSTALL_DIR
   sudo chown -R $SERVICE_USER:$SERVICE_USER $INSTALL_DIR
-
-  echo "Cloning repository..."
   sudo -u $SERVICE_USER git clone $REPO_URL $INSTALL_DIR
 fi
 
