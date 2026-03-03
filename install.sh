@@ -68,9 +68,9 @@ echo "Preparing installation directory..."
 if [ -d "$INSTALL_DIR/.git" ]; then
   echo "Existing repo detected — resetting to origin/main..."
   cd $INSTALL_DIR
-  sudo git fetch origin
-  sudo git reset --hard origin/main
-  sudo git clean -fd
+  sudo -u $SERVICE_USER git fetch origin
+  sudo -u $SERVICE_USER git reset --hard origin/main
+  sudo -u $SERVICE_USER git clean -fd
   sudo chown -R $SERVICE_USER:$SERVICE_USER $INSTALL_DIR
 else
   echo "Fresh install — cloning repository..."
