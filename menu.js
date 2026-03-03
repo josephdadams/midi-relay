@@ -11,11 +11,11 @@ const showPreferences = () => {
 const helpSubmenu = [
 	openUrlMenuItem({
 		label: 'Website',
-		url: 'https://github.com/josephdadams/beacon',
+		url: 'https://github.com/josephdadams/midi-relay',
 	}),
 	openUrlMenuItem({
 		label: 'Source Code',
-		url: 'https://github.com/josephdadams/beacon',
+		url: 'https://github.com/josephdadams/midi-relay',
 	}),
 	{
 		label: 'Report an Issue…',
