@@ -15,7 +15,7 @@
 		"lint": "yarn lint:raw .",
 		"pack": "electron-builder --dir",
 		"dist": "electron-builder --macos --linux --windows",
-		"postinstall": "electron-builder install-app-deps"
+		"postinstall": "node scripts/postinstall.js"
 	},
 	"build": {
 		"appId": "com.josephadams.midi-relay",
@@ -72,10 +72,10 @@
 	},
 	"dependencies": {
 		"body-parser": "^1.18.3",
+		"conf": "^15.1.0",
 		"electron-context-menu": "^3.0.0",
 		"electron-debug": "^3.2.0",
 		"electron-positioner": "^4.1.0",
-		"electron-store": "^8.0.0",
 		"electron-unhandled": "^3.0.2",
 		"electron-updater": "^6.3.0",
 		"electron-util": "^0.15.1",

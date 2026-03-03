@@ -85,11 +85,7 @@ cd $INSTALL_DIR
 
 echo ""
 echo "Installing project dependencies..."
-sudo -u $SERVICE_USER yarn install
-
-echo ""
-echo "Rebuilding native modules for ARM64..."
-sudo -u $SERVICE_USER npx electron-rebuild -f -w midi || true
+sudo -u $SERVICE_USER yarn install --production
 
 echo ""
 echo "Creating systemd service..."

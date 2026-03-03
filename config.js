@@ -1,7 +1,7 @@
 'use strict'
-const Store = require('electron-store')
+const Conf = require('conf')
 
-module.exports = new Store({
+module.exports = new Conf({
 	defaults: {
 		appUserModelId: 'com.josephadams.midi-relay',
 		apiPort: 4000,
