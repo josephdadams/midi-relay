@@ -63,21 +63,21 @@ sudo mkdir -p $INSTALL_DIR
 sudo chown -R $SERVICE_USER:$SERVICE_USER $INSTALL_DIR
 
 echo ""
-echo "Cloning or updating repository..."
-
-echo ""
 echo "Preparing installation directory..."
 
 if [ -d "$INSTALL_DIR/.git" ]; then
   echo "Git repo detected — pulling latest..."
   cd $INSTALL_DIR
   sudo -u $SERVICE_USER git pull
-elif [ -d "$INSTALL_DIR" ] && [ "$(ls -A $INSTALL_DIR)" ]; then
-  echo "Directory exists but is not a git repo."
-  echo "Removing existing directory..."
-  sudo rm -rf $INSTALL_DIR
-  sudo -u $SERVICE_USER git clone $REPO_URL $INSTALL_DIR
 else
+  echo "Removing existing directory (if any)..."
+  sudo rm -rf $INSTALL_DIR
+
+  echo "Recreating directory with correct ownership..."
+  sudo mkdir -p $INSTALL_DIR
+  sudo chown -R $SERVICE_USER:$SERVICE_USER $INSTALL_DIR
+
+  echo "Cloning repository..."
   sudo -u $SERVICE_USER git clone $REPO_URL $INSTALL_DIR
 fi
 
