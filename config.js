@@ -2,6 +2,7 @@
 const Conf = require('conf').default
 
 module.exports = new Conf({
+	projectName: 'midi-relay',
 	defaults: {
 		appUserModelId: 'com.josephadams.midi-relay',
 		apiPort: 4000,
