@@ -61,7 +61,7 @@ For rack deployments, automation servers, and embedded systems, run
 Run this directly on your Raspberry Pi:
 
 ``` bash
-curl -fsSL https://raw.githubusercontent.com/josephdadams/midi-relay/main/install-midi-relay.sh | bash
+curl -fsSL https://raw.githubusercontent.com/josephdadams/midi-relay/main/install.sh | bash
 ```
 
 The installer will:

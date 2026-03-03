@@ -65,10 +65,18 @@ sudo chown -R $SERVICE_USER:$SERVICE_USER $INSTALL_DIR
 echo ""
 echo "Cloning or updating repository..."
 
+echo ""
+echo "Preparing installation directory..."
+
 if [ -d "$INSTALL_DIR/.git" ]; then
-  echo "Repo exists — pulling latest..."
+  echo "Git repo detected — pulling latest..."
   cd $INSTALL_DIR
   sudo -u $SERVICE_USER git pull
+elif [ -d "$INSTALL_DIR" ] && [ "$(ls -A $INSTALL_DIR)" ]; then
+  echo "Directory exists but is not a git repo."
+  echo "Removing existing directory..."
+  sudo rm -rf $INSTALL_DIR
+  sudo -u $SERVICE_USER git clone $REPO_URL $INSTALL_DIR
 else
   sudo -u $SERVICE_USER git clone $REPO_URL $INSTALL_DIR
 fi
