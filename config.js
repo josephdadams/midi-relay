@@ -1,5 +1,5 @@
 'use strict'
-const Conf = require('conf')
+const Conf = require('conf').default
 
 module.exports = new Conf({
 	defaults: {
