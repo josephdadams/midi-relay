@@ -10,16 +10,16 @@ const _ = require('lodash')
 
 const BOUNCE_MS = 300
 
-const COLD_START_MS = 300;
-const appStartedAt = Date.now();//bounceback debounce time in milliseconds
+const COLD_START_MS = 300
+const appStartedAt = Date.now() //bounceback debounce time in milliseconds
 
 let virtualOutput = new midi.Output()
 let virtualInput = new midi.Input()
 
 let virtualCreated = false
 
-const drainingInputs = new Map(); // portName -> untilTimestamp (ms)
-const DRAIN_MS = 200;
+const drainingInputs = new Map() // portName -> untilTimestamp (ms)
+const DRAIN_MS = 200
 
 function createVirtualMIDIPort() {
 	try {
@@ -156,14 +156,14 @@ function OpenPort(portName) {
 				input.openPort(i)
 				input.ignoreTypes(false, false, false)
 
-				drainingInputs.set(portName, Date.now() + DRAIN_MS);
+				drainingInputs.set(portName, Date.now() + DRAIN_MS)
 				input.on('message', (_, message) => {
-					const until = drainingInputs.get(portName) || 0;
-					if (Date.now() < until) return;     // drop stale burst
-					receiveMIDI(portName, message);
-				});
+					const until = drainingInputs.get(portName) || 0
+					if (Date.now() < until) return // drop stale burst
+					receiveMIDI(portName, message)
+				})
 				// when DRAIN_MS elapses, stop tracking
-				setTimeout(() => drainingInputs.delete(portName), DRAIN_MS + 10);
+				setTimeout(() => drainingInputs.delete(portName), DRAIN_MS + 10)
 
 				inputMap.set(portName, input)
 
@@ -677,8 +677,7 @@ function processMIDI(midiObj) {
 			return
 		}
 		AddToLog(midiObj.midiport, midiObj.midicommand, midiObj.rawmessage) //add to log after processing
-	}
-	else {
+	} else {
 		console.log('MIDI message did not pass debounce check, skipping processing:', midiObj.rawmessage)
 	}
 }
