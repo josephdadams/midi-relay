@@ -1,84 +1,152 @@
 # midi-relay
 
-**MIDI over HTTP — simple, powerful, and cross-platform.**  
-`midi-relay` lets you send and receive MIDI messages across a network using JSON-based HTTP requests. Built with flexibility in mind, it's perfect for triggering MIDI gear from custom tools, Bitfocus Companion, or remote scripts.
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Node](https://img.shields.io/badge/node-%3E%3D18-green)
+![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey)
+![MIDI](https://img.shields.io/badge/protocol-MIDI-orange)
 
----
+**MIDI over HTTP --- simple, powerful, and production-ready.**
 
-## About
+`midi-relay` allows you to send and receive MIDI messages across a
+network using JSON-based HTTP requests. It is designed for automation,
+control systems, live production environments, and integration with
+tools like Bitfocus Companion.
 
-Created by **Joseph Adams**, distributed under the **MIT License**.
+------------------------------------------------------------------------
 
-More info: [www.josephadams.dev](http://www.josephadams.dev)
+## 🚀 Why midi-relay?
 
----
+-   Trigger MIDI from HTTP requests
+-   Integrate with control systems and automation platforms
+-   Deploy as a desktop utility or rack-mounted headless service
+-   Lightweight and reliable
+-   Built for real-world production environments
 
-## Features
+Created by **Joseph Adams**\
+MIT Licensed\
+More projects: https://www.josephadams.dev
 
-- Send MIDI messages via HTTP POST (JSON payload)
-- Cross-network and cross-subnet support
-- Listen for incoming MIDI messages and trigger scripts, HTTP requests, or automation
-- Bitfocus Companion integration
-- Headless server and desktop app versions
+------------------------------------------------------------------------
 
----
+# ✨ Features
 
-## Getting Started
+-   Send MIDI messages via HTTP POST (JSON payload)
+-   Receive incoming MIDI and trigger automation
+-   Cross-network / cross-subnet support
+-   Bitfocus Companion friendly
+-   Desktop app (macOS / Windows)
+-   Headless Linux service (ideal for Raspberry Pi)
 
-### ▶️ Running midi-relay v3.0+ (Desktop Application)
+------------------------------------------------------------------------
 
-1. Download the appropriate binary from [Releases](https://github.com/josephdadams/midi-relay/releases)
-2. Launch the app on your OS
-3. MIDI ports will be scanned on startup
-4. The app runs an HTTP server on port `4000` (must be available)
+# 🖥 Desktop Installation (macOS / Windows)
 
-📝 To run it from terminal (headless), use **v2.x** instead.
+1.  Download the latest release:
+    https://github.com/josephdadams/midi-relay/releases
+2.  Launch the application
+3.  MIDI ports scan automatically on startup
+4.  HTTP server runs on port `4000` (default)
 
----
+That's it.
 
-### 💻 Running midi-relay v2.x (Node.js)
+------------------------------------------------------------------------
 
-#### Manual Run
+# 🍓 Raspberry Pi / Linux Installation (Headless Mode)
 
-1. Install Node.js from [nodejs.org](https://nodejs.org/en/download/)
-2. Clone or download the source
-3. Open terminal and `cd` into the folder
-4. Run it with:
-   ```bash
-   node main.js
-   ```
+For rack deployments, automation servers, and embedded systems, run
+`midi-relay` as a system service.
 
-If `midi_triggers.json` is missing, it will be created automatically after you add your first trigger.
+## One-Line Installer
 
-#### Running as a Background Service
+Run this directly on your Raspberry Pi:
 
-1. Install [PM2](https://pm2.keymetrics.io/) globally:
-   ```bash
-   npm install -g pm2
-   ```
-2. Start the service:
-   ```bash
-   pm2 start main.js --name midi-relay
-   ```
-3. (Optional) Enable startup on boot:
-   ```bash
-   pm2 startup
-   ```
-4. View logs:
-   ```bash
-   pm2 logs midi-relay
-   ```
+``` bash
+curl -fsSL https://raw.githubusercontent.com/josephdadams/midi-relay/main/install-midi-relay.sh | bash
+```
 
----
+The installer will:
 
-## API
+-   Install Node.js (ARM64)
+-   Install required system libraries (ALSA)
+-   Clone the repository into `/opt/midi-relay`
+-   Build native MIDI modules correctly for ARM
+-   Create a dedicated `midi` system user
+-   Install and enable a systemd service
+-   Configure automatic startup on boot
 
-You can integrate midi-relay into third-party control systems by sending HTTP POST requests with MIDI data in JSON format.
+------------------------------------------------------------------------
 
-📘 [View the API Documentation](./api.md)
+## 🔍 Service Management
 
----
+Check service status:
 
-## License
+``` bash
+sudo systemctl status midi-relay
+```
+
+View live logs:
+
+``` bash
+journalctl -u midi-relay -f
+```
+
+The service automatically restarts if it crashes.
+
+------------------------------------------------------------------------
+
+# 🧪 Development Mode
+
+For development or testing:
+
+``` bash
+git clone https://github.com/josephdadams/midi-relay.git
+cd midi-relay
+yarn install
+node index.js
+```
+
+On macOS / Windows (Electron GUI):
+
+``` bash
+yarn start
+```
+
+------------------------------------------------------------------------
+
+# 📡 API Example
+
+Send MIDI via HTTP POST:
+
+``` json
+{
+  "type": "noteon",
+  "channel": 1,
+  "note": 60,
+  "velocity": 127
+}
+```
+
+Default endpoint:
+
+    http://localhost:4000
+
+Full documentation:
+
+📘 See `api.md`
+
+------------------------------------------------------------------------
+
+# 🛠 Deployment Use Cases
+
+-   Church AVL control systems
+-   Companion integrations
+-   Remote MIDI triggering
+-   Automation servers
+-   Network-controlled hardware
+-   Rack-mounted MIDI appliances
+
+------------------------------------------------------------------------
+
+# 📄 License
 
 MIT License © Joseph Adams

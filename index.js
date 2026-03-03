@@ -1,28 +1,19 @@
 'use strict'
-const path = require('path')
-const { app, BrowserWindow, Tray, nativeImage } = require('electron')
-/// const {autoUpdater} = require('electron-updater');
-const { is } = require('electron-util')
-const unhandled = require('electron-unhandled')
-const debug = require('electron-debug')
-const contextMenu = require('electron-context-menu')
+
 const config = require('./config.js')
 const util = require('./util.js')
 const API = require('./api.js')
-
 const notifications = require('./notifications.js')
 
-global.tray = undefined
+const isElectron = !!process.versions.electron
 
-global.win = undefined
-
+// Shared globals (used by util/API)
 global.MIDI_INPUTS = []
 global.MIDI_OUTPUTS = []
 
 global.IncomingMIDIRelayTypes = ['noteon', 'noteoff', 'aftertouch', 'cc', 'pc', 'pressure', 'pitchbend', 'msc', 'sysex']
 
-global.MIDIRelaysLog = [] //global array of MIDI messages and the datetime they were sent
-
+global.MIDIRelaysLog = []
 global.MDNS_HOSTS = []
 
 global.sendControlStatus = function () {
@@ -51,23 +42,56 @@ global.sendMIDIBack = function (midiObj) {
 	API.sendMIDIBack(midiObj)
 }
 
+function gracefulShutdown() {
+	try {
+		util.shutdownMIDI && util.shutdownMIDI()
+	} catch {}
+}
+
+/* ===============================
+   HEADLESS NODE MODE (Pi)
+   =============================== */
+
+if (!isElectron) {
+	console.log('Starting midi-relay in headless mode...')
+
+	API.start(config.get('apiPort'))
+
+	process.on('SIGINT', () => {
+		gracefulShutdown()
+		process.exit(0)
+	})
+
+	process.on('SIGTERM', () => {
+		gracefulShutdown()
+		process.exit(0)
+	})
+
+	process.on('uncaughtException', (err) => {
+		console.error('Uncaught Exception:', err)
+		setTimeout(() => process.exit(1), 5000)
+	})
+
+	return
+}
+
+/* ===============================
+   ELECTRON MODE (Desktop)
+   =============================== */
+
+const path = require('path')
+const { app, BrowserWindow, Tray, nativeImage } = require('electron')
+const { is } = require('electron-util')
+const unhandled = require('electron-unhandled')
+const contextMenu = require('electron-context-menu')
+
+global.tray = undefined
+global.win = undefined
+
 unhandled()
-//debug();
 contextMenu()
 
-// Note: Must match `build.appId` in package.json
 app.setAppUserModelId(config.get('appUserModelId'))
-
-// Uncomment this before publishing your first version.
-// It's commented out as it throws an error if there are no published versions.
-// if (!is.development) {
-// 	const FOUR_HOURS = 1000 * 60 * 60 * 4;
-// 	setInterval(() => {
-// 		autoUpdater.checkForUpdates();
-// 	}, FOUR_HOURS);
-//
-// 	autoUpdater.checkForUpdates();
-// }
 
 const createMainWindow = async () => {
 	global.win = new BrowserWindow({
@@ -95,8 +119,6 @@ const createMainWindow = async () => {
 	})
 
 	global.win.on('closed', () => {
-		// Dereference the window
-		// For multiple windows store them in an array
 		global.win = undefined
 	})
 
@@ -105,7 +127,6 @@ const createMainWindow = async () => {
 	return global.win
 }
 
-// Prevent multiple instances of the app
 if (!app.requestSingleInstanceLock()) {
 	app.quit()
 }
@@ -115,14 +136,12 @@ app.on('second-instance', () => {
 		if (global.win.isMinimized()) {
 			global.win.restore()
 		}
-
-		//global.win.show();
 	}
 })
 
 app.on('window-all-closed', () => {
 	if (!is.macos) {
-		//app.quit();
+		// keep running in tray
 	}
 })
 
@@ -142,23 +161,14 @@ app.on('activate', async () => {
 	global.tray.setToolTip('midi-relay')
 
 	if (process.platform === 'darwin') {
-	app.dock.hide()
-}
+		app.dock.hide()
+	}
 
 	API.start(config.get('apiPort'))
 })()
 
-function gracefulShutdown() {
-	try {
-		util.shutdownMIDI && util.shutdownMIDI()
-	} catch {}
-}
-
 app.on('before-quit', gracefulShutdown)
 app.on('will-quit', gracefulShutdown)
-
-process.on('SIGINT', gracefulShutdown)
-process.on('SIGTERM', gracefulShutdown)
 
 process.on('uncaughtException', (err) => {
 	try {
@@ -168,5 +178,5 @@ process.on('uncaughtException', (err) => {
 			showNotification: true,
 		})
 	} catch {}
-	setTimeout(() => process.exit(1), 10000) // ← invoke later
+	setTimeout(() => process.exit(1), 10000)
 })

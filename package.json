@@ -1,7 +1,7 @@
 {
 	"name": "midi-relay",
 	"productName": "midi-relay",
-	"version": "3.6.0",
+	"version": "3.7.0",
 	"author": {
 		"name": "Joseph Adams",
 		"email": "joseph@josephadams.dev"
@@ -20,6 +20,7 @@
 	"build": {
 		"appId": "com.josephadams.midi-relay",
 		"productName": "midi-relay",
+		"artifactName": "midi-relay-v${version}-${os}-${arch}.${ext}",
 		"mac": {
 			"target": [
 				{
