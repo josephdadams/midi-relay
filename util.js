@@ -1,6 +1,12 @@
 'use strict'
 
-const { app, systemPreferences } = require('electron')
+let systemPreferences = null
+
+// Only require Electron when running inside Electron
+if (process.versions.electron) {
+	const electron = require('electron')
+	systemPreferences = electron.systemPreferences
+}
 
 const config = require('./config.js')
 
@@ -11,8 +17,11 @@ const notifications = require('./notifications.js')
 const contextmenu = require('./contextmenu.js')
 
 function subscribeToNotifications() {
-	//system events that can notify the app of a system change - perhaps like USB device being plugged in
-	let allowedEvents = config.get('allowedEvents')
+	// Skip entirely in headless mode
+	if (!systemPreferences) return
+
+	let allowedEvents = config.get('allowedEvents') || []
+
 	for (let i = 0; i < allowedEvents.length; i++) {
 		systemPreferences.subscribeNotification(allowedEvents[i], (event, userInfo) => {
 			processNotification(event, userInfo)
@@ -21,10 +30,8 @@ function subscribeToNotifications() {
 }
 
 function processNotification(event, info) {
-	//process the system event
 	try {
-		if (config.get('allowedEvents').includes(event)) {
-			//do the stuff with the things
+		if ((config.get('allowedEvents') || []).includes(event)) {
 			switch (event) {
 				default:
 					break
@@ -47,11 +54,17 @@ function startRescanInterval() {
 
 module.exports = {
 	startUp() {
-		contextmenu.buildContextMenu()
+		// Only build context menu in Electron
+		if (process.versions.electron) {
+			contextmenu.buildContextMenu()
+		}
+
 		midi.startMIDI()
-		//mdns.startMDNS();
+		// mdns.startMDNS();
 		startRescanInterval()
-		subscribeToNotifications() //for system notifications to alert the app of changes like usb devices detected
+
+		// Only subscribe to system notifications in Electron
+		subscribeToNotifications()
 	},
 
 	getMIDIOutputs() {
